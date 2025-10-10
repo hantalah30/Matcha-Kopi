@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css"
+    />
+    <link rel="stylesheet" href="assets/css/admin.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+  <body>
+    <div class="admin-container">
+      <header class="admin-header">
+        <h1>Admin Dashboard</h1>
+        <button id="logout-btn" class="button">Logout</button>
+      </header>
+
+      <main class="admin-main">
+        <section class="admin-section">
+          <h2>Rekap Data Penjualan</h2>
+          <div class="stats-container">
+            <div class="stat-card">
+              <h3>Total Pendapatan</h3>
+              <p id="total-revenue">Rp 0</p>
+            </div>
+            <div class="stat-card">
+              <h3>Total Item Terjual</h3>
+              <p id="total-items-sold">0</p>
+            </div>
+            <div class="stat-card">
+              <h3>Produk Terlaris</h3>
+              <p id="best-seller">-</p>
+            </div>
+          </div>
+          <canvas id="salesChart"></canvas>
+        </section>
+
+        <section class="admin-section">
+          <h2>Analisis Komposisi & Keuntungan</h2>
+          <div class="product-table-container">
+            <table id="composition-table">
+              <thead>
+                <tr>
+                  <th>Menu</th>
+                  <th>Komposisi per Cup (400ml)</th>
+                  <th>Modal per Cup</th>
+                  <th>Harga Jual</th>
+                  <th>Keuntungan per Cup</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="admin-section">
+          <h2>Manajemen Produk</h2>
+          <button id="add-product-btn" class="button">
+            <i class="ri-add-line"></i> Tambah Produk
+          </button>
+          <div class="product-table-container">
+            <table id="product-table">
+              <thead>
+                <tr>
+                  <th>Gambar</th>
+                  <th>Nama Produk</th>
+                  <th>Harga Jual</th>
+                  <th>Modal</th>
+                  <th>Kategori</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <div id="product-modal" class="modal">
+      <div class="modal-content">
+        <span class="close-btn">&times;</span>
+        <h2 id="modal-title">Tambah Produk</h2>
+        <form id="product-form">
+          <input type="hidden" id="product-id" />
+          <div class="input-group">
+            <label for="product-name">Nama Produk</label>
+            <input type="text" id="product-name" required />
+          </div>
+          <div class="input-group">
+            <label for="product-price">Harga Jual (IDR)</label>
+            <input type="number" id="product-price" step="500" required />
+          </div>
+          <div class="input-group">
+            <label for="product-cost">Modal per Cup (IDR)</label>
+            <input
+              type="number"
+              id="product-cost"
+              step="100"
+              required
+              placeholder="Contoh: 7500"
+            />
+          </div>
+          <div class="input-group">
+            <label for="product-category">Kategori</label>
+            <select id="product-category" required>
+              <option value="kopi">Kopi</option>
+              <option value="matcha">Matcha</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <label for="product-composition">Komposisi (per cup 400ml)</label>
+            <textarea
+              id="product-composition"
+              rows="3"
+              placeholder="Contoh: Espresso 30ml, Susu 150ml, Gula Aren 20g"
+            ></textarea>
+          </div>
+          <div class="input-group">
+            <label for="product-image-url">URL Gambar Produk</label>
+            <input
+              type="url"
+              id="product-image-url"
+              required
+              placeholder="https://...gambar.png"
+            />
+            <img id="image-preview" src="#" alt="Preview Gambar" />
+          </div>
+          <button type="submit" class="button">Simpan</button>
+        </form>
+      </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+    <script src="assets/js/firebase-config.js"></script>
+    <script src="assets/js/admin.js"></script>
+  </body>
+</html>

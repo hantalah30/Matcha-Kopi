@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="shortcut icon"
+      href="assets/img/favicon.png"
+      type="image/x-icon"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css"
+    />
+    <link rel="stylesheet" href="assets/css/styles.css" />
+    <link rel="stylesheet" href="assets/css/checkout.css" />
+    <title>Checkout - KOPI & MATCHA</title>
+  </head>
+  <body>
+    <div class="success-overlay" id="success-overlay">
+      <div class="success-checkmark">
+        <div class="check-icon">
+          <span class="icon-line line-tip"></span>
+          <span class="icon-line line-long"></span>
+          <div class="icon-circle"></div>
+          <div class="icon-fix"></div>
+        </div>
+      </div>
+      <p>Pesanan Berhasil!</p>
+    </div>
+
+    <header class="header" id="header">
+      <nav class="nav container">
+        <a href="index.html" class="nav__logo">KOPI & MATCHA</a>
+      </nav>
+    </header>
+
+    <main class="main">
+      <section class="checkout section" id="checkout">
+        <h2 class="section__title">Konfirmasi Pesanan</h2>
+        <div class="checkout__container container grid">
+          <div class="checkout__summary">
+            <h3 class="checkout__summary-title">Ringkasan Pesanan</h3>
+            <div id="checkout-items"></div>
+            <div class="checkout__total">
+              <span class="checkout__total-title">Total:</span>
+              <span class="checkout__total-price" id="checkout-total-price"
+                >Rp 0</span
+              >
+            </div>
+          </div>
+
+          <form class="checkout__form" id="checkout-form">
+            <h3 class="checkout__form-title">Detail Pengiriman</h3>
+            <div class="checkout__form-group">
+              <label for="name">Nama</label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                required
+                placeholder="Masukkan nama Anda"
+              />
+            </div>
+            <div class="checkout__form-group">
+              <label for="phone">No. Telepon</label>
+              <input
+                type="tel"
+                id="phone"
+                name="phone"
+                required
+                placeholder="Contoh: 08123456789"
+              />
+            </div>
+            <div class="checkout__form-group">
+              <label for="class-schedule"
+                >Pilih Jadwal Kelas Sistem Informasi</label
+              >
+              <select id="class-schedule" name="class-schedule" required>
+                <option value="SI-01">SI-01</option>
+                <option value="SI-02">SI-02</option>
+                <option value="SI-03">SI-03</option>
+                <option value="SI-04">SI-04</option>
+                <option value="SI-05">SI-05</option>
+                <option value="SI-06">SI-06</option>
+                <option value="SI-07">SI-07</option>
+                <option value="SI-08">SI-08</option>
+                <option value="SI-09">SI-09</option>
+                <option value="SI-10">SI-10</option>
+              </select>
+            </div>
+            <div class="checkout__form-group">
+              <label for="classroom">Ruangan Kelas</label>
+              <input
+                type="text"
+                id="classroom"
+                name="classroom"
+                required
+                placeholder="Contoh: R. 401"
+              />
+            </div>
+            <div class="checkout__form-group">
+              <label for="payment-method">Metode Pembayaran</label>
+              <select id="payment-method" name="payment-method" required>
+                <option value="QRIS">QRIS</option>
+                <option value="Tunai">Tunai</option>
+              </select>
+            </div>
+            <button type="submit" class="button checkout__button">
+              <span class="button__text">Konfirmasi & Kirim via WhatsApp</span>
+              <span class="button__loading-spinner"></span>
+            </button>
+          </form>
+        </div>
+      </section>
+    </main>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+    <script src="assets/js/firebase-config.js"></script>
+    <script src="assets/js/checkout.js"></script>
+  </body>
+</html>

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Login - Kopi & Matcha</title>
+    <link rel="stylesheet" href="assets/css/admin.css" />
+  </head>
+  <body>
+    <div class="login-container">
+      <div class="login-box">
+        <h2>Admin Login</h2>
+        <p class="login-subtitle">Akses dashboard pengelolaan toko Anda.</p>
+        <form id="login-form">
+          <div class="input-group">
+            <label for="email">Email</label>
+            <input
+              type="email"
+              id="email"
+              required
+              placeholder="admin@example.com"
+            />
+          </div>
+          <div class="input-group">
+            <label for="password">Password</label>
+            <input
+              type="password"
+              id="password"
+              required
+              placeholder="••••••••"
+            />
+          </div>
+          <button type="submit" class="button" id="login-button">
+            <span class="button__text">Login</span>
+            <span class="button__loading-spinner"></span>
+          </button>
+          <p id="login-error" class="error-message"></p>
+        </form>
+      </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+
+    <script src="assets/js/firebase-config.js"></script>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        // Pastikan firebase auth sudah terinisialisasi sebelum digunakan
+        if (typeof firebase === "undefined" || !firebase.auth) {
+          console.error(
+            "Firebase Auth tidak terinisialisasi. Periksa koneksi dan file firebase-config.js Anda."
+          );
+          document.getElementById("login-error").textContent =
+            "Gagal memuat sistem. Coba refresh halaman.";
+          return;
+        }
+
+        const auth = firebase.auth();
+        const loginForm = document.getElementById("login-form");
+        const loginButton = document.getElementById("login-button");
+        const loginError = document.getElementById("login-error");
+
+        // Listener ini akan aktif setiap kali status login berubah (login/logout)
+        auth.onAuthStateChanged((user) => {
+          if (user) {
+            // Jika pengguna terdeteksi sudah login, langsung alihkan ke halaman admin.
+            // window.location.replace() lebih baik dari .href karena tidak menyimpan halaman login di riwayat browser.
+            console.log("Pengguna sudah login, mengalihkan ke admin...");
+            window.location.replace("admin.html");
+          } else {
+            console.log("Tidak ada pengguna yang login.");
+          }
+        });
+
+        loginForm.addEventListener("submit", (e) => {
+          // Mencegah form melakukan refresh halaman (INI BAGIAN PENTING YANG DIPERBAIKI)
+          e.preventDefault();
+
+          loginButton.classList.add("loading");
+          loginButton.disabled = true;
+          loginError.textContent = "";
+
+          const email = document.getElementById("email").value;
+          const password = document.getElementById("password").value;
+
+          // Memproses login menggunakan Firebase Auth
+          auth
+            .signInWithEmailAndPassword(email, password)
+            .then((userCredential) => {
+              // Jika berhasil, onAuthStateChanged akan otomatis menangani pengalihan
+              console.log("Login berhasil!", userCredential.user);
+            })
+            .catch((error) => {
+              // Menampilkan pesan error yang lebih spesifik
+              if (
+                error.code === "auth/user-not-found" ||
+                error.code === "auth/wrong-password"
+              ) {
+                loginError.textContent =
+                  "Email atau password yang Anda masukkan salah.";
+              } else {
+                loginError.textContent = "Terjadi kesalahan. Coba lagi.";
+              }
+              console.error("Error saat login:", error);
+
+              // Mengembalikan tombol ke keadaan normal
+              loginButton.classList.remove("loading");
+              loginButton.disabled = false;
+            });
+        });
+      });
+    </script>
+  </body>
+</html>
