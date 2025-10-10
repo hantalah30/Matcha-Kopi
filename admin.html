@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Admin Dashboard</title>
+    <title>Admin Dashboard - KOPI & MATCHA</title>
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css"
@@ -12,43 +12,110 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   </head>
   <body>
-    <div class="admin-container">
-      <header class="admin-header">
-        <h1>Admin Dashboard</h1>
-        <button id="logout-btn" class="button">Logout</button>
-      </header>
+    <div class="admin-layout">
+      <aside class="sidebar" id="sidebar">
+        <nav class="sidebar__nav">
+          <div>
+            <a href="#" class="sidebar__logo">
+              <i class="ri-cup-line sidebar__logo-icon"></i>
+              <span class="sidebar__logo-text">KopiMatcha</span>
+            </a>
 
-      <main class="admin-main">
-        <section class="admin-section">
-          <h2>Rekap Data Penjualan</h2>
+            <div class="sidebar__menu">
+              <ul class="sidebar__list">
+                <li>
+                  <a href="#dashboard" class="sidebar__link active-link">
+                    <i class="ri-dashboard-line"></i>
+                    <span>Dashboard</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="#orders" class="sidebar__link">
+                    <i class="ri-list-check"></i>
+                    <span>Pesanan</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="#products" class="sidebar__link">
+                    <i class="ri-settings-3-line"></i>
+                    <span>Produk</span>
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <a href="#" id="logout-btn" class="sidebar__link sidebar__logout">
+            <i class="ri-logout-box-r-line"></i>
+            <span>Logout</span>
+          </a>
+        </nav>
+      </aside>
+
+      <main class="main-content">
+        <header class="main-header">
+          <button id="sidebar-toggle" class="sidebar-toggle">
+            <i class="ri-menu-line"></i>
+          </button>
+          <div class="header-actions">
+            <div class="theme-switch-wrapper">
+              <label class="theme-switch" for="theme-checkbox">
+                <input type="checkbox" id="theme-checkbox" />
+                <div class="slider round">
+                  <i class="ri-sun-line light-icon"></i>
+                  <i class="ri-moon-line dark-icon"></i>
+                </div>
+              </label>
+            </div>
+          </div>
+        </header>
+
+        <section id="page-dashboard" class="admin-page active-page">
+          <h1>Dashboard</h1>
           <div class="stats-container">
             <div class="stat-card">
-              <h3>Total Pendapatan</h3>
+              <h3>
+                <i class="ri-calendar-event-line"></i> Pendapatan Hari Ini
+              </h3>
+              <p id="revenue-today">Rp 0</p>
+            </div>
+            <div class="stat-card">
+              <h3><i class="ri-wallet-3-line"></i> Total Pendapatan</h3>
               <p id="total-revenue">Rp 0</p>
             </div>
             <div class="stat-card">
-              <h3>Total Item Terjual</h3>
+              <h3><i class="ri-shopping-bag-3-line"></i> Total Item Terjual</h3>
               <p id="total-items-sold">0</p>
             </div>
             <div class="stat-card">
-              <h3>Produk Terlaris</h3>
+              <h3><i class="ri-trophy-line"></i> Produk Terlaris</h3>
               <p id="best-seller">-</p>
             </div>
           </div>
-          <canvas id="salesChart"></canvas>
+          <div class="charts-container">
+            <div class="chart-card">
+              <h3>Penjualan 7 Hari Terakhir</h3>
+              <canvas id="salesChart"></canvas>
+            </div>
+            <div class="chart-card">
+              <h3>Komposisi Kategori</h3>
+              <canvas id="categoryChart"></canvas>
+            </div>
+          </div>
         </section>
 
-        <section class="admin-section">
-          <h2>Analisis Komposisi & Keuntungan</h2>
-          <div class="product-table-container">
-            <table id="composition-table">
+        <section id="page-orders" class="admin-page">
+          <h1>Manajemen Pesanan</h1>
+          <div class="order-table-container">
+            <table id="order-table">
               <thead>
                 <tr>
-                  <th>Menu</th>
-                  <th>Komposisi per Cup (400ml)</th>
-                  <th>Modal per Cup</th>
-                  <th>Harga Jual</th>
-                  <th>Keuntungan per Cup</th>
+                  <th>Waktu</th>
+                  <th>Pelanggan</th>
+                  <th>Total</th>
+                  <th>Lokasi</th>
+                  <th>Status</th>
+                  <th>Aksi</th>
                 </tr>
               </thead>
               <tbody></tbody>
@@ -56,17 +123,19 @@
           </div>
         </section>
 
-        <section class="admin-section">
-          <h2>Manajemen Produk</h2>
-          <button id="add-product-btn" class="button">
-            <i class="ri-add-line"></i> Tambah Produk
-          </button>
+        <section id="page-products" class="admin-page">
+          <div class="section-header">
+            <h1>Manajemen Produk</h1>
+            <button id="add-product-btn" class="button">
+              <i class="ri-add-line"></i> Tambah Produk
+            </button>
+          </div>
           <div class="product-table-container">
             <table id="product-table">
               <thead>
                 <tr>
                   <th>Gambar</th>
-                  <th>Nama Produk</th>
+                  <th>Nama</th>
                   <th>Harga Jual</th>
                   <th>Modal</th>
                   <th>Kategori</th>
@@ -96,13 +165,7 @@
           </div>
           <div class="input-group">
             <label for="product-cost">Modal per Cup (IDR)</label>
-            <input
-              type="number"
-              id="product-cost"
-              step="100"
-              required
-              placeholder="Contoh: 7500"
-            />
+            <input type="number" id="product-cost" step="100" required />
           </div>
           <div class="input-group">
             <label for="product-category">Kategori</label>
@@ -112,32 +175,37 @@
             </select>
           </div>
           <div class="input-group">
-            <label for="product-composition">Komposisi (per cup 400ml)</label>
-            <textarea
-              id="product-composition"
-              rows="3"
-              placeholder="Contoh: Espresso 30ml, Susu 150ml, Gula Aren 20g"
-            ></textarea>
+            <label for="product-composition">Komposisi</label>
+            <textarea id="product-composition" rows="3"></textarea>
           </div>
           <div class="input-group">
             <label for="product-image-url">URL Gambar Produk</label>
-            <input
-              type="url"
-              id="product-image-url"
-              required
-              placeholder="https://...gambar.png"
-            />
-            <img id="image-preview" src="#" alt="Preview Gambar" />
+            <input type="url" id="product-image-url" required />
+            <img id="image-preview" src="#" alt="Preview" />
           </div>
           <button type="submit" class="button">Simpan</button>
         </form>
       </div>
     </div>
 
+    <div id="order-details-modal" class="modal">
+      <div class="modal-content">
+        <span class="close-btn">&times;</span>
+        <h2>Detail Pesanan</h2>
+        <div id="order-details-content"></div>
+      </div>
+    </div>
+
+    <div id="admin-notification" class="admin-notification"></div>
+    <audio
+      id="notification-sound"
+      src="assets/audio/notification.mp3"
+      preload="auto"
+    ></audio>
+
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
     <script src="assets/js/firebase-config.js"></script>
     <script src="assets/js/admin.js"></script>
   </body>
