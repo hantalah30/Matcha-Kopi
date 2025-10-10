@@ -91,7 +91,7 @@ document.addEventListener("DOMContentLoaded", () => {
       message += `Metode Pembayaran: ${orderData.paymentMethod}\n\n`;
       message += `Terima kasih!`;
 
-      const phoneNumber = "+6285775603396"; // GANTI DENGAN NOMOR WA ANDA
+      const phoneNumber = "+6287899451847"; // GANTI DENGAN NOMOR WA ANDA
       const whatsappUrl = `https://api.whatsapp.com/send?phone=${phoneNumber}&text=${encodeURIComponent(
         message
       )}`;
