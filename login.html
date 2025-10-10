@@ -3,56 +3,89 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Admin Login - Kopi & Matcha</title>
+    <title>Admin Login - KOPI & MATCHA</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css"
+    />
     <link rel="stylesheet" href="assets/css/admin.css" />
+    <link
+      rel="shortcut icon"
+      href="assets/img/favicon2.png"
+      type="image/x-icon"
+    />
+    <link
   </head>
   <body>
-    <div class="login-container">
-      <div class="login-box">
-        <h2>Admin Login</h2>
-        <p class="login-subtitle">Akses dashboard pengelolaan toko Anda.</p>
-        <form id="login-form">
-          <div class="input-group">
-            <label for="email">Email</label>
-            <input
-              type="email"
-              id="email"
-              required
-              placeholder="admin@example.com"
-            />
+    <div class="login-page">
+      <div class="login-image-panel">
+        <div class="floating-elements">
+          <i class="ri-cup-line bean1"></i>
+          <i class="ri-cup-line bean2"></i>
+          <i class="ri-cup-line bean3"></i>
+          <i class="ri-cup-line bean4"></i>
+        </div>
+        <div class="image-overlay"></div>
+        <div class="image-content">
+          <h1>Selamat Datang Kembali, Admin.</h1>
+          <p>Kelola pesanan, produk, dan lihat laporan penjualan di sini.</p>
+        </div>
+      </div>
+
+      <div class="login-form-panel">
+        <div class="login-box glass-effect">
+          <div class="login-logo">
+            <i class="ri-cup-line"></i>
+            <span>KOPI & MATCHA</span>
           </div>
-          <div class="input-group">
-            <label for="password">Password</label>
-            <input
-              type="password"
-              id="password"
-              required
-              placeholder="••••••••"
-            />
-          </div>
-          <button type="submit" class="button" id="login-button">
-            <span class="button__text">Login</span>
-            <span class="button__loading-spinner"></span>
-          </button>
-          <p id="login-error" class="error-message"></p>
-        </form>
+          <h2>Admin Login</h2>
+          <p class="login-subtitle">
+            Masukkan kredensial Anda untuk melanjutkan.
+          </p>
+          <form id="login-form">
+            <div class="input-group">
+              <label for="email">Email</label>
+              <i class="ri-mail-line input-icon"></i>
+              <input
+                type="email"
+                id="email"
+                required
+                placeholder="admin@example.com"
+              />
+            </div>
+            <div class="input-group">
+              <label for="password">Password</label>
+              <i class="ri-lock-line input-icon"></i>
+              <input
+                type="password"
+                id="password"
+                required
+                placeholder="••••••••"
+              />
+              <i class="ri-eye-line password-toggle" id="password-toggle"></i>
+            </div>
+            <button type="submit" class="button" id="login-button">
+              <span class="button__text">Login</span>
+              <span class="button__loading-spinner"></span>
+            </button>
+            <p id="login-error" class="error-message"></p>
+          </form>
+        </div>
       </div>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-
     <script src="assets/js/firebase-config.js"></script>
 
     <script>
       document.addEventListener("DOMContentLoaded", () => {
-        // Pastikan firebase auth sudah terinisialisasi sebelum digunakan
         if (typeof firebase === "undefined" || !firebase.auth) {
-          console.error(
-            "Firebase Auth tidak terinisialisasi. Periksa koneksi dan file firebase-config.js Anda."
-          );
-          document.getElementById("login-error").textContent =
-            "Gagal memuat sistem. Coba refresh halaman.";
+          console.error("Firebase Auth tidak terinisialisasi.");
+          const loginError = document.getElementById("login-error");
+          if (loginError)
+            loginError.textContent =
+              "Gagal memuat sistem. Coba refresh halaman.";
           return;
         }
 
@@ -60,55 +93,57 @@
         const loginForm = document.getElementById("login-form");
         const loginButton = document.getElementById("login-button");
         const loginError = document.getElementById("login-error");
+        const passwordInput = document.getElementById("password");
+        const passwordToggle = document.getElementById("password-toggle");
 
-        // Listener ini akan aktif setiap kali status login berubah (login/logout)
+        if (passwordToggle && passwordInput) {
+          passwordToggle.addEventListener("click", () => {
+            const type =
+              passwordInput.getAttribute("type") === "password"
+                ? "text"
+                : "password";
+            passwordInput.setAttribute("type", type);
+            passwordToggle.classList.toggle("ri-eye-off-line");
+            passwordToggle.classList.toggle("ri-eye-line");
+          });
+        }
+
         auth.onAuthStateChanged((user) => {
           if (user) {
-            // Jika pengguna terdeteksi sudah login, langsung alihkan ke halaman admin.
-            // window.location.replace() lebih baik dari .href karena tidak menyimpan halaman login di riwayat browser.
-            console.log("Pengguna sudah login, mengalihkan ke admin...");
             window.location.replace("admin.html");
-          } else {
-            console.log("Tidak ada pengguna yang login.");
           }
         });
 
-        loginForm.addEventListener("submit", (e) => {
-          // Mencegah form melakukan refresh halaman (INI BAGIAN PENTING YANG DIPERBAIKI)
-          e.preventDefault();
+        if (loginForm) {
+          loginForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+            loginButton.classList.add("loading");
+            loginButton.disabled = true;
+            loginError.textContent = "";
 
-          loginButton.classList.add("loading");
-          loginButton.disabled = true;
-          loginError.textContent = "";
+            const email = document.getElementById("email").value;
+            const password = passwordInput.value;
 
-          const email = document.getElementById("email").value;
-          const password = document.getElementById("password").value;
-
-          // Memproses login menggunakan Firebase Auth
-          auth
-            .signInWithEmailAndPassword(email, password)
-            .then((userCredential) => {
-              // Jika berhasil, onAuthStateChanged akan otomatis menangani pengalihan
-              console.log("Login berhasil!", userCredential.user);
-            })
-            .catch((error) => {
-              // Menampilkan pesan error yang lebih spesifik
-              if (
-                error.code === "auth/user-not-found" ||
-                error.code === "auth/wrong-password"
-              ) {
-                loginError.textContent =
-                  "Email atau password yang Anda masukkan salah.";
-              } else {
-                loginError.textContent = "Terjadi kesalahan. Coba lagi.";
-              }
-              console.error("Error saat login:", error);
-
-              // Mengembalikan tombol ke keadaan normal
-              loginButton.classList.remove("loading");
-              loginButton.disabled = false;
-            });
-        });
+            auth
+              .signInWithEmailAndPassword(email, password)
+              .then((userCredential) => {})
+              .catch((error) => {
+                if (
+                  error.code === "auth/user-not-found" ||
+                  error.code === "auth/wrong-password" ||
+                  error.code === "auth/invalid-credential"
+                ) {
+                  loginError.textContent =
+                    "Email atau password yang Anda masukkan salah.";
+                } else {
+                  loginError.textContent =
+                    "Terjadi kesalahan. Coba lagi nanti.";
+                }
+                loginButton.classList.remove("loading");
+                loginButton.disabled = false;
+              });
+          });
+        }
       });
     </script>
   </body>
