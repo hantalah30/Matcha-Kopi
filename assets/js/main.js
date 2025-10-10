@@ -575,3 +575,17 @@ document.addEventListener("DOMContentLoaded", () => {
   sr.reveal(".footer__container > div", { interval: 150, origin: "bottom" });
   sr.reveal(".footer__copy", { delay: 800 });
 });
+
+/*=============== PENDAFTARAN SERVICE WORKER UNTUK PWA ===============*/
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker
+      .register("/sw.js")
+      .then((registration) => {
+        console.log("Service Worker berhasil didaftarkan: ", registration);
+      })
+      .catch((error) => {
+        console.log("Pendaftaran Service Worker gagal: ", error);
+      });
+  });
+}
