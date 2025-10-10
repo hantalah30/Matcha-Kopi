@@ -580,7 +580,7 @@ document.addEventListener("DOMContentLoaded", () => {
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
     navigator.serviceWorker
-      .register("/sw.js")
+      .register("./sw.js") // Pastikan ada './'
       .then((registration) => {
         console.log("Service Worker berhasil didaftarkan: ", registration);
       })
