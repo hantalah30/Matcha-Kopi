@@ -36,7 +36,9 @@ document.addEventListener("DOMContentLoaded", () => {
       }" class="checkout__item-img">
         <div class="checkout__item-details">
             <span class="checkout__item-name">${item.name}</span>
-            <span class="checkout__item-quantity">${item.quantity} pcs</span>
+            <span class="checkout__item-quantity">${item.quantity} pcs (${
+        item.options.sugar
+      }, ${item.options.ice})</span>
         </div>
         <span class="checkout__item-price">${formatRupiah(
           item.price * item.quantity
@@ -78,11 +80,13 @@ document.addEventListener("DOMContentLoaded", () => {
       // Siapkan pesan WhatsApp
       let message = `Halo, saya mau pesan:\n\n`;
       items.forEach((item) => {
-        message += `- ${item.name} (${item.quantity} pcs) - ${formatRupiah(
+        message += `- ${item.name} (${item.quantity} pcs)\n`;
+        message += `  (Opsi: ${item.options.sugar}, ${item.options.ice})\n`;
+        message += `  Subtotal: ${formatRupiah(
           item.price * item.quantity
-        )}\n`;
+        )}\n\n`;
       });
-      message += `\n*Total: ${formatRupiah(total)}*\n\n`;
+      message += `*Total: ${formatRupiah(total)}*\n\n`;
       message += `*Detail Pemesan:*\n`;
       message += `Nama: ${orderData.customerName}\n`;
       message += `No. Telepon: ${orderData.phone}\n`;

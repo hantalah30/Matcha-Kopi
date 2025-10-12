@@ -57,8 +57,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 )}</span>
               </div>
               <div class="products__buttons">
-                <button class="button products__button-action add-to-cart-btn">Ke Keranjang</button>
-                <button class="button button-dark products__button-action buy-now-btn">Beli Sekarang</button>
+                <button class="button products__button-action choose-options-btn">Pilih Opsi</button>
               </div>
           `;
           productsContainer.appendChild(card);
@@ -83,6 +82,74 @@ document.addEventListener("DOMContentLoaded", () => {
       const filter = btn.dataset.filter;
       renderProducts(filter);
     });
+  });
+
+  /*=============== CUSTOMIZATION MODAL LOGIC ===============*/
+  const customizationModal = document.getElementById("customization-modal");
+  const modalCloseBtn = document.getElementById("modal-close");
+  const modalProductDetails = document.getElementById("modal-product-details");
+  const sugarOptions = document.getElementById("sugar-options");
+  const iceOptions = document.getElementById("ice-options");
+  const modalAddToCartBtn = document.getElementById("modal-add-to-cart");
+
+  let currentProduct = {};
+
+  const openCustomizationModal = (product) => {
+    currentProduct = product;
+    modalProductDetails.innerHTML = `
+            <img src="${product.imageUrl}" alt="${product.name}">
+            <h3>${product.name}</h3>
+            <span>${formatRupiah(product.price)}</span>
+        `;
+    // Reset options to default
+    sugarOptions.querySelector(".active").classList.remove("active");
+    sugarOptions
+      .querySelector('[data-value="Normal Sugar"]')
+      .classList.add("active");
+    iceOptions.querySelector(".active").classList.remove("active");
+    iceOptions
+      .querySelector('[data-value="Normal Ice"]')
+      .classList.add("active");
+
+    customizationModal.classList.add("show-modal");
+  };
+
+  const closeCustomizationModal = () => {
+    customizationModal.classList.remove("show-modal");
+  };
+
+  modalCloseBtn.addEventListener("click", closeCustomizationModal);
+
+  sugarOptions.addEventListener("click", (e) => {
+    if (e.target.classList.contains("option-btn")) {
+      sugarOptions.querySelector(".active").classList.remove("active");
+      e.target.classList.add("active");
+    }
+  });
+
+  iceOptions.addEventListener("click", (e) => {
+    if (e.target.classList.contains("option-btn")) {
+      iceOptions.querySelector(".active").classList.remove("active");
+      e.target.classList.add("active");
+    }
+  });
+
+  modalAddToCartBtn.addEventListener("click", () => {
+    const selectedSugar = sugarOptions.querySelector(".active").dataset.value;
+    const selectedIce = iceOptions.querySelector(".active").dataset.value;
+
+    // Create a unique ID for the cart item based on product and options
+    const cartItemId = `${currentProduct.id}-${selectedSugar}-${selectedIce}`;
+
+    addToCart(
+      cartItemId,
+      currentProduct.id,
+      currentProduct.name,
+      currentProduct.price,
+      currentProduct.imageUrl,
+      { sugar: selectedSugar, ice: selectedIce }
+    );
+    closeCustomizationModal();
   });
 
   /*=============== KODE LAINNYA (TIDAK BERUBAH) ===============*/
@@ -193,6 +260,9 @@ document.addEventListener("DOMContentLoaded", () => {
           <img src="${item.imageUrl}" alt="${item.name}" class="cart__item-img">
           <div class="cart__item-details">
             <h3 class="cart__item-name">${item.name}</h3>
+            <div class="cart__item-options">
+                <small>${item.options.sugar}, ${item.options.ice}</small>
+            </div>
             <span class="cart__item-price">${formatRupiah(
               item.price * item.quantity
             )}</span>
@@ -222,22 +292,26 @@ document.addEventListener("DOMContentLoaded", () => {
     cartItemCount.innerText = itemCount;
     saveCart();
   };
-  const addToCart = (id, name, price, imageUrl, button) => {
-    const existingItem = cartItems.find((item) => item.id === id);
+
+  const addToCart = (cartItemId, productId, name, price, imageUrl, options) => {
+    const existingItem = cartItems.find((item) => item.id === cartItemId);
     if (existingItem) {
       existingItem.quantity++;
     } else {
-      cartItems.push({ id, name, price, imageUrl, quantity: 1 });
+      cartItems.push({
+        id: cartItemId,
+        productId,
+        name,
+        price,
+        imageUrl,
+        options,
+        quantity: 1,
+      });
     }
     updateCart();
     showNotification(`${name} ditambahkan!`);
-    button.innerHTML = 'Ditambahkan <i class="ri-check-line"></i>';
-    button.classList.add("added");
-    setTimeout(() => {
-      button.innerHTML = "Ke Keranjang";
-      button.classList.remove("added");
-    }, 1500);
   };
+
   cartContent.addEventListener("click", (e) => {
     const id = e.target.closest("[data-id]")?.dataset.id;
     if (!id) return;
@@ -256,27 +330,22 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     updateCart();
   });
+
   const attachProductActionListeners = () => {
-    document.querySelectorAll(".add-to-cart-btn").forEach((button) => {
+    document.querySelectorAll(".choose-options-btn").forEach((button) => {
       button.addEventListener("click", (e) => {
         const card = e.target.closest(".products__card");
-        const { id, name, price } = card.dataset;
-        const imageUrl = card.querySelector(".products__coffee").src;
-        addToCart(id, name, parseFloat(price), imageUrl, e.target);
-      });
-    });
-    document.querySelectorAll(".buy-now-btn").forEach((button) => {
-      button.addEventListener("click", (e) => {
-        const card = e.target.closest(".products__card");
-        const { id, name, price } = card.dataset;
-        const imageUrl = card.querySelector(".products__coffee").src;
-        const item = [
-          { id, name, price: parseFloat(price), imageUrl, quantity: 1 },
-        ];
-        redirectToCheckout(item);
+        const product = {
+          id: card.dataset.id,
+          name: card.dataset.name,
+          price: parseFloat(card.dataset.price),
+          imageUrl: card.querySelector(".products__coffee").src,
+        };
+        openCustomizationModal(product);
       });
     });
   };
+
   const redirectToCheckout = (items) => {
     const itemsJson = JSON.stringify(items);
     window.location.href = `checkout.html?items=${encodeURIComponent(
