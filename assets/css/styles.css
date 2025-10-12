@@ -5,25 +5,19 @@
 :root {
   --header-height: 3.5rem;
   --mobile-nav-height: 4.5rem;
-
-  /*========== Colors ==========*/
   --kopi-first-color: hsl(28, 80%, 50%);
   --kopi-first-color-alt: hsl(28, 78%, 45%);
   --kopi-bg-color: hsl(25, 25%, 15%);
   --kopi-title-color: hsl(28, 95%, 90%);
   --kopi-text-color: hsl(28, 15%, 75%);
-
   --matcha-first-color: hsl(88, 50%, 55%);
   --matcha-first-color-alt: hsl(88, 50%, 45%);
   --matcha-bg-color: hsl(90, 20%, 18%);
   --matcha-title-color: hsl(90, 70%, 92%);
   --matcha-text-color: hsl(90, 10%, 80%);
-
   --white-color: #fff;
   --dark-color: hsl(28, 95%, 12%);
   --success-color: #28a745;
-
-  /*========== Font and typography ==========*/
   --body-font: "Montserrat", sans-serif;
   --second-font: "Saira", sans-serif;
   --biggest-font-size: 4.5rem;
@@ -33,11 +27,9 @@
   --h3-font-size: 1rem;
   --normal-font-size: 0.938rem;
   --small-font-size: 0.813rem;
-
   --font-regular: 400;
   --font-medium: 500;
   --font-semi-bold: 600;
-
   --z-tooltip: 10;
   --z-fixed: 100;
   --z-modal: 1000;
@@ -177,9 +169,8 @@ body.matcha-theme .nav__logo:hover {
 }
 .nav__menu {
   display: none;
-} /* Hide by default, show on desktop */
+}
 
-/* Desktop Navigation Styles */
 @media screen and (min-width: 769px) {
   .nav__menu {
     display: block;
@@ -194,22 +185,25 @@ body.matcha-theme .nav__logo:hover {
     font: var(--font-medium) var(--normal-font-size) var(--second-font);
     line-height: 110%;
     transition: color 0.4s;
+    position: relative;
   }
-  .nav__link:hover,
-  .nav__link.active-link {
-    color: var(--kopi-first-color);
+  .nav__link::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -6px;
+    width: 0;
+    height: 2px;
+    background-color: var(--kopi-first-color);
+    transition: width 0.3s;
   }
-  body.matcha-theme .nav__link:hover,
-  body.matcha-theme .nav__link.active-link {
-    color: var(--matcha-first-color);
+  body.matcha-theme .nav__link::after {
+    background-color: var(--matcha-first-color);
   }
-}
-
-.active-link {
-  color: var(--kopi-first-color);
-}
-body.matcha-theme .active-link {
-  color: var(--matcha-first-color);
+  .nav__link:hover::after,
+  .nav__link.active-link::after {
+    width: 100%;
+  }
 }
 
 /*=============== MOBILE BUBBLE NAVIGATION ===============*/
@@ -230,7 +224,7 @@ body.matcha-theme .active-link {
   justify-content: space-around;
   align-items: center;
   z-index: var(--z-fixed);
-  transition: background-color 0.6s ease, bottom 0.4s;
+  transition: background-color 0.6s ease, bottom 0.4s, border-color 0.6s;
 }
 .mobile-nav.hide {
   bottom: -100%;
@@ -240,7 +234,6 @@ body.matcha-theme .mobile-nav {
   border-color: hsla(90, 10%, 80%, 0.2);
 }
 .mobile-nav__link {
-  position: relative;
   color: var(--kopi-text-color);
   font-size: 1.5rem;
   padding: 0.75rem;
@@ -248,28 +241,43 @@ body.matcha-theme .mobile-nav {
   justify-content: center;
   align-items: center;
   transition: color 0.4s;
+  z-index: 2;
 }
 body.matcha-theme .mobile-nav__link {
   color: var(--matcha-text-color);
 }
 .mobile-nav__link.active-link {
-  background-color: var(--kopi-first-color);
   color: var(--white-color);
-  border-radius: 50%;
-  box-shadow: 0 4px 12px hsla(28, 80%, 50%, 0.4);
 }
 body.matcha-theme .mobile-nav__link.active-link {
-  background-color: var(--matcha-first-color);
   color: var(--dark-color);
+}
+
+.mobile-nav__indicator {
+  position: absolute;
+  left: 0;
+  top: 0.5rem;
+  height: calc(100% - 1rem);
+  width: 83px; /* Adjust based on icon size + padding */
+  background-color: var(--kopi-first-color);
+  border-radius: 2rem;
+  box-shadow: 0 4px 12px hsla(28, 80%, 50%, 0.4);
+  transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55),
+    background-color 0.6s;
+  z-index: 1;
+}
+body.matcha-theme .mobile-nav__indicator {
+  background-color: var(--matcha-first-color);
   box-shadow: 0 4px 12px hsla(88, 50%, 55%, 0.4);
 }
+
 @media screen and (min-width: 769px) {
   .mobile-nav {
     display: none;
   }
 }
 
-/*=============== HOME - SPLIT SCREEN ===============*/
+/* Other styles remain mostly the same... */
 .home {
   height: 100vh;
   width: 100%;
@@ -375,8 +383,6 @@ body.matcha-theme .mobile-nav__link.active-link {
     transform: translateY(15px) rotate(10deg);
   }
 }
-
-/* Desktop hover effects for split screen */
 @media screen and (min-width: 769px) {
   .home.hover-kopi .kopi-panel {
     width: 70%;
@@ -414,8 +420,6 @@ body.matcha-theme .mobile-nav__link.active-link {
     transform: scale(1.3);
   }
 }
-
-/*=============== BUTTON ===============*/
 .button {
   display: inline-flex;
   justify-content: center;
@@ -454,8 +458,6 @@ body.matcha-theme .button:hover {
 .button-dark:hover {
   background-color: hsl(28, 95%, 8%);
 }
-
-/* ... (Sisa CSS dari jawaban sebelumnya untuk .special, .products, .footer, .cart, .modal, dll tetap sama. Tambahkan Media Query di bagian akhir) ... */
 .special {
   background-color: #fff;
 }
@@ -501,7 +503,6 @@ body.matcha-theme .button:hover {
 .special__card:hover .special__img {
   transform: translateY(-0.5rem) scale(1.05);
 }
-
 .products__filter {
   display: flex;
   justify-content: center;
@@ -606,63 +607,55 @@ body.matcha-theme .products__price {
   transform: translateZ(40px);
 }
 
+/*=============== NEW FOOTER ===============*/
 .footer {
-  padding-block: 4rem 2rem;
-  background-color: hsl(0, 0%, 95%);
+  padding-block: 4rem;
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
 }
-.footer__container {
-  row-gap: 3rem;
-}
-.footer__title {
-  font-size: var(--h2-font-size);
-  color: var(--dark-color);
-  margin-bottom: 1rem;
-}
-.footer__social,
-.footer__pay,
-.footer__form {
-  display: flex;
-  column-gap: 1rem;
-}
-.footer__social-link {
-  font-size: 1.5rem;
-  color: var(--dark-color);
-  transition: transform 0.4s;
-}
-.footer__social-link:hover {
-  transform: translateY(-0.25rem);
-}
-.footer__pay-card {
-  width: 30px;
-}
-.footer__form {
-  background-color: var(--dark-color);
-  padding: 0.5rem;
-  border-radius: 0.5rem;
-}
-.footer__input {
-  width: 100%;
-  background: transparent;
-  padding-left: 0.75rem;
-  color: var(--white-color);
-  font-weight: var(--font-semi-bold);
-}
-.footer__input::placeholder {
-  color: var(--white-color);
-}
-.footer__button {
-  padding: 0.75rem 1.5rem;
-  color: var(--white-color);
-  cursor: pointer;
-  background-color: var(--kopi-first-color);
-}
-.footer__copy {
-  display: block;
-  margin-top: 4rem;
-  color: var(--dark-color);
+.footer__content {
   text-align: center;
-  font-size: var(--small-font-size);
+  position: relative;
 }
+.footer__names {
+  display: flex;
+  font-family: var(--second-font);
+  font-size: clamp(1.2rem, 4vw, 2rem);
+  color: var(--kopi-text-color);
+  transition: color 0.6s ease;
+}
+body.matcha-theme .footer__names {
+  color: var(--matcha-text-color);
+}
+.footer__name {
+  padding: 0 0.5rem;
+  transition: color 0.3s ease;
+}
+.footer__name:hover {
+  color: var(--kopi-first-color);
+}
+body.matcha-theme .footer__name:hover {
+  color: var(--matcha-first-color);
+}
+.footer__glow-line {
+  position: absolute;
+  bottom: -10px;
+
+  width: var(--line-width, 0);
+  height: 3px;
+  background: var(--kopi-first-color);
+  border-radius: 3px;
+  box-shadow: 0 0 10px var(--kopi-first-color), 0 0 20px var(--kopi-first-color);
+  transition: left 0.5s, width 0.5s, background-color 0.6s, box-shadow 0.6s;
+}
+body.matcha-theme .footer__glow-line {
+  background: var(--matcha-first-color);
+  box-shadow: 0 0 10px var(--matcha-first-color),
+    0 0 20px var(--matcha-first-color);
+}
+
 ::-webkit-scrollbar {
   width: 0.6rem;
   background-color: hsl(28, 20%, 30%);
@@ -693,9 +686,8 @@ body.matcha-theme .scrollup {
   transform: translateY(-0.5rem);
 }
 .show-scroll {
-  bottom: 3rem;
+  bottom: calc(var(--mobile-nav-height) + 1rem);
 }
-
 .cart {
   position: fixed;
   top: 0;
@@ -993,43 +985,9 @@ body.matcha-theme .option-btn.active {
   width: 100%;
 }
 
-/*=============== MEDIA QUERIES ===============*/
-@media screen and (min-width: 1150px) {
-  .container {
-    margin-inline: auto;
-  }
-  .section {
-    padding-block: 7rem 5rem;
-  }
-  .footer__container {
-    grid-template-columns: repeat(3, 1fr);
-  }
-  .footer__container div:nth-child(3) {
-    grid-column: initial;
-  }
-  .footer__container div:nth-child(2) {
-    order: 1;
-    justify-self: end;
-  }
-  .footer__container div:nth-child(1) {
-    justify-self: start;
-  }
-  .footer__social,
-  .footer__pay {
-    margin-inline: auto;
-    justify-content: center;
-  }
-  .footer__copy {
-    margin-top: 5rem;
-  }
-  .scrollup {
-    right: 3rem;
-  }
-}
-
 @media screen and (max-width: 768px) {
   body {
-    padding-bottom: var(--mobile-nav-height); /* Make space for mobile nav */
+    padding-bottom: var(--mobile-nav-height);
   }
   .home {
     flex-direction: column;
@@ -1045,20 +1003,28 @@ body.matcha-theme .option-btn.active {
     transform: translateY(0) !important;
   }
 }
-
 @media screen and (min-width: 576px) {
   .products__container {
     grid-template-columns: repeat(2, 240px);
     justify-content: center;
   }
 }
-
 @media screen and (min-width: 769px) {
   .products__container {
     grid-template-columns: repeat(3, 280px);
   }
 }
-
+@media screen and (min-width: 1150px) {
+  .container {
+    margin-inline: auto;
+  }
+  .section {
+    padding-block: 7rem 5rem;
+  }
+  .scrollup {
+    right: 3rem;
+  }
+}
 @media screen and (max-width: 320px) {
   .container {
     margin-inline: 1rem;

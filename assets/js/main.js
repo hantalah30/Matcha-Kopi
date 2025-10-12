@@ -24,23 +24,27 @@ document.addEventListener("DOMContentLoaded", () => {
     const matchaPanel = document.querySelector(".matcha-panel");
     const cursorGlow = document.querySelector(".cursor-glow");
 
-    kopiPanel.addEventListener("mouseenter", () =>
-      home.classList.add("hover-kopi")
-    );
-    kopiPanel.addEventListener("mouseleave", () =>
-      home.classList.remove("hover-kopi")
-    );
-    matchaPanel.addEventListener("mouseenter", () =>
-      home.classList.add("hover-matcha")
-    );
-    matchaPanel.addEventListener("mouseleave", () =>
-      home.classList.remove("hover-matcha")
-    );
+    if (home && kopiPanel && matchaPanel) {
+      kopiPanel.addEventListener("mouseenter", () =>
+        home.classList.add("hover-kopi")
+      );
+      kopiPanel.addEventListener("mouseleave", () =>
+        home.classList.remove("hover-kopi")
+      );
+      matchaPanel.addEventListener("mouseenter", () =>
+        home.classList.add("hover-matcha")
+      );
+      matchaPanel.addEventListener("mouseleave", () =>
+        home.classList.remove("hover-matcha")
+      );
+    }
 
-    window.addEventListener("mousemove", (e) => {
-      cursorGlow.style.left = `${e.clientX}px`;
-      cursorGlow.style.top = `${e.clientY}px`;
-    });
+    if (cursorGlow) {
+      window.addEventListener("mousemove", (e) => {
+        cursorGlow.style.left = `${e.clientX}px`;
+        cursorGlow.style.top = `${e.clientY}px`;
+      });
+    }
   }
 
   /*=============== DYNAMIC PRODUCTS ===============*/
@@ -105,11 +109,11 @@ document.addEventListener("DOMContentLoaded", () => {
     localStorage.setItem("kopiMatchaCart", JSON.stringify(cartItems));
   const showCart = () => {
     cart.classList.add("show-cart");
-    if (!isDesktop) body.style.overflow = "hidden";
+    body.style.overflow = "hidden";
   };
   const hideCart = () => {
     cart.classList.remove("show-cart");
-    if (!isDesktop) body.style.overflow = "auto";
+    body.style.overflow = "auto";
   };
 
   const showNotification = (message) => {
@@ -126,6 +130,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const flyToCart = (targetElement) => {
     const cartIcon = document.getElementById("cart-icon");
+    if (!cartIcon || !targetElement) return;
     const cartRect = cartIcon.getBoundingClientRect();
     const targetRect = targetElement.getBoundingClientRect();
     const flyingEl = document.createElement("img");
@@ -160,9 +165,15 @@ document.addEventListener("DOMContentLoaded", () => {
     if (cartItems.length === 0) {
       cartContent.innerHTML =
         '<p class="cart__empty-message">Keranjang Anda kosong.</p>';
-      cartCheckoutButton.style.display = "none";
+      if (cartCheckoutButton) cartCheckoutButton.style.display = "none";
     } else {
       cartItems.forEach((item) => {
+        if (!item || !item.options) {
+          // BUG FIX
+          console.warn("Skipping malformed cart item:", item);
+          return;
+        }
+
         const cartItemElement = document.createElement("div");
         cartItemElement.classList.add("cart__item");
         cartItemElement.dataset.id = item.id;
@@ -189,10 +200,10 @@ document.addEventListener("DOMContentLoaded", () => {
         total += item.price * item.quantity;
         itemCount += item.quantity;
       });
-      cartCheckoutButton.style.display = "block";
+      if (cartCheckoutButton) cartCheckoutButton.style.display = "block";
     }
-    cartTotalPrice.innerText = formatRupiah(total);
-    cartItemCount.innerText = itemCount;
+    if (cartTotalPrice) cartTotalPrice.innerText = formatRupiah(total);
+    if (cartItemCount) cartItemCount.innerText = itemCount;
     saveCart();
   };
 
@@ -257,23 +268,25 @@ document.addEventListener("DOMContentLoaded", () => {
       document
         .querySelector(".products__filter-btn.active")
         .classList.remove("active");
-      target.closest(".products__filter-btn").classList.add("active");
-      const filter = target.closest(".products__filter-btn").dataset.filter;
-      renderProducts(filter);
-      body.classList.toggle("matcha-theme", filter === "matcha");
+      const btn = target.closest(".products__filter-btn");
+      btn.classList.add("active");
+      renderProducts(btn.dataset.filter);
+      body.classList.toggle("matcha-theme", btn.dataset.filter === "matcha");
     }
 
     if (target.closest(".choose-options-btn")) {
       const card = target.closest(".products__card");
-      openCustomizationModal({
-        id: card.dataset.id,
-        name: card.dataset.name,
-        price: parseFloat(card.dataset.price),
-        imageUrl: card.dataset.imageUrl,
-      });
+      if (card) {
+        openCustomizationModal({
+          id: card.dataset.id,
+          name: card.dataset.name,
+          price: parseFloat(card.dataset.price),
+          imageUrl: card.dataset.imageUrl,
+        });
+      }
     }
 
-    if (target.closest(".modal-close") || target.id === "customization-modal")
+    if (target.closest(".modal-close") || target === customizationModal)
       closeCustomizationModal();
     if (target.classList.contains("option-btn")) {
       const parent = target.closest(".options-container");
@@ -299,7 +312,6 @@ document.addEventListener("DOMContentLoaded", () => {
       const cartItemId = cartItem.dataset.id;
       const itemIndex = cartItems.findIndex((i) => i.id === cartItemId);
       if (itemIndex === -1) return;
-
       if (target.classList.contains("increase-qty")) {
         cartItems[itemIndex].quantity++;
         updateCart();
@@ -326,56 +338,82 @@ document.addEventListener("DOMContentLoaded", () => {
 
   /*=============== UI SETUP & SCROLL-BASED LOGIC ===============*/
   const sections = document.querySelectorAll("section[id]");
-  const navLinks = document.querySelectorAll(".nav__link, .mobile-nav__link");
-
-  let lastScrollY = window.scrollY;
+  const allNavLinks = document.querySelectorAll(
+    ".nav__link, .mobile-nav__link"
+  );
   const mobileNav = document.getElementById("mobile-nav");
+  const mobileNavIndicator = document.querySelector(".mobile-nav__indicator");
+  let lastScrollY = window.scrollY;
 
   const scrollActive = () => {
-    const scrollDown = window.scrollY;
+    const scrollY = window.scrollY;
 
-    // Sembunyikan/Tampilkan Navigasi Mobile saat scroll
     if (mobileNav) {
-      if (scrollDown > lastScrollY && scrollDown > 200) {
+      if (scrollY > lastScrollY && scrollY > 200)
         mobileNav.classList.add("hide");
-      } else {
-        mobileNav.classList.remove("hide");
-      }
-      lastScrollY = scrollDown <= 0 ? 0 : scrollDown;
+      else mobileNav.classList.remove("hide");
+      lastScrollY = scrollY <= 0 ? 0 : scrollY;
     }
 
-    // Update active link
+    let currentSectionId = "";
     sections.forEach((current) => {
-      const sectionHeight = current.offsetHeight,
-        sectionTop = current.offsetTop - 58,
-        sectionId = current.getAttribute("id");
+      const sectionHeight = current.offsetHeight;
+      const sectionTop =
+        current.offsetTop - (isDesktop ? 70 : window.innerHeight / 2);
+      if (scrollY > sectionTop && scrollY <= sectionTop + sectionHeight) {
+        currentSectionId = current.getAttribute("id");
+      }
+    });
 
-      const shouldBeActive =
-        scrollDown > sectionTop && scrollDown <= sectionTop + sectionHeight;
+    allNavLinks.forEach((link, index) => {
+      const isActive = link.getAttribute("href") === `#${currentSectionId}`;
+      link.classList.toggle("active-link", isActive);
 
-      navLinks.forEach((link) => {
-        if (link.getAttribute("href") === `#${sectionId}`) {
-          link.classList.toggle("active-link", shouldBeActive);
+      if (isActive && link.closest(".mobile-nav")) {
+        const linkIndex = Array.from(mobileNav.children).indexOf(link) - 1; // -1 for indicator
+        if (mobileNavIndicator) {
+          mobileNavIndicator.style.transform = `translateX(${
+            linkIndex * 100
+          }%)`;
         }
-      });
+      }
     });
   };
-  window.addEventListener("scroll", scrollActive);
 
-  document
-    .getElementById("header")
-    .classList.toggle("shadow-header", window.scrollY >= 50);
-  document
-    .getElementById("scroll-up")
-    .classList.toggle("show-scroll", window.scrollY >= 350);
-  window.addEventListener("scroll", () => {
-    document
-      .getElementById("header")
-      .classList.toggle("shadow-header", window.scrollY >= 50);
-    document
-      .getElementById("scroll-up")
-      .classList.toggle("show-scroll", window.scrollY >= 350);
-  });
+  window.addEventListener("scroll", scrollActive, { passive: true });
+  window.addEventListener(
+    "scroll",
+    () => {
+      document
+        .getElementById("header")
+        .classList.toggle("shadow-header", window.scrollY >= 50);
+      document
+        .getElementById("scroll-up")
+        .classList.toggle("show-scroll", window.scrollY >= 350);
+    },
+    { passive: true }
+  );
+
+  // Footer Animation
+  const footer = document.getElementById("footer");
+  const footerNamesContainer = document.querySelector(".footer__names");
+  const glowLine = document.querySelector(".footer__glow-line");
+  if (footer && footerNamesContainer && glowLine) {
+    footerNamesContainer.addEventListener("mouseleave", () => {
+      glowLine.style.width = "0px";
+    });
+
+    footerNamesContainer.querySelectorAll(".footer__name").forEach((name) => {
+      name.addEventListener("mouseenter", () => {
+        const rect = name.getBoundingClientRect();
+        const containerRect = footerNamesContainer.getBoundingClientRect();
+        glowLine.style.width = `${rect.width}px`;
+        glowLine.style.transform = `translateX(${
+          rect.left - containerRect.left
+        }px)`;
+      });
+    });
+  }
 
   /*=============== INITIAL LOAD ===============*/
   renderProducts();
@@ -388,7 +426,7 @@ document.addEventListener("DOMContentLoaded", () => {
     distance: "80px",
     duration: 2500,
     delay: 200,
-    reset: false,
+    reset: !isDesktop,
     easing: "cubic-bezier(0.5, 0, 0, 1)",
   });
   sr.reveal(".special__card", {
@@ -399,8 +437,6 @@ document.addEventListener("DOMContentLoaded", () => {
   });
   sr.reveal(".products__filter-btn", { interval: 100, origin: "top" });
   sr.reveal(".products__card", { interval: 100, origin: "top" });
-  sr.reveal(".footer__container > div", { interval: 150, origin: "bottom" });
-  sr.reveal(".footer__copy", { delay: 800 });
 });
 
 /*=============== SERVICE WORKER REGISTRATION ===============*/
@@ -409,10 +445,10 @@ if ("serviceWorker" in navigator) {
     navigator.serviceWorker
       .register("./sw.js")
       .then((registration) =>
-        console.log("Service Worker registered: ", registration)
+        console.log("Service Worker registered:", registration)
       )
       .catch((error) =>
-        console.log("Service Worker registration failed: ", error)
+        console.log("Service Worker registration failed:", error)
       );
   });
 }
