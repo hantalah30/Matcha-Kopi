@@ -19,46 +19,32 @@
       href="assets/img/favicon2.png"
       type="image/x-icon"
     />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css"
+    />
+    <link rel="stylesheet" href="assets/css/swiper-bundle.min.css" />
+    <link rel="stylesheet" href="assets/css/styles.css" />
   </head>
-
-  <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css"
-  />
-  <link rel="stylesheet" href="assets/css/swiper-bundle.min.css" />
-  <link rel="stylesheet" href="assets/css/styles.css" />
   <body>
+    <div class="cursor-glow"></div>
+
     <header class="header" id="header">
       <nav class="nav container">
         <a href="#" class="nav__logo">KOPI & MATCHA</a>
 
         <div class="nav__menu" id="nav-menu">
           <ul class="nav__list">
-            <li>
-              <a href="#home" class="nav__link active-link">HOME</a>
-            </li>
-            <li>
-              <a href="#special" class="nav__link">SPESIAL</a>
-            </li>
-            <li>
-              <a href="#products" class="nav__link">MENU</a>
-            </li>
-            <li>
-              <a href="login.html" class="nav__link">ADMIN</a>
-            </li>
+            <li><a href="#home" class="nav__link">HOME</a></li>
+            <li><a href="#special" class="nav__link">SPESIAL</a></li>
+            <li><a href="#products" class="nav__link">MENU</a></li>
+            <li><a href="login.html" class="nav__link">ADMIN</a></li>
           </ul>
-          <div class="nav__close" id="nav-close">
-            <i class="ri-close-large-line"></i>
-          </div>
         </div>
 
         <div class="nav__cart">
           <i class="ri-shopping-cart-2-line" id="cart-icon"></i>
           <span class="cart__item-count" id="cart-item-count">0</span>
-        </div>
-
-        <div class="nav__toggle" id="nav-toggle">
-          <i class="ri-apps-2-fill"></i>
         </div>
       </nav>
     </header>
@@ -68,11 +54,9 @@
         <h2 class="cart__title">Keranjang Anda</h2>
         <i class="ri-close-line" id="cart-close"></i>
       </div>
-
       <div class="cart__content" id="cart-content">
         <p class="cart__empty-message">Keranjang Anda kosong.</p>
       </div>
-
       <div class="cart__footer">
         <div class="cart__total">
           <span class="cart__total-title">Total:</span>
@@ -124,47 +108,54 @@
     </div>
 
     <main class="main">
-      <section class="home section" id="home">
-        <div class="home__container container grid">
-          <h1 class="home__title">KOPI MATCHA</h1>
+      <section class="home" id="home">
+        <div class="home__panel kopi-panel">
+          <div class="home__content">
+            <h1 class="home__title">KOPI</h1>
+            <p class="home__description">
+              Energi dalam setiap tegukan. Temukan biji kopi pilihan dari
+              seluruh dunia, diseduh dengan sempurna untuk Anda.
+            </p>
+            <a href="#products" class="button">Lihat Menu Kopi</a>
+          </div>
           <div class="home__images">
-            <div class="home__shape"></div>
-            <img
-              src="assets/img/home-splash.png"
-              alt="image"
-              class="home__splash"
-            />
-            <img
-              src="assets/img/bean-img.png"
-              alt="image"
-              class="home__bean-2"
-            />
             <img
               src="assets/img/home-coffee.png"
-              alt="image"
+              alt="Kopi"
               class="home__coffee"
             />
             <img
               src="assets/img/bean-img.png"
-              alt="image"
+              alt="Biji Kopi"
               class="home__bean-1"
             />
-            <img src="assets/img/ice-img.png" alt="image" class="home__ice-1" />
-            <img src="assets/img/ice-img.png" alt="image" class="home__ice-2" />
-            <img src="assets/img/leaf-img.png" alt="image" class="home__leaf" />
+            <img
+              src="assets/img/bean-img.png"
+              alt="Biji Kopi"
+              class="home__bean-2"
+            />
           </div>
-          <img
-            src="assets/img/home-sticker.svg"
-            alt="image"
-            class="home__sticker"
-          />
-          <div class="home__data">
+        </div>
+        <div class="home__panel matcha-panel">
+          <div class="home__content">
+            <h1 class="home__title">MATCHA</h1>
             <p class="home__description">
-              Temukan kopi dan matcha panas dan dingin yang lezat dengan
-              varietas terbaik, tenangkan kenikmatan dan nikmati minuman
-              berkualitas, pesan sekarang.
+              Ketenangan dalam setiap cangkir. Nikmati rasa otentik teh hijau
+              matcha premium dari Jepang.
             </p>
-            <a href="#products" class="button">Lihat Menu</a>
+            <a href="#products" class="button">Lihat Menu Matcha</a>
+          </div>
+          <div class="home__images">
+            <img
+              src="assets/img/products-coffee-6.png"
+              alt="Matcha"
+              class="home__coffee"
+            />
+            <img
+              src="assets/img/leaf-img.png"
+              alt="Daun Teh"
+              class="home__leaf"
+            />
           </div>
         </div>
       </section>
@@ -172,63 +163,34 @@
       <section class="special section" id="special">
         <h2 class="section__title">SPESIAL HARI INI</h2>
         <div class="special__container container">
-          <div class="swiper special-swiper">
-            <div class="swiper-wrapper">
-              <div class="swiper-slide">
-                <div class="special__card">
-                  <div class="special__content">
-                    <h3 class="special__name">Cappuccino Coffee</h3>
-                    <p class="special__description">
-                      Kombinasi sempurna antara espresso, susu panas, dan busa
-                      susu yang lembut.
-                    </p>
-                    <a href="#products" class="button">Pesan Sekarang</a>
-                  </div>
-                  <img
-                    src="assets/img/products-coffee-3.png"
-                    alt=""
-                    class="special__img"
-                  />
-                </div>
-              </div>
-
-              <div class="swiper-slide">
-                <div class="special__card">
-                  <div class="special__content">
-                    <h3 class="special__name">Iced Matcha Frappe</h3>
-                    <p class="special__description">
-                      Kesegaran teh hijau matcha yang diblend dengan es dan
-                      susu, disajikan dingin.
-                    </p>
-                    <a href="#products" class="button">Pesan Sekarang</a>
-                  </div>
-                  <img
-                    src="assets/img/products-coffee-6.png"
-                    alt=""
-                    class="special__img"
-                  />
-                </div>
-              </div>
-
-              <div class="swiper-slide">
-                <div class="special__card">
-                  <div class="special__content">
-                    <h3 class="special__name">Iced Coffee Mocha</h3>
-                    <p class="special__description">
-                      Perpaduan espresso, cokelat, dan susu dingin yang
-                      menyegarkan hari Anda.
-                    </p>
-                    <a href="#products" class="button">Pesan Sekarang</a>
-                  </div>
-                  <img
-                    src="assets/img/products-coffee-1.png"
-                    alt=""
-                    class="special__img"
-                  />
-                </div>
-              </div>
+          <div class="special__card">
+            <div class="special__content">
+              <h3 class="special__name">Iced Coffee Mocha</h3>
+              <p class="special__description">
+                Perpaduan espresso, cokelat, dan susu dingin yang menyegarkan.
+              </p>
+              <a href="#products" class="button">Pesan Sekarang</a>
             </div>
-            <div class="swiper-pagination"></div>
+            <img
+              src="assets/img/products-coffee-1.png"
+              alt="Iced Coffee Mocha"
+              class="special__img"
+            />
+          </div>
+          <div class="special__card matcha-special">
+            <div class="special__content">
+              <h3 class="special__name">Iced Matcha Frappe</h3>
+              <p class="special__description">
+                Kesegaran teh hijau matcha diblend dengan es dan susu, disajikan
+                dingin.
+              </p>
+              <a href="#products" class="button">Pesan Sekarang</a>
+            </div>
+            <img
+              src="assets/img/products-coffee-6.png"
+              alt="Iced Matcha Frappe"
+              class="special__img"
+            />
           </div>
         </div>
       </section>
@@ -244,14 +206,84 @@
             Matcha
           </button>
         </div>
-
         <div class="products__container container grid"></div>
       </section>
     </main>
 
-    <a href="#" class="scrollup" id="scroll-up">
-      <i class="ri-arrow-up-line"></i>
-    </a>
+    <footer class="footer">
+      <div class="footer__container container grid">
+        <div>
+          <h3 class="footer__title">Sosial Media</h3>
+          <div class="footer__social">
+            <a href="#" class="footer__social-link"
+              ><i class="ri-facebook-fill"></i
+            ></a>
+            <a href="#" class="footer__social-link"
+              ><i class="ri-instagram-fill"></i
+            ></a>
+            <a href="#" class="footer__social-link"
+              ><i class="ri-twitter-fill"></i
+            ></a>
+          </div>
+        </div>
+        <div>
+          <h3 class="footer__title">Pembayaran</h3>
+          <div class="footer__pay">
+            <img
+              src="assets/img/footer-card-1.png"
+              alt="Visa"
+              class="footer__pay-card"
+            />
+            <img
+              src="assets/img/footer-card-2.png"
+              alt="Mastercard"
+              class="footer__pay-card"
+            />
+            <img
+              src="assets/img/footer-card-3.png"
+              alt="Paypal"
+              class="footer__pay-card"
+            />
+            <img
+              src="assets/img/footer-card-4.png"
+              alt="Discover"
+              class="footer__pay-card"
+            />
+          </div>
+        </div>
+        <div>
+          <h3 class="footer__title">Berlangganan</h3>
+          <form class="footer__form">
+            <input
+              type="email"
+              placeholder="Email Anda"
+              class="footer__input"
+            />
+            <button class="button footer__button">Subscribe</button>
+          </form>
+        </div>
+      </div>
+      <span class="footer__copy">&#169; All Rights Reserved By Bedimcode</span>
+    </footer>
+
+    <a href="#" class="scrollup" id="scroll-up"
+      ><i class="ri-arrow-up-line"></i
+    ></a>
+
+    <nav class="mobile-nav" id="mobile-nav">
+      <a href="#home" class="mobile-nav__link active-link">
+        <i class="ri-home-5-line"></i>
+      </a>
+      <a href="#special" class="mobile-nav__link">
+        <i class="ri-star-line"></i>
+      </a>
+      <a href="#products" class="mobile-nav__link">
+        <i class="ri-cup-line"></i>
+      </a>
+      <a href="login.html" class="mobile-nav__link">
+        <i class="ri-user-line"></i>
+      </a>
+    </nav>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>

@@ -1,23 +1,50 @@
 document.addEventListener("DOMContentLoaded", () => {
+  // Pastikan Firebase sudah siap
   if (typeof firebase === "undefined" || !firebase.firestore) {
     console.error("Firebase tidak terinisialisasi.");
     return;
   }
   const db = firebase.firestore();
 
-  // Fungsi format Rupiah
-  const formatRupiah = (number) => {
-    return new Intl.NumberFormat("id-ID", {
+  const formatRupiah = (number) =>
+    new Intl.NumberFormat("id-ID", {
       style: "currency",
       currency: "IDR",
       minimumFractionDigits: 0,
     }).format(number);
-  };
 
-  /*=============== DYNAMIC PRODUCTS & FILTER ===============*/
+  /*=============== THEME & INTERACTIVITY SETUP ===============*/
+  const body = document.body;
+  const isDesktop = window.matchMedia("(min-width: 769px)").matches;
+
+  // Efek hanya untuk desktop
+  if (isDesktop) {
+    const home = document.getElementById("home");
+    const kopiPanel = document.querySelector(".kopi-panel");
+    const matchaPanel = document.querySelector(".matcha-panel");
+    const cursorGlow = document.querySelector(".cursor-glow");
+
+    kopiPanel.addEventListener("mouseenter", () =>
+      home.classList.add("hover-kopi")
+    );
+    kopiPanel.addEventListener("mouseleave", () =>
+      home.classList.remove("hover-kopi")
+    );
+    matchaPanel.addEventListener("mouseenter", () =>
+      home.classList.add("hover-matcha")
+    );
+    matchaPanel.addEventListener("mouseleave", () =>
+      home.classList.remove("hover-matcha")
+    );
+
+    window.addEventListener("mousemove", (e) => {
+      cursorGlow.style.left = `${e.clientX}px`;
+      cursorGlow.style.top = `${e.clientY}px`;
+    });
+  }
+
+  /*=============== DYNAMIC PRODUCTS ===============*/
   const productsContainer = document.querySelector(".products__container");
-  const filterBtns = document.querySelectorAll(".products__filter-btn");
-
   const renderProducts = async (filter = "all") => {
     if (!productsContainer) return;
     productsContainer.innerHTML =
@@ -30,22 +57,17 @@ document.addEventListener("DOMContentLoaded", () => {
           '<p class="info-text">Belum ada produk.</p>';
         return;
       }
-      let productsDisplayed = 0;
       snapshot.forEach((doc) => {
         const product = { id: doc.id, ...doc.data() };
         if (filter === "all" || product.category === filter) {
-          productsDisplayed++;
           const card = document.createElement("article");
           card.className = "products__card";
           card.dataset.id = doc.id;
           card.dataset.name = product.name;
           card.dataset.price = product.price;
-          card.dataset.category = product.category;
+          card.dataset.imageUrl = product.imageUrl;
           card.innerHTML = `
               <div class="products__images">
-                <div class="products__shape"></div>
-                <img src="assets/img/ice-img.png" alt="ice" class="products__ice-1" />
-                <img src="assets/img/ice-img.png" alt="ice" class="products__ice-2" />
                 <img src="${product.imageUrl}" alt="${
             product.name
           }" class="products__coffee" />
@@ -58,196 +80,83 @@ document.addEventListener("DOMContentLoaded", () => {
               </div>
               <div class="products__buttons">
                 <button class="button products__button-action choose-options-btn">Pilih Opsi</button>
-              </div>
-          `;
+              </div>`;
           productsContainer.appendChild(card);
         }
       });
-      if (productsDisplayed === 0) {
+      if (productsContainer.innerHTML === "") {
         productsContainer.innerHTML = `<p class="info-text">Tidak ada produk di kategori ini.</p>`;
       }
-      attachProductActionListeners();
     } catch (error) {
       console.error("Error fetching products: ", error);
       productsContainer.innerHTML =
         '<p class="error-text">Gagal memuat produk.</p>';
     }
   };
-  renderProducts();
 
-  filterBtns.forEach((btn) => {
-    btn.addEventListener("click", () => {
-      filterBtns.forEach((b) => b.classList.remove("active"));
-      btn.classList.add("active");
-      const filter = btn.dataset.filter;
-      renderProducts(filter);
-    });
-  });
-
-  /*=============== CUSTOMIZATION MODAL LOGIC ===============*/
+  /*=============== CART & MODAL LOGIC ===============*/
+  const cart = document.getElementById("cart");
+  const cartContent = document.getElementById("cart-content");
   const customizationModal = document.getElementById("customization-modal");
-  const modalCloseBtn = document.getElementById("modal-close");
-  const modalProductDetails = document.getElementById("modal-product-details");
-  const sugarOptions = document.getElementById("sugar-options");
-  const iceOptions = document.getElementById("ice-options");
-  const modalAddToCartBtn = document.getElementById("modal-add-to-cart");
-
-  let currentProduct = {};
-
-  const openCustomizationModal = (product) => {
-    currentProduct = product;
-    modalProductDetails.innerHTML = `
-            <img src="${product.imageUrl}" alt="${product.name}">
-            <h3>${product.name}</h3>
-            <span>${formatRupiah(product.price)}</span>
-        `;
-    // Reset options to default
-    sugarOptions.querySelector(".active").classList.remove("active");
-    sugarOptions
-      .querySelector('[data-value="Normal Sugar"]')
-      .classList.add("active");
-    iceOptions.querySelector(".active").classList.remove("active");
-    iceOptions
-      .querySelector('[data-value="Normal Ice"]')
-      .classList.add("active");
-
-    customizationModal.classList.add("show-modal");
-  };
-
-  const closeCustomizationModal = () => {
-    customizationModal.classList.remove("show-modal");
-  };
-
-  modalCloseBtn.addEventListener("click", closeCustomizationModal);
-
-  sugarOptions.addEventListener("click", (e) => {
-    if (e.target.classList.contains("option-btn")) {
-      sugarOptions.querySelector(".active").classList.remove("active");
-      e.target.classList.add("active");
-    }
-  });
-
-  iceOptions.addEventListener("click", (e) => {
-    if (e.target.classList.contains("option-btn")) {
-      iceOptions.querySelector(".active").classList.remove("active");
-      e.target.classList.add("active");
-    }
-  });
-
-  modalAddToCartBtn.addEventListener("click", () => {
-    const selectedSugar = sugarOptions.querySelector(".active").dataset.value;
-    const selectedIce = iceOptions.querySelector(".active").dataset.value;
-
-    // Create a unique ID for the cart item based on product and options
-    const cartItemId = `${currentProduct.id}-${selectedSugar}-${selectedIce}`;
-
-    addToCart(
-      cartItemId,
-      currentProduct.id,
-      currentProduct.name,
-      currentProduct.price,
-      currentProduct.imageUrl,
-      { sugar: selectedSugar, ice: selectedIce }
-    );
-    closeCustomizationModal();
-  });
-
-  /*=============== KODE LAINNYA (TIDAK BERUBAH) ===============*/
-  const navMenu = document.getElementById("nav-menu"),
-    navToggle = document.getElementById("nav-toggle"),
-    navClose = document.getElementById("nav-close");
-  if (navToggle) {
-    navToggle.addEventListener("click", () =>
-      navMenu.classList.add("show-menu")
-    );
-  }
-  if (navClose) {
-    navClose.addEventListener("click", () =>
-      navMenu.classList.remove("show-menu")
-    );
-  }
-  const navLink = document.querySelectorAll(".nav__link");
-  const linkAction = () => navMenu.classList.remove("show-menu");
-  navLink.forEach((n) => n.addEventListener("click", linkAction));
-  const shadowHeader = () => {
-    const header = document.getElementById("header");
-    window.scrollY >= 50
-      ? header.classList.add("shadow-header")
-      : header.classList.remove("shadow-header");
-  };
-  window.addEventListener("scroll", shadowHeader);
-  const scrollUp = () => {
-    const scrollUp = document.getElementById("scroll-up");
-    window.scrollY >= 350
-      ? scrollUp.classList.add("show-scroll")
-      : scrollUp.classList.remove("show-scroll");
-  };
-  window.addEventListener("scroll", scrollUp);
-  const sections = document.querySelectorAll("section[id]");
-  const scrollActive = () => {
-    const scrollDown = window.scrollY;
-    sections.forEach((current) => {
-      const sectionHeight = current.offsetHeight,
-        sectionTop = current.offsetTop - 58,
-        sectionId = current.getAttribute("id"),
-        sectionsClass = document.querySelector(
-          ".nav__menu a[href*=" + sectionId + "]"
-        );
-      if (scrollDown > sectionTop && scrollDown <= sectionTop + sectionHeight) {
-        sectionsClass.classList.add("active-link");
-      } else {
-        sectionsClass.classList.remove("active-link");
-      }
-    });
-  };
-  window.addEventListener("scroll", scrollActive);
-  var specialSwiper = new Swiper(".special-swiper", {
-    loop: true,
-    effect: "fade",
-    autoplay: {
-      delay: 3500,
-      disableOnInteraction: false,
-      pauseOnMouseEnter: true,
-    },
-    pagination: { el: ".swiper-pagination", clickable: true },
-  });
-
-  const cartIcon = document.getElementById("cart-icon"),
-    cart = document.getElementById("cart"),
-    cartClose = document.getElementById("cart-close"),
-    cartContent = document.getElementById("cart-content"),
-    cartItemCount = document.getElementById("cart-item-count"),
-    cartTotalPrice = document.getElementById("cart-total-price"),
-    cartCheckoutButton = document.getElementById("cart-checkout-button"),
-    body = document.body;
   let cartItems = JSON.parse(localStorage.getItem("kopiMatchaCart")) || [];
+  let currentProductForModal = {};
+
   const saveCart = () =>
     localStorage.setItem("kopiMatchaCart", JSON.stringify(cartItems));
   const showCart = () => {
     cart.classList.add("show-cart");
-    body.style.overflow = "hidden";
+    if (!isDesktop) body.style.overflow = "hidden";
   };
   const hideCart = () => {
     cart.classList.remove("show-cart");
-    body.style.overflow = "auto";
+    if (!isDesktop) body.style.overflow = "auto";
   };
-  cartIcon.addEventListener("click", showCart);
-  cartClose.addEventListener("click", hideCart);
+
   const showNotification = (message) => {
     const notification = document.createElement("div");
     notification.classList.add("notification");
     notification.innerText = message;
-    document.body.appendChild(notification);
+    body.appendChild(notification);
     setTimeout(() => notification.classList.add("show"), 10);
     setTimeout(() => {
       notification.classList.remove("show");
-      setTimeout(() => document.body.removeChild(notification), 500);
+      setTimeout(() => body.removeChild(notification), 500);
     }, 2000);
   };
+
+  const flyToCart = (targetElement) => {
+    const cartIcon = document.getElementById("cart-icon");
+    const cartRect = cartIcon.getBoundingClientRect();
+    const targetRect = targetElement.getBoundingClientRect();
+    const flyingEl = document.createElement("img");
+    flyingEl.src = targetElement.src;
+    flyingEl.className = "fly-to-cart-animation";
+    body.appendChild(flyingEl);
+
+    flyingEl.style.left = `${targetRect.left + targetRect.width / 2}px`;
+    flyingEl.style.top = `${targetRect.top + targetRect.height / 2}px`;
+    flyingEl.style.width = `${targetRect.width}px`;
+    flyingEl.style.height = `${targetRect.height}px`;
+
+    requestAnimationFrame(() => {
+      flyingEl.style.left = `${cartRect.left + cartRect.width / 2}px`;
+      flyingEl.style.top = `${cartRect.top + cartRect.height / 2}px`;
+      flyingEl.style.width = "20px";
+      flyingEl.style.height = "20px";
+      flyingEl.style.opacity = "0.5";
+    });
+    setTimeout(() => flyingEl.remove(), 800);
+  };
+
   const updateCart = () => {
+    const cartItemCount = document.getElementById("cart-item-count");
+    const cartTotalPrice = document.getElementById("cart-total-price");
+    const cartCheckoutButton = document.getElementById("cart-checkout-button");
+
     cartContent.innerHTML = "";
     let total = 0,
       itemCount = 0;
+
     if (cartItems.length === 0) {
       cartContent.innerHTML =
         '<p class="cart__empty-message">Keranjang Anda kosong.</p>';
@@ -256,32 +165,26 @@ document.addEventListener("DOMContentLoaded", () => {
       cartItems.forEach((item) => {
         const cartItemElement = document.createElement("div");
         cartItemElement.classList.add("cart__item");
+        cartItemElement.dataset.id = item.id;
         cartItemElement.innerHTML = `
           <img src="${item.imageUrl}" alt="${item.name}" class="cart__item-img">
           <div class="cart__item-details">
             <h3 class="cart__item-name">${item.name}</h3>
-            <div class="cart__item-options">
-                <small>${item.options.sugar}, ${item.options.ice}</small>
-            </div>
+            <div class="cart__item-options"><small>${item.options.sugar}, ${
+          item.options.ice
+        }</small></div>
             <span class="cart__item-price">${formatRupiah(
               item.price * item.quantity
             )}</span>
             <div class="cart__item-actions">
               <div class="cart__item-quantity-controls">
-                <button class="cart__quantity-btn decrease-qty" data-id="${
-                  item.id
-                }">-</button>
+                <button class="cart__quantity-btn decrease-qty">-</button>
                 <span class="cart__item-quantity">${item.quantity}</span>
-                <button class="cart__quantity-btn increase-qty" data-id="${
-                  item.id
-                }">+</button>
+                <button class="cart__quantity-btn increase-qty">+</button>
               </div>
-              <i class="ri-delete-bin-line cart__item-remove" data-id="${
-                item.id
-              }"></i>
+              <i class="ri-delete-bin-line cart__item-remove"></i>
             </div>
-          </div>
-        `;
+          </div>`;
         cartContent.appendChild(cartItemElement);
         total += item.price * item.quantity;
         itemCount += item.quantity;
@@ -293,326 +196,191 @@ document.addEventListener("DOMContentLoaded", () => {
     saveCart();
   };
 
-  const addToCart = (cartItemId, productId, name, price, imageUrl, options) => {
+  const addToCart = (product, options) => {
+    const cartItemId = `${product.id}-${options.sugar.replace(
+      " ",
+      "-"
+    )}-${options.ice.replace(" ", "-")}`;
     const existingItem = cartItems.find((item) => item.id === cartItemId);
     if (existingItem) {
       existingItem.quantity++;
     } else {
       cartItems.push({
         id: cartItemId,
-        productId,
-        name,
-        price,
-        imageUrl,
+        productId: product.id,
+        name: product.name,
+        price: product.price,
+        imageUrl: product.imageUrl,
         options,
         quantity: 1,
       });
     }
     updateCart();
-    showNotification(`${name} ditambahkan!`);
+    showNotification(`${product.name} ditambahkan!`);
   };
 
-  cartContent.addEventListener("click", (e) => {
-    const id = e.target.closest("[data-id]")?.dataset.id;
-    if (!id) return;
-    if (e.target.classList.contains("increase-qty")) {
-      const item = cartItems.find((i) => i.id === id);
-      if (item) item.quantity++;
-    }
-    if (e.target.classList.contains("decrease-qty")) {
-      let item = cartItems.find((i) => i.id === id);
-      if (item && item.quantity > 1) item.quantity--;
-      else cartItems = cartItems.filter((i) => i.id !== id);
-    }
-    if (e.target.classList.contains("cart__item-remove")) {
-      cartItems = cartItems.filter((i) => i.id !== id);
-      showNotification("Item dihapus.");
-    }
-    updateCart();
-  });
+  const openCustomizationModal = (product) => {
+    currentProductForModal = product;
+    const modalProductDetails = document.getElementById(
+      "modal-product-details"
+    );
+    const sugarOptions = document.getElementById("sugar-options");
+    const iceOptions = document.getElementById("ice-options");
+    modalProductDetails.innerHTML = `
+          <img src="${product.imageUrl}" alt="${
+      product.name
+    }" id="modal-product-image">
+          <h3>${product.name}</h3>
+          <span>${formatRupiah(product.price)}</span>`;
+    sugarOptions.querySelector(".active")?.classList.remove("active");
+    sugarOptions
+      .querySelector('[data-value="Normal Sugar"]')
+      .classList.add("active");
+    iceOptions.querySelector(".active")?.classList.remove("active");
+    iceOptions
+      .querySelector('[data-value="Normal Ice"]')
+      .classList.add("active");
+    customizationModal.classList.add("show-modal");
+  };
 
-  const attachProductActionListeners = () => {
-    document.querySelectorAll(".choose-options-btn").forEach((button) => {
-      button.addEventListener("click", (e) => {
-        const card = e.target.closest(".products__card");
-        const product = {
-          id: card.dataset.id,
-          name: card.dataset.name,
-          price: parseFloat(card.dataset.price),
-          imageUrl: card.querySelector(".products__coffee").src,
-        };
-        openCustomizationModal(product);
+  const closeCustomizationModal = () =>
+    customizationModal.classList.remove("show-modal");
+
+  /*=============== MASTER EVENT LISTENER (EVENT DELEGATION) ===============*/
+  document.addEventListener("click", (e) => {
+    const target = e.target;
+
+    if (target.closest("#cart-icon")) showCart();
+    if (target.closest("#cart-close")) hideCart();
+
+    if (target.closest(".products__filter-btn")) {
+      document
+        .querySelector(".products__filter-btn.active")
+        .classList.remove("active");
+      target.closest(".products__filter-btn").classList.add("active");
+      const filter = target.closest(".products__filter-btn").dataset.filter;
+      renderProducts(filter);
+      body.classList.toggle("matcha-theme", filter === "matcha");
+    }
+
+    if (target.closest(".choose-options-btn")) {
+      const card = target.closest(".products__card");
+      openCustomizationModal({
+        id: card.dataset.id,
+        name: card.dataset.name,
+        price: parseFloat(card.dataset.price),
+        imageUrl: card.dataset.imageUrl,
       });
-    });
-  };
+    }
 
-  const redirectToCheckout = (items) => {
-    const itemsJson = JSON.stringify(items);
-    window.location.href = `checkout.html?items=${encodeURIComponent(
-      itemsJson
-    )}`;
-  };
-  cartCheckoutButton.addEventListener("click", () => {
-    if (cartItems.length > 0) redirectToCheckout(cartItems);
+    if (target.closest(".modal-close") || target.id === "customization-modal")
+      closeCustomizationModal();
+    if (target.classList.contains("option-btn")) {
+      const parent = target.closest(".options-container");
+      parent.querySelector(".active")?.classList.remove("active");
+      target.classList.add("active");
+    }
+
+    if (target.id === "modal-add-to-cart") {
+      const selectedSugar = document.querySelector("#sugar-options .active")
+        .dataset.value;
+      const selectedIce = document.querySelector("#ice-options .active").dataset
+        .value;
+      addToCart(currentProductForModal, {
+        sugar: selectedSugar,
+        ice: selectedIce,
+      });
+      flyToCart(document.getElementById("modal-product-image"));
+      closeCustomizationModal();
+    }
+
+    const cartItem = target.closest(".cart__item");
+    if (cartItem) {
+      const cartItemId = cartItem.dataset.id;
+      const itemIndex = cartItems.findIndex((i) => i.id === cartItemId);
+      if (itemIndex === -1) return;
+
+      if (target.classList.contains("increase-qty")) {
+        cartItems[itemIndex].quantity++;
+        updateCart();
+      } else if (target.classList.contains("decrease-qty")) {
+        cartItems[itemIndex].quantity--;
+        if (cartItems[itemIndex].quantity <= 0) cartItems.splice(itemIndex, 1);
+        updateCart();
+      } else if (target.classList.contains("cart__item-remove")) {
+        cartItem.classList.add("removing");
+        setTimeout(() => {
+          cartItems.splice(itemIndex, 1);
+          updateCart();
+          showNotification("Item dihapus.");
+        }, 400);
+      }
+    }
+
+    if (target.id === "cart-checkout-button" && cartItems.length > 0) {
+      window.location.href = `checkout.html?items=${encodeURIComponent(
+        JSON.stringify(cartItems)
+      )}`;
+    }
   });
-  updateCart();
-  const sr = ScrollReveal({
-    origin: "bottom",
-    distance: "80px",
-    duration: 2500,
-    delay: 200,
-    reset: false,
-    easing: "cubic-bezier(0.5, 0, 0, 1)",
-  });
-  sr.reveal(".home__title, .home__description, .home__sticker");
-  sr.reveal(".home__shape", { origin: "bottom", delay: 400 });
-  sr.reveal(".home__coffee", { delay: 800, distance: "200px" });
-  sr.reveal(".home__splash", { delay: 1200, scale: 0, duration: 2000 });
-  sr.reveal(
-    ".home__bean-1, .home__bean-2, .home__ice-1, .home__ice-2, .home__leaf",
-    { interval: 100, delay: 1500, scale: 0, rotate: { z: 180 } }
-  );
-  sr.reveal(".section__title", { delay: 200 });
-  sr.reveal(".special__card", {
-    delay: 400,
-    origin: "left",
-    distance: "100px",
-  });
-  sr.reveal(".products__filter-btn", { interval: 100, origin: "top" });
-  sr.reveal(".products__card", { interval: 100, origin: "top" });
-  sr.reveal(".contact__info", { origin: "left", interval: 150, delay: 300 });
-  sr.reveal(".contact__images", { origin: "right", delay: 500 });
-  sr.reveal(".footer__container > div", { interval: 150, origin: "bottom" });
-  sr.reveal(".footer__copy", { delay: 800 });
-});
-document.addEventListener("DOMContentLoaded", () => {
-  /*=============== SHOW MENU ===============*/
-  const navMenu = document.getElementById("nav-menu"),
-    navToggle = document.getElementById("nav-toggle"),
-    navClose = document.getElementById("nav-close");
 
-  /* Show menu */
-  if (navToggle) {
-    navToggle.addEventListener("click", () => {
-      navMenu.classList.add("show-menu");
-    });
-  }
-
-  /* Menu hidden */
-  if (navClose) {
-    navClose.addEventListener("click", () => {
-      navMenu.classList.remove("show-menu");
-    });
-  }
-
-  /*=============== REMOVE MENU MOBILE ===============*/
-  const navLink = document.querySelectorAll(".nav__link");
-
-  const linkAction = () => {
-    const navMenu = document.getElementById("nav-menu");
-    // When we click on each nav__link, we remove the show-menu class
-    navMenu.classList.remove("show-menu");
-  };
-  navLink.forEach((n) => n.addEventListener("click", linkAction));
-
-  /*=============== SHADOW HEADER ===============*/
-  const shadowHeader = () => {
-    const header = document.getElementById("header");
-    // When the scroll is greater than 50 viewport height, add the shadow-header class to the header tag
-    window.scrollY >= 50
-      ? header.classList.add("shadow-header")
-      : header.classList.remove("shadow-header");
-  };
-  window.addEventListener("scroll", shadowHeader);
-
-  /*=============== SHOW SCROLL UP ===============*/
-  const scrollUp = () => {
-    const scrollUp = document.getElementById("scroll-up");
-    // When the scroll is higher than 350 viewport height, add the show-scroll class to the a tag with the scrollup class
-    window.scrollY >= 350
-      ? scrollUp.classList.add("show-scroll")
-      : scrollUp.classList.remove("show-scroll");
-  };
-  window.addEventListener("scroll", scrollUp);
-
-  /*=============== SCROLL SECTIONS ACTIVE LINK ===============*/
+  /*=============== UI SETUP & SCROLL-BASED LOGIC ===============*/
   const sections = document.querySelectorAll("section[id]");
+  const navLinks = document.querySelectorAll(".nav__link, .mobile-nav__link");
+
+  let lastScrollY = window.scrollY;
+  const mobileNav = document.getElementById("mobile-nav");
 
   const scrollActive = () => {
     const scrollDown = window.scrollY;
 
+    // Sembunyikan/Tampilkan Navigasi Mobile saat scroll
+    if (mobileNav) {
+      if (scrollDown > lastScrollY && scrollDown > 200) {
+        mobileNav.classList.add("hide");
+      } else {
+        mobileNav.classList.remove("hide");
+      }
+      lastScrollY = scrollDown <= 0 ? 0 : scrollDown;
+    }
+
+    // Update active link
     sections.forEach((current) => {
       const sectionHeight = current.offsetHeight,
         sectionTop = current.offsetTop - 58,
-        sectionId = current.getAttribute("id"),
-        sectionsClass = document.querySelector(
-          ".nav__menu a[href*=" + sectionId + "]"
-        );
+        sectionId = current.getAttribute("id");
 
-      if (scrollDown > sectionTop && scrollDown <= sectionTop + sectionHeight) {
-        sectionsClass.classList.add("active-link");
-      } else {
-        sectionsClass.classList.remove("active-link");
-      }
+      const shouldBeActive =
+        scrollDown > sectionTop && scrollDown <= sectionTop + sectionHeight;
+
+      navLinks.forEach((link) => {
+        if (link.getAttribute("href") === `#${sectionId}`) {
+          link.classList.toggle("active-link", shouldBeActive);
+        }
+      });
     });
   };
   window.addEventListener("scroll", scrollActive);
 
-  /*=============== SWIPER ===============*/
-  var specialSwiper = new Swiper(".special-swiper", {
-    loop: true,
-    effect: "fade",
-    autoplay: {
-      delay: 3500,
-      disableOnInteraction: false,
-      pauseOnMouseEnter: true,
-    },
-    pagination: { el: ".swiper-pagination", clickable: true },
+  document
+    .getElementById("header")
+    .classList.toggle("shadow-header", window.scrollY >= 50);
+  document
+    .getElementById("scroll-up")
+    .classList.toggle("show-scroll", window.scrollY >= 350);
+  window.addEventListener("scroll", () => {
+    document
+      .getElementById("header")
+      .classList.toggle("shadow-header", window.scrollY >= 50);
+    document
+      .getElementById("scroll-up")
+      .classList.toggle("show-scroll", window.scrollY >= 350);
   });
 
-  /*=============== CART ===============*/
-  const cartIcon = document.getElementById("cart-icon"),
-    cart = document.getElementById("cart"),
-    cartClose = document.getElementById("cart-close"),
-    cartContent = document.getElementById("cart-content"),
-    cartItemCount = document.getElementById("cart-item-count"),
-    cartTotalPrice = document.getElementById("cart-total-price"),
-    cartCheckoutButton = document.getElementById("cart-checkout-button"),
-    body = document.body;
-  let cartItems = JSON.parse(localStorage.getItem("kopiMatchaCart")) || [];
-  const saveCart = () =>
-    localStorage.setItem("kopiMatchaCart", JSON.stringify(cartItems));
-  const showCart = () => {
-    cart.classList.add("show-cart");
-    body.style.overflow = "hidden";
-  };
-  const hideCart = () => {
-    cart.classList.remove("show-cart");
-    body.style.overflow = "auto";
-  };
-  cartIcon.addEventListener("click", showCart);
-  cartClose.addEventListener("click", hideCart);
-  const showNotification = (message) => {
-    const notification = document.createElement("div");
-    notification.classList.add("notification");
-    notification.innerText = message;
-    document.body.appendChild(notification);
-    setTimeout(() => notification.classList.add("show"), 10);
-    setTimeout(() => {
-      notification.classList.remove("show");
-      setTimeout(() => document.body.removeChild(notification), 500);
-    }, 2000);
-  };
-  const updateCart = () => {
-    cartContent.innerHTML = "";
-    let total = 0,
-      itemCount = 0;
-    if (cartItems.length === 0) {
-      cartContent.innerHTML =
-        '<p class="cart__empty-message">Keranjang Anda kosong.</p>';
-      cartCheckoutButton.style.display = "none";
-    } else {
-      cartItems.forEach((item) => {
-        const cartItemElement = document.createElement("div");
-        cartItemElement.classList.add("cart__item");
-        cartItemElement.innerHTML = `
-          <img src="${item.imageUrl}" alt="${item.name}" class="cart__item-img">
-          <div class="cart__item-details">
-            <h3 class="cart__item-name">${item.name}</h3>
-            <span class="cart__item-price">${formatRupiah(
-              item.price * item.quantity
-            )}</span>
-            <div class="cart__item-actions">
-              <div class="cart__item-quantity-controls">
-                <button class="cart__quantity-btn decrease-qty" data-id="${
-                  item.id
-                }">-</button>
-                <span class="cart__item-quantity">${item.quantity}</span>
-                <button class="cart__quantity-btn increase-qty" data-id="${
-                  item.id
-                }">+</button>
-              </div>
-              <i class="ri-delete-bin-line cart__item-remove" data-id="${
-                item.id
-              }"></i>
-            </div>
-          </div>
-        `;
-        cartContent.appendChild(cartItemElement);
-        total += item.price * item.quantity;
-        itemCount += item.quantity;
-      });
-      cartCheckoutButton.style.display = "block";
-    }
-    cartTotalPrice.innerText = formatRupiah(total);
-    cartItemCount.innerText = itemCount;
-    saveCart();
-  };
-  const addToCart = (id, name, price, imageUrl, button) => {
-    const existingItem = cartItems.find((item) => item.id === id);
-    if (existingItem) {
-      existingItem.quantity++;
-    } else {
-      cartItems.push({ id, name, price, imageUrl, quantity: 1 });
-    }
-    updateCart();
-    showNotification(`${name} ditambahkan!`);
-    button.innerHTML = 'Ditambahkan <i class="ri-check-line"></i>';
-    button.classList.add("added");
-    setTimeout(() => {
-      button.innerHTML = "Ke Keranjang";
-      button.classList.remove("added");
-    }, 1500);
-  };
-  cartContent.addEventListener("click", (e) => {
-    const id = e.target.closest("[data-id]")?.dataset.id;
-    if (!id) return;
-    if (e.target.classList.contains("increase-qty")) {
-      const item = cartItems.find((i) => i.id === id);
-      if (item) item.quantity++;
-    }
-    if (e.target.classList.contains("decrease-qty")) {
-      let item = cartItems.find((i) => i.id === id);
-      if (item && item.quantity > 1) item.quantity--;
-      else cartItems = cartItems.filter((i) => i.id !== id);
-    }
-    if (e.target.classList.contains("cart__item-remove")) {
-      cartItems = cartItems.filter((i) => i.id !== id);
-      showNotification("Item dihapus.");
-    }
-    updateCart();
-  });
-  const attachProductActionListeners = () => {
-    document.querySelectorAll(".add-to-cart-btn").forEach((button) => {
-      button.addEventListener("click", (e) => {
-        const card = e.target.closest(".products__card");
-        const { id, name, price } = card.dataset;
-        const imageUrl = card.querySelector(".products__coffee").src;
-        addToCart(id, name, parseFloat(price), imageUrl, e.target);
-      });
-    });
-    document.querySelectorAll(".buy-now-btn").forEach((button) => {
-      button.addEventListener("click", (e) => {
-        const card = e.target.closest(".products__card");
-        const { id, name, price } = card.dataset;
-        const imageUrl = card.querySelector(".products__coffee").src;
-        const item = [
-          { id, name, price: parseFloat(price), imageUrl, quantity: 1 },
-        ];
-        redirectToCheckout(item);
-      });
-    });
-  };
-  const redirectToCheckout = (items) => {
-    const itemsJson = JSON.stringify(items);
-    window.location.href = `checkout.html?items=${encodeURIComponent(
-      itemsJson
-    )}`;
-  };
-  cartCheckoutButton.addEventListener("click", () => {
-    if (cartItems.length > 0) redirectToCheckout(cartItems);
-  });
+  /*=============== INITIAL LOAD ===============*/
+  renderProducts();
   updateCart();
+  scrollActive();
 
   /*=============== SCROLL REVEAL ANIMATION ===============*/
   const sr = ScrollReveal({
@@ -623,38 +391,28 @@ document.addEventListener("DOMContentLoaded", () => {
     reset: false,
     easing: "cubic-bezier(0.5, 0, 0, 1)",
   });
-  sr.reveal(".home__title, .home__description, .home__sticker");
-  sr.reveal(".home__shape", { origin: "bottom", delay: 400 });
-  sr.reveal(".home__coffee", { delay: 800, distance: "200px" });
-  sr.reveal(".home__splash", { delay: 1200, scale: 0, duration: 2000 });
-  sr.reveal(
-    ".home__bean-1, .home__bean-2, .home__ice-1, .home__ice-2, .home__leaf",
-    { interval: 100, delay: 1500, scale: 0, rotate: { z: 180 } }
-  );
-  sr.reveal(".section__title", { delay: 200 });
   sr.reveal(".special__card", {
     delay: 400,
     origin: "left",
     distance: "100px",
+    interval: 100,
   });
   sr.reveal(".products__filter-btn", { interval: 100, origin: "top" });
   sr.reveal(".products__card", { interval: 100, origin: "top" });
-  sr.reveal(".contact__info", { origin: "left", interval: 150, delay: 300 });
-  sr.reveal(".contact__images", { origin: "right", delay: 500 });
   sr.reveal(".footer__container > div", { interval: 150, origin: "bottom" });
   sr.reveal(".footer__copy", { delay: 800 });
 });
 
-/*=============== PENDAFTARAN SERVICE WORKER UNTUK PWA ===============*/
+/*=============== SERVICE WORKER REGISTRATION ===============*/
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
     navigator.serviceWorker
-      .register("./sw.js") // Pastikan ada './'
-      .then((registration) => {
-        console.log("Service Worker berhasil didaftarkan: ", registration);
-      })
-      .catch((error) => {
-        console.log("Pendaftaran Service Worker gagal: ", error);
-      });
+      .register("./sw.js")
+      .then((registration) =>
+        console.log("Service Worker registered: ", registration)
+      )
+      .catch((error) =>
+        console.log("Service Worker registration failed: ", error)
+      );
   });
 }
