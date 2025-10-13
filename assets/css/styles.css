@@ -20,7 +20,7 @@
   --success-color: #28a745;
   --body-font: "Montserrat", sans-serif;
   --second-font: "Saira", sans-serif;
-  --biggest-font-size: 4.5rem;
+  --biggest-font-size: clamp(2.5rem, 8vw, 4.5rem);
   --big-font-size: 2.5rem;
   --h1-font-size: 1.5rem;
   --h2-font-size: 1.25rem;
@@ -242,6 +242,7 @@ body.matcha-theme .mobile-nav {
   align-items: center;
   transition: color 0.4s;
   z-index: 2;
+  -webkit-tap-highlight-color: transparent;
 }
 body.matcha-theme .mobile-nav__link {
   color: var(--matcha-text-color);
@@ -258,7 +259,7 @@ body.matcha-theme .mobile-nav__link.active-link {
   left: 0;
   top: 0.5rem;
   height: calc(100% - 1rem);
-  width: 83px; /* Adjust based on icon size + padding */
+  width: 83px;
   background-color: var(--kopi-first-color);
   border-radius: 2rem;
   box-shadow: 0 4px 12px hsla(28, 80%, 50%, 0.4);
@@ -277,7 +278,7 @@ body.matcha-theme .mobile-nav__indicator {
   }
 }
 
-/* Other styles remain mostly the same... */
+/*=============== HOME SECTION (MODIFIED) ===============*/
 .home {
   height: 100vh;
   width: 100%;
@@ -290,8 +291,11 @@ body.matcha-theme .mobile-nav__indicator {
   width: 50%;
   height: 100%;
   overflow: hidden;
-  display: grid;
-  place-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
   transition: width 0.8s cubic-bezier(0.77, 0, 0.175, 1);
 }
 .home__panel.kopi-panel {
@@ -300,16 +304,35 @@ body.matcha-theme .mobile-nav__indicator {
 .home__panel.matcha-panel {
   background-color: var(--matcha-bg-color);
 }
+
+.home__images {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none;
+  order: 1; /* Image appears first */
+  flex-shrink: 0;
+}
+
 .home__content {
   position: relative;
   z-index: 2;
   text-align: center;
-  padding: 2rem;
+  padding: 1.5rem;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  order: 2; /* Text appears second */
+  background: hsla(0, 0%, 0%, 0.1);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border-radius: 1rem;
+  border: 1px solid hsla(0, 0%, 100%, 0.1);
 }
+
 .home__title {
   font-size: clamp(2.5rem, 8vw, 6rem);
   font-weight: var(--font-semi-bold);
@@ -332,30 +355,25 @@ body.matcha-theme .mobile-nav__indicator {
 .matcha-panel .home__description {
   color: var(--matcha-text-color);
 }
-.home__images {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-  pointer-events: none;
-}
-.home__images img {
-  position: absolute;
-  transition: transform 1s ease-out, opacity 1s ease-out;
-}
+
 .home__coffee {
-  width: clamp(180px, 25vw, 320px);
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  width: clamp(250px, 25vw, 350px);
+
+  /* --- TAMBAHKAN 2 BARIS INI --- */
+  height: clamp(250px, 25vw, 350px); /* Menyamakan tinggi dengan lebarnya */
+  object-fit: contain; /* Memastikan gambar pas tanpa distorsi */
+
+  position: relative;
   z-index: 1;
+  margin-bottom: 2rem;
 }
+
 .home__leaf,
 .home__bean-1,
 .home__bean-2 {
   opacity: 0.5;
   animation: float 8s ease-in-out infinite alternate;
+  position: absolute;
 }
 .home__leaf {
   width: clamp(40px, 10vw, 80px);
@@ -420,6 +438,7 @@ body.matcha-theme .mobile-nav__indicator {
     transform: scale(1.3);
   }
 }
+
 .button {
   display: inline-flex;
   justify-content: center;
@@ -519,7 +538,7 @@ body.matcha-theme .button:hover {
   font-weight: var(--font-semi-bold);
   cursor: pointer;
   border: 2px solid var(--kopi-text-color);
-  transition: all 0.3s;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 body.matcha-theme .products__filter-btn {
   color: var(--matcha-text-color);
@@ -536,6 +555,9 @@ body.matcha-theme .products__filter-btn:hover {
   background-color: var(--matcha-first-color);
   border-color: var(--matcha-first-color);
   color: var(--dark-color);
+}
+.products__filter-btn:active {
+  transform: scale(0.95);
 }
 .products__container {
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -557,11 +579,11 @@ body.matcha-theme .products__card {
 }
 @media (hover: hover) {
   .products__card:hover {
-    box-shadow: 0 12px 24px hsla(28, 95%, 8%, 0.6);
+    box-shadow: 0 16px 32px hsla(28, 80%, 40%, 0.3);
     transform: translateY(-0.75rem) rotateY(5deg) rotateX(10deg);
   }
   body.matcha-theme .products__card:hover {
-    box-shadow: 0 12px 24px hsla(90, 35%, 15%, 0.6);
+    box-shadow: 0 16px 32px hsla(88, 50%, 45%, 0.3);
   }
 }
 .products__images {

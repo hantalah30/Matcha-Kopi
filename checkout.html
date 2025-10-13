@@ -39,76 +39,156 @@
       <section class="checkout section" id="checkout">
         <h2 class="section__title">Konfirmasi Pesanan</h2>
         <div class="checkout__container container grid">
+          <div class="checkout__details">
+            <div class="checkout-card__preview" id="certificate-card">
+              <div class="certificate__ribbon">
+                <span>PREMIUM ORDER</span>
+              </div>
+              <div class="certificate__border">
+                <div class="certificate__content">
+                  <p class="certificate__heading">
+                    Sertifikat <br />
+                    Pencinta Kopi & Matcha
+                  </p>
+                  <p class="certificate__issued">
+                    Dengan hormat kami berikan kepada:
+                  </p>
+                  <h3
+                    class="card__value certificate__name"
+                    id="card-name-preview"
+                  >
+                    -
+                  </h3>
+                  <p class="certificate__for">Atas Pesanan Terbaik dari:</p>
+                  <p
+                    class="card__value certificate__location"
+                    id="card-location-preview"
+                  >
+                    -
+                  </p>
+                  <div class="certificate__divider"></div>
+                  <p class="certificate__total-label">Total Pesanan:</p>
+                  <h2
+                    class="card__total certificate__total"
+                    id="card-total-preview"
+                  >
+                    Rp 0
+                  </h2>
+                  <p class="certificate__footer">
+                    Terima kasih telah memilih kami!
+                  </p>
+                  <div class="certificate__stamp">
+                    <img src="assets/img/logo-dark-square.png" alt="Stamp" />
+                  </div>
+                </div>
+              </div>
+              <div class="confetti-container" id="confetti-container"></div>
+            </div>
+
+            <form class="checkout__form" id="checkout-form">
+              <h3 class="checkout__form-title">Detail Pengiriman</h3>
+              <div class="checkout__form-group">
+                <i class="ri-user-line"></i>
+                <input
+                  type="text"
+                  id="name"
+                  name="name"
+                  required
+                  placeholder=" "
+                />
+                <label for="name">Nama</label>
+              </div>
+              <div class="checkout__form-group">
+                <i class="ri-phone-line"></i>
+                <input
+                  type="tel"
+                  id="phone"
+                  name="phone"
+                  required
+                  placeholder=" "
+                />
+                <label for="phone">No. Telepon</label>
+              </div>
+              <div class="checkout__form-group">
+                <i class="ri-group-line"></i>
+                <select id="class-schedule" name="class-schedule" required>
+                  <option value="" disabled selected></option>
+                  <option value="SI-01">SI-01</option>
+                  <option value="SI-02">SI-02</option>
+                  <option value="SI-03">SI-03</option>
+                  <option value="SI-04">SI-04</option>
+                  <option value="SI-05">SI-05</option>
+                  <option value="SI-06">SI-06</option>
+                  <option value="SI-07">SI-07</option>
+                  <option value="SI-08">SI-08</option>
+                  <option value="SI-09">SI-09</option>
+                  <option value="SI-10">SI-10</option>
+                </select>
+                <label for="class-schedule">Rombel</label>
+              </div>
+              <div class="checkout__form-group">
+                <i class="ri-building-4-line"></i>
+                <input
+                  type="text"
+                  id="classroom"
+                  name="classroom"
+                  required
+                  placeholder=" "
+                />
+                <label for="classroom">Ruangan Kelas</label>
+              </div>
+
+              <h3 class="checkout__form-title">Metode Pembayaran</h3>
+              <div class="payment__options">
+                <div class="payment__option">
+                  <input
+                    type="radio"
+                    id="dana"
+                    name="payment-method"
+                    value="Dana"
+                    checked
+                  />
+                  <label for="dana" class="payment__label">
+                    <img
+                      src="https://upload.wikimedia.org/wikipedia/commons/7/72/Logo_dana_blue.svg"
+                      alt="DANA"
+                    />
+                    <span>DANA</span>
+                  </label>
+                </div>
+                <div class="payment__option">
+                  <input
+                    type="radio"
+                    id="tunai"
+                    name="payment-method"
+                    value="Tunai"
+                  />
+                  <label for="tunai" class="payment__label">
+                    <i class="ri-money-dollar-circle-line"></i>
+                    <span>TUNAI</span>
+                  </label>
+                </div>
+              </div>
+
+              <button type="submit" class="button checkout__button">
+                <span class="button__text"
+                  >Konfirmasi & Kirim via WhatsApp</span
+                >
+                <span class="button__loading-spinner"></span>
+              </button>
+            </form>
+          </div>
+
           <div class="checkout__summary">
             <h3 class="checkout__summary-title">Ringkasan Pesanan</h3>
             <div id="checkout-items"></div>
             <div class="checkout__total">
-              <span class="checkout__total-title">Total:</span>
+              <span class="checkout__total-title">Total Pembayaran:</span>
               <span class="checkout__total-price" id="checkout-total-price"
                 >Rp 0</span
               >
             </div>
           </div>
-
-          <form class="checkout__form" id="checkout-form">
-            <h3 class="checkout__form-title">Detail Pengiriman</h3>
-            <div class="checkout__form-group">
-              <label for="name">Nama</label>
-              <input
-                type="text"
-                id="name"
-                name="name"
-                required
-                placeholder="Masukkan nama Anda"
-              />
-            </div>
-            <div class="checkout__form-group">
-              <label for="phone">No. Telepon</label>
-              <input
-                type="tel"
-                id="phone"
-                name="phone"
-                required
-                placeholder="Contoh: 08123456789"
-              />
-            </div>
-            <div class="checkout__form-group">
-              <label for="class-schedule">Pilih Rombel Sistem Informasi</label>
-              <select id="class-schedule" name="class-schedule" required>
-                <option value="SI-01">SI-01</option>
-                <option value="SI-02">SI-02</option>
-                <option value="SI-03">SI-03</option>
-                <option value="SI-04">SI-04</option>
-                <option value="SI-05">SI-05</option>
-                <option value="SI-06">SI-06</option>
-                <option value="SI-07">SI-07</option>
-                <option value="SI-08">SI-08</option>
-                <option value="SI-09">SI-09</option>
-                <option value="SI-10">SI-10</option>
-              </select>
-            </div>
-            <div class="checkout__form-group">
-              <label for="classroom">Ruangan Kelas</label>
-              <input
-                type="text"
-                id="classroom"
-                name="classroom"
-                required
-                placeholder="Contoh: R. 401"
-              />
-            </div>
-            <div class="checkout__form-group">
-              <label for="payment-method">Metode Pembayaran</label>
-              <select id="payment-method" name="payment-method" required>
-                <option value="Dana">DANA</option>
-                <option value="Tunai">TUNAI</option>
-              </select>
-            </div>
-            <button type="submit" class="button checkout__button">
-              <span class="button__text">Konfirmasi & Kirim via WhatsApp</span>
-              <span class="button__loading-spinner"></span>
-            </button>
-          </form>
         </div>
       </section>
     </main>

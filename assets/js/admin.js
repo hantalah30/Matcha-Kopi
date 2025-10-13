@@ -1,18 +1,13 @@
 document.addEventListener("DOMContentLoaded", function () {
-  // Cek inisialisasi Firebase
   if (typeof firebase === "undefined" || !firebase.auth) {
     console.error("Firebase tidak terinisialisasi.");
     return;
   }
 
-  // Inisialisasi Firebase services
   const db = firebase.firestore();
   const auth = firebase.auth();
-
-  // Variabel Global untuk Chart
   let salesChartInstance, categoryChartInstance;
 
-  // Cek status login pengguna
   auth.onAuthStateChanged((user) => {
     if (user) {
       initAdminApp();
@@ -21,7 +16,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
-  // Fungsi utama setelah login berhasil
   function initAdminApp() {
     setupEventListeners();
     loadDashboardData();
@@ -29,18 +23,14 @@ document.addEventListener("DOMContentLoaded", function () {
     renderProductTable();
   }
 
-  // Mengatur semua event listener
   function setupEventListeners() {
-    // Navigasi Halaman
     const sidebarLinks = document.querySelectorAll(".sidebar__link");
     sidebarLinks.forEach((link) => {
       link.addEventListener("click", (e) => {
         if (link.id === "logout-btn") return;
         e.preventDefault();
-
         sidebarLinks.forEach((l) => l.classList.remove("active-link"));
         link.classList.add("active-link");
-
         const targetPageId = link.getAttribute("href").substring(1);
         document.querySelectorAll(".admin-page").forEach((page) => {
           page.classList.remove("active-page");
@@ -51,41 +41,27 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     });
 
-    // Toggle Sidebar untuk Mobile
     const sidebarToggle = document.getElementById("sidebar-toggle");
     if (sidebarToggle) {
       sidebarToggle.addEventListener("click", () => {
         document.body.classList.toggle("sidebar-show");
+        sidebar.classList.toggle("collapsed");
       });
     }
 
-    // Logout
-    document.getElementById("logout-btn").addEventListener("click", () => {
-      auth.signOut().then(() => window.location.replace("login.html"));
+    document.getElementById("logout-btn").addEventListener("click", (e) => {
+      e.preventDefault();
+      auth.signOut();
     });
-
-    // Dark Mode Toggle
-    const themeCheckbox = document.getElementById("theme-checkbox");
-    themeCheckbox.addEventListener("change", () => {
-      document.body.classList.toggle("dark-mode");
-      localStorage.setItem(
-        "darkMode",
-        document.body.classList.contains("dark-mode")
-      );
-    });
-    if (localStorage.getItem("darkMode") === "true") {
-      document.body.classList.add("dark-mode");
-      themeCheckbox.checked = true;
-    }
   }
 
-  // --- Fungsi Format ---
   const formatRupiah = (number) =>
     new Intl.NumberFormat("id-ID", {
       style: "currency",
       currency: "IDR",
       minimumFractionDigits: 0,
     }).format(number);
+
   const formatDate = (timestamp) =>
     timestamp
       ? timestamp.toDate().toLocaleDateString("id-ID", {
@@ -94,6 +70,7 @@ document.addEventListener("DOMContentLoaded", function () {
           year: "numeric",
         })
       : "N/A";
+
   const formatTime = (timestamp) =>
     timestamp
       ? timestamp
@@ -101,7 +78,6 @@ document.addEventListener("DOMContentLoaded", function () {
           .toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" })
       : "N/A";
 
-  // --- Fungsi Notifikasi ---
   const notificationSound = document.getElementById("notification-sound");
   let isFirstOrderLoad = true;
   const showAdminNotification = (message, isSuccess = true) => {
@@ -112,7 +88,6 @@ document.addEventListener("DOMContentLoaded", function () {
     setTimeout(() => notification.classList.remove("show"), 3000);
   };
 
-  // --- Memuat Data Dashboard & Chart ---
   function loadDashboardData() {
     db.collection("orders").onSnapshot(async (snapshot) => {
       let totalRevenue = 0,
@@ -123,7 +98,6 @@ document.addEventListener("DOMContentLoaded", function () {
       const todayStart = new Date();
       todayStart.setHours(0, 0, 0, 0);
 
-      // Ambil data produk untuk mencocokkan kategori
       const productsSnapshot = await db.collection("products").get();
       const productCategories = {};
       productsSnapshot.forEach((doc) => {
@@ -132,24 +106,26 @@ document.addEventListener("DOMContentLoaded", function () {
 
       snapshot.forEach((doc) => {
         const order = doc.data();
-        if (order.status === "completed") {
+
+        // PERBAIKAN: Hitung pendapatan dari pesanan yang 'pending' atau 'completed'
+        if (order.status === "completed" || order.status === "pending") {
           totalRevenue += order.total;
           if (order.createdAt && order.createdAt.toDate() >= todayStart) {
             revenueToday += order.total;
           }
+
+          order.items.forEach((item) => {
+            totalItemsSold += item.quantity;
+            productSales[item.name] =
+              (productSales[item.name] || 0) + item.quantity;
+
+            const category = productCategories[item.name];
+            if (category) {
+              categorySales[category] =
+                (categorySales[category] || 0) + item.price * item.quantity;
+            }
+          });
         }
-
-        order.items.forEach((item) => {
-          totalItemsSold += item.quantity;
-          productSales[item.name] =
-            (productSales[item.name] || 0) + item.quantity;
-
-          const category = productCategories[item.name];
-          if (category) {
-            categorySales[category] =
-              (categorySales[category] || 0) + item.price * item.quantity;
-          }
-        });
       });
 
       document.getElementById("revenue-today").textContent =
@@ -180,7 +156,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
     snapshot.forEach((doc) => {
       const order = doc.data();
-      if (order.createdAt && order.status === "completed") {
+      // PERBAIKAN: Chart juga harus menghitung pesanan 'pending' & 'completed'
+      if (
+        order.createdAt &&
+        (order.status === "completed" || order.status === "pending")
+      ) {
         const dateStr = order.createdAt.toDate().toISOString().split("T")[0];
         if (salesData[dateStr] !== undefined) {
           salesData[dateStr] += order.total;
@@ -210,6 +190,13 @@ document.addEventListener("DOMContentLoaded", function () {
           },
         ],
       },
+      options: {
+        scales: {
+          y: { ticks: { color: "rgba(255,255,255,0.7)" } },
+          x: { ticks: { color: "rgba(255,255,255,0.7)" } },
+        },
+        plugins: { legend: { labels: { color: "rgba(255,255,255,0.7)" } } },
+      },
     });
   }
 
@@ -224,13 +211,17 @@ document.addEventListener("DOMContentLoaded", function () {
           {
             data: [categorySales.kopi, categorySales.matcha],
             backgroundColor: ["hsl(28, 80%, 50%)", "hsl(88, 48%, 57%)"],
+            borderColor: "hsl(215, 28%, 17%)",
+            borderWidth: 4,
           },
         ],
+      },
+      options: {
+        plugins: { legend: { labels: { color: "rgba(255,255,255,0.7)" } } },
       },
     });
   }
 
-  // --- Render Tabel Pesanan ---
   function renderOrderTable() {
     const orderTableBody = document.querySelector("#order-table tbody");
     if (!orderTableBody) return;
@@ -245,14 +236,14 @@ document.addEventListener("DOMContentLoaded", function () {
         ) {
           notificationSound
             .play()
-            .catch((e) => console.log("Gagal memutar suara notifikasi:", e));
+            .catch((e) => console.log("Gagal memutar notifikasi:", e));
           showAdminNotification("Ada pesanan baru!");
         }
         isFirstOrderLoad = false;
 
         orderTableBody.innerHTML = "";
         if (snapshot.empty) {
-          orderTableBody.innerHTML = `<tr><td colspan="6" style="text-align:center;">Belum ada pesanan masuk.</td></tr>`;
+          orderTableBody.innerHTML = `<tr><td colspan="6" style="text-align:center;">Belum ada pesanan.</td></tr>`;
           return;
         }
 
@@ -260,19 +251,17 @@ document.addEventListener("DOMContentLoaded", function () {
           const order = doc.data();
           const row = document.createElement("tr");
           row.innerHTML = `
-              <td>${formatTime(order.createdAt)}<br><small>${formatDate(
+          <td>${formatTime(order.createdAt)}<br><small>${formatDate(
             order.createdAt
           )}</small></td>
-              <td>${order.customerName}</td>
-              <td>${formatRupiah(order.total)}</td>
-              <td>${order.classSchedule} (${order.classroom})</td>
-              <td><select class="status-select" data-id="${
-                doc.id
-              }"></select></td>
-              <td><button class="button view-details-btn" data-id="${
-                doc.id
-              }">Detail</button></td>
-          `;
+          <td>${order.customerName}</td>
+          <td>${formatRupiah(order.total)}</td>
+          <td>${order.classSchedule} (${order.classroom})</td>
+          <td><select class="status-select" data-id="${doc.id}"></select></td>
+          <td><button class="action-btn view-details-btn" data-id="${
+            doc.id
+          }"><i class="ri-eye-line"></i></button></td>
+        `;
 
           const statusSelect = row.querySelector(".status-select");
           ["pending", "completed", "cancelled"].forEach((status) => {
@@ -300,7 +289,6 @@ document.addEventListener("DOMContentLoaded", function () {
           row
             .querySelector(".view-details-btn")
             .addEventListener("click", () => showOrderDetails(order));
-
           orderTableBody.appendChild(row);
         });
       });
@@ -342,12 +330,7 @@ document.addEventListener("DOMContentLoaded", function () {
       (modal.style.display = "none");
   }
 
-  // --- Render Tabel Produk & Modal ---
-  const productsRef = db.collection("products");
   function renderProductTable() {
-    // Sisa kode untuk manajemen produk (add, edit, delete, modal)
-    // diletakkan di sini... (Kode ini tidak berubah dari versi sebelumnya)
-    // Untuk keringkasan, saya akan copy-paste logika modal & tabel produk yang sudah ada.
     const productTableBody = document.querySelector("#product-table tbody");
     const modal = document.getElementById("product-modal");
     const modalTitle = document.getElementById("modal-title");
@@ -361,16 +344,13 @@ document.addEventListener("DOMContentLoaded", function () {
       productForm.reset();
       document.getElementById("product-id").value = "";
       imagePreview.style.display = "none";
-
       if (type === "edit") {
         modalTitle.textContent = "Edit Produk";
+        Object.keys(data).forEach((key) => {
+          const el = document.getElementById(`product-${key.toLowerCase()}`);
+          if (el) el.value = data[key];
+        });
         document.getElementById("product-id").value = data.id;
-        document.getElementById("product-name").value = data.name;
-        document.getElementById("product-price").value = data.price;
-        document.getElementById("product-cost").value = data.cost || 0;
-        document.getElementById("product-category").value = data.category;
-        document.getElementById("product-composition").value =
-          data.composition || "";
         imageUrlInput.value = data.imageUrl;
         imagePreview.src = data.imageUrl;
         imagePreview.style.display = "block";
@@ -395,37 +375,41 @@ document.addEventListener("DOMContentLoaded", function () {
       imagePreview.style.display = imageUrlInput.value ? "block" : "none";
     });
 
-    productsRef.orderBy("createdAt", "desc").onSnapshot((snapshot) => {
-      if (!productTableBody) return;
-      productTableBody.innerHTML = "";
-      snapshot.forEach((doc) => {
-        const product = { id: doc.id, ...doc.data() };
-        const row = document.createElement("tr");
-        row.innerHTML = `
-              <td><img src="${product.imageUrl}" alt="${
-          product.name
-        }" class="product-image-cell"></td>
-              <td>${product.name}</td>
-              <td>${formatRupiah(product.price)}</td>
-              <td>${formatRupiah(product.cost || 0)}</td>
-              <td>${product.category}</td>
-              <td>
-                <button class="action-btn edit-btn"><i class="ri-pencil-line"></i></button>
-                <button class="action-btn delete-btn"><i class="ri-delete-bin-line"></i></button>
-              </td>
-          `;
-        row
-          .querySelector(".edit-btn")
-          .addEventListener("click", () => openModal("edit", product));
-        row.querySelector(".delete-btn").addEventListener("click", async () => {
-          if (confirm(`Yakin ingin menghapus ${product.name}?`)) {
-            await productsRef.doc(product.id).delete();
-            showAdminNotification("Produk berhasil dihapus.");
-          }
+    db.collection("products")
+      .orderBy("name")
+      .onSnapshot((snapshot) => {
+        if (!productTableBody) return;
+        productTableBody.innerHTML = "";
+        snapshot.forEach((doc) => {
+          const product = { id: doc.id, ...doc.data() };
+          const row = document.createElement("tr");
+          row.innerHTML = `
+          <td><img src="${product.imageUrl}" alt="${
+            product.name
+          }" class="product-image-cell"></td>
+          <td>${product.name}</td>
+          <td>${formatRupiah(product.price)}</td>
+          <td>${formatRupiah(product.cost || 0)}</td>
+          <td>${product.category}</td>
+          <td>
+            <button class="action-btn edit-btn"><i class="ri-pencil-line"></i></button>
+            <button class="action-btn delete-btn"><i class="ri-delete-bin-line"></i></button>
+          </td>
+        `;
+          row
+            .querySelector(".edit-btn")
+            .addEventListener("click", () => openModal("edit", product));
+          row
+            .querySelector(".delete-btn")
+            .addEventListener("click", async () => {
+              if (confirm(`Yakin ingin menghapus ${product.name}?`)) {
+                await db.collection("products").doc(product.id).delete();
+                showAdminNotification("Produk berhasil dihapus.");
+              }
+            });
+          productTableBody.appendChild(row);
         });
-        productTableBody.appendChild(row);
       });
-    });
 
     productForm.addEventListener("submit", async (e) => {
       e.preventDefault();
@@ -437,18 +421,17 @@ document.addEventListener("DOMContentLoaded", function () {
         category: document.getElementById("product-category").value,
         composition: document.getElementById("product-composition").value,
         imageUrl: document.getElementById("product-image-url").value,
-        updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
       };
 
       if (id) {
-        await productsRef.doc(id).update(productData);
+        await db.collection("products").doc(id).update(productData);
         showAdminNotification("Produk berhasil diperbarui!");
       } else {
         productData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
-        await productsRef.add(productData);
+        await db.collection("products").add(productData);
         showAdminNotification("Produk berhasil ditambahkan!");
       }
       closeModal();
     });
-  } // Akhir dari renderProductTable
+  }
 });

@@ -15,10 +15,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   /*=============== THEME & INTERACTIVITY SETUP ===============*/
   const body = document.body;
-  const isDesktop = window.matchMedia("(min-width: 769px)").matches;
 
   // Efek hanya untuk desktop
-  if (isDesktop) {
+  if (window.matchMedia("(min-width: 769px)").matches) {
     const home = document.getElementById("home");
     const kopiPanel = document.querySelector(".kopi-panel");
     const matchaPanel = document.querySelector(".matcha-panel");
@@ -329,6 +328,13 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
+    if (target.closest(".mobile-nav__link")) {
+      // Cek apakah browser mendukung getaran
+      if (window.navigator.vibrate) {
+        window.navigator.vibrate(50); // Getaran selama 50ms
+      }
+    }
+
     if (target.id === "cart-checkout-button" && cartItems.length > 0) {
       window.location.href = `checkout.html?items=${encodeURIComponent(
         JSON.stringify(cartItems)
@@ -359,7 +365,8 @@ document.addEventListener("DOMContentLoaded", () => {
     sections.forEach((current) => {
       const sectionHeight = current.offsetHeight;
       const sectionTop =
-        current.offsetTop - (isDesktop ? 70 : window.innerHeight / 2);
+        current.offsetTop -
+        (window.innerWidth >= 769 ? 70 : window.innerHeight / 2);
       if (scrollY > sectionTop && scrollY <= sectionTop + sectionHeight) {
         currentSectionId = current.getAttribute("id");
       }
@@ -426,7 +433,7 @@ document.addEventListener("DOMContentLoaded", () => {
     distance: "80px",
     duration: 2500,
     delay: 200,
-    reset: !isDesktop,
+    reset: false, // Animasi aktif di semua perangkat dan tidak berulang
     easing: "cubic-bezier(0.5, 0, 0, 1)",
   });
   sr.reveal(".special__card", {

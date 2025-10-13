@@ -9,12 +9,11 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css"
     />
     <link rel="stylesheet" href="assets/css/admin.css" />
-        <link
+    <link
       rel="shortcut icon"
       href="assets/img/favicon2.png"
       type="image/x-icon"
     />
-    <link
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   </head>
   <body>
@@ -31,13 +30,13 @@
               <ul class="sidebar__list">
                 <li>
                   <a href="#dashboard" class="sidebar__link active-link">
-                    <i class="ri-dashboard-line"></i>
+                    <i class="ri-dashboard-3-line"></i>
                     <span>Dashboard</span>
                   </a>
                 </li>
                 <li>
                   <a href="#orders" class="sidebar__link">
-                    <i class="ri-list-check"></i>
+                    <i class="ri-list-check-2"></i>
                     <span>Pesanan</span>
                   </a>
                 </li>
@@ -63,17 +62,7 @@
           <button id="sidebar-toggle" class="sidebar-toggle">
             <i class="ri-menu-line"></i>
           </button>
-          <div class="header-actions">
-            <div class="theme-switch-wrapper">
-              <label class="theme-switch" for="theme-checkbox">
-                <input type="checkbox" id="theme-checkbox" />
-                <div class="slider round">
-                  <i class="ri-sun-line light-icon"></i>
-                  <i class="ri-moon-line dark-icon"></i>
-                </div>
-              </label>
-            </div>
-          </div>
+          <div class="header-actions"></div>
         </header>
 
         <section id="page-dashboard" class="admin-page active-page">
@@ -111,7 +100,9 @@
         </section>
 
         <section id="page-orders" class="admin-page">
-          <h1>Manajemen Pesanan</h1>
+          <div class="section-header">
+            <h1>Manajemen Pesanan</h1>
+          </div>
           <div class="order-table-container">
             <table id="order-table">
               <thead>
