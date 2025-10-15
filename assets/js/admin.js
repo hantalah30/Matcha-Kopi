@@ -21,16 +21,20 @@ document.addEventListener("DOMContentLoaded", function () {
     loadDashboardData();
     renderOrderTable();
     renderProductTable();
+    setupSpecialsCRUD(); // FUNGSI BARU UNTUK MENGELOLA SPESIAL
   }
 
   function setupEventListeners() {
+    // Navigasi Halaman
     const sidebarLinks = document.querySelectorAll(".sidebar__link");
     sidebarLinks.forEach((link) => {
       link.addEventListener("click", (e) => {
         if (link.id === "logout-btn") return;
         e.preventDefault();
+
         sidebarLinks.forEach((l) => l.classList.remove("active-link"));
         link.classList.add("active-link");
+
         const targetPageId = link.getAttribute("href").substring(1);
         document.querySelectorAll(".admin-page").forEach((page) => {
           page.classList.remove("active-page");
@@ -41,27 +45,43 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     });
 
+    // Toggle Sidebar untuk Mobile
     const sidebarToggle = document.getElementById("sidebar-toggle");
     if (sidebarToggle) {
       sidebarToggle.addEventListener("click", () => {
         document.body.classList.toggle("sidebar-show");
-        sidebar.classList.toggle("collapsed");
       });
     }
 
-    document.getElementById("logout-btn").addEventListener("click", (e) => {
-      e.preventDefault();
-      auth.signOut();
+    // Logout
+    document.getElementById("logout-btn").addEventListener("click", () => {
+      auth.signOut().then(() => window.location.replace("login.html"));
     });
+
+    // Dark Mode Toggle
+    const themeCheckbox = document.getElementById("theme-checkbox");
+    if (themeCheckbox) {
+      themeCheckbox.addEventListener("change", () => {
+        document.body.classList.toggle("dark-mode");
+        localStorage.setItem(
+          "darkMode",
+          document.body.classList.contains("dark-mode")
+        );
+      });
+      if (localStorage.getItem("darkMode") === "true") {
+        document.body.classList.add("dark-mode");
+        themeCheckbox.checked = true;
+      }
+    }
   }
 
+  // --- Fungsi Format ---
   const formatRupiah = (number) =>
     new Intl.NumberFormat("id-ID", {
       style: "currency",
       currency: "IDR",
       minimumFractionDigits: 0,
     }).format(number);
-
   const formatDate = (timestamp) =>
     timestamp
       ? timestamp.toDate().toLocaleDateString("id-ID", {
@@ -70,7 +90,6 @@ document.addEventListener("DOMContentLoaded", function () {
           year: "numeric",
         })
       : "N/A";
-
   const formatTime = (timestamp) =>
     timestamp
       ? timestamp
@@ -78,6 +97,7 @@ document.addEventListener("DOMContentLoaded", function () {
           .toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" })
       : "N/A";
 
+  // --- Fungsi Notifikasi ---
   const notificationSound = document.getElementById("notification-sound");
   let isFirstOrderLoad = true;
   const showAdminNotification = (message, isSuccess = true) => {
@@ -88,6 +108,7 @@ document.addEventListener("DOMContentLoaded", function () {
     setTimeout(() => notification.classList.remove("show"), 3000);
   };
 
+  // --- Memuat Data Dashboard & Chart ---
   function loadDashboardData() {
     db.collection("orders").onSnapshot(async (snapshot) => {
       let totalRevenue = 0,
@@ -98,6 +119,7 @@ document.addEventListener("DOMContentLoaded", function () {
       const todayStart = new Date();
       todayStart.setHours(0, 0, 0, 0);
 
+      // Ambil data produk untuk mencocokkan kategori
       const productsSnapshot = await db.collection("products").get();
       const productCategories = {};
       productsSnapshot.forEach((doc) => {
@@ -106,26 +128,24 @@ document.addEventListener("DOMContentLoaded", function () {
 
       snapshot.forEach((doc) => {
         const order = doc.data();
-
-        // PERBAIKAN: Hitung pendapatan dari pesanan yang 'pending' atau 'completed'
-        if (order.status === "completed" || order.status === "pending") {
+        if (order.status === "completed") {
           totalRevenue += order.total;
           if (order.createdAt && order.createdAt.toDate() >= todayStart) {
             revenueToday += order.total;
           }
-
-          order.items.forEach((item) => {
-            totalItemsSold += item.quantity;
-            productSales[item.name] =
-              (productSales[item.name] || 0) + item.quantity;
-
-            const category = productCategories[item.name];
-            if (category) {
-              categorySales[category] =
-                (categorySales[category] || 0) + item.price * item.quantity;
-            }
-          });
         }
+
+        order.items.forEach((item) => {
+          totalItemsSold += item.quantity;
+          productSales[item.name] =
+            (productSales[item.name] || 0) + item.quantity;
+
+          const category = productCategories[item.name];
+          if (category) {
+            categorySales[category] =
+              (categorySales[category] || 0) + item.price * item.quantity;
+          }
+        });
       });
 
       document.getElementById("revenue-today").textContent =
@@ -156,11 +176,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     snapshot.forEach((doc) => {
       const order = doc.data();
-      // PERBAIKAN: Chart juga harus menghitung pesanan 'pending' & 'completed'
-      if (
-        order.createdAt &&
-        (order.status === "completed" || order.status === "pending")
-      ) {
+      if (order.createdAt && order.status === "completed") {
         const dateStr = order.createdAt.toDate().toISOString().split("T")[0];
         if (salesData[dateStr] !== undefined) {
           salesData[dateStr] += order.total;
@@ -190,13 +206,6 @@ document.addEventListener("DOMContentLoaded", function () {
           },
         ],
       },
-      options: {
-        scales: {
-          y: { ticks: { color: "rgba(255,255,255,0.7)" } },
-          x: { ticks: { color: "rgba(255,255,255,0.7)" } },
-        },
-        plugins: { legend: { labels: { color: "rgba(255,255,255,0.7)" } } },
-      },
     });
   }
 
@@ -211,17 +220,13 @@ document.addEventListener("DOMContentLoaded", function () {
           {
             data: [categorySales.kopi, categorySales.matcha],
             backgroundColor: ["hsl(28, 80%, 50%)", "hsl(88, 48%, 57%)"],
-            borderColor: "hsl(215, 28%, 17%)",
-            borderWidth: 4,
           },
         ],
-      },
-      options: {
-        plugins: { legend: { labels: { color: "rgba(255,255,255,0.7)" } } },
       },
     });
   }
 
+  // --- Render Tabel Pesanan ---
   function renderOrderTable() {
     const orderTableBody = document.querySelector("#order-table tbody");
     if (!orderTableBody) return;
@@ -236,14 +241,14 @@ document.addEventListener("DOMContentLoaded", function () {
         ) {
           notificationSound
             .play()
-            .catch((e) => console.log("Gagal memutar notifikasi:", e));
+            .catch((e) => console.log("Gagal memutar suara notifikasi:", e));
           showAdminNotification("Ada pesanan baru!");
         }
         isFirstOrderLoad = false;
 
         orderTableBody.innerHTML = "";
         if (snapshot.empty) {
-          orderTableBody.innerHTML = `<tr><td colspan="6" style="text-align:center;">Belum ada pesanan.</td></tr>`;
+          orderTableBody.innerHTML = `<tr><td colspan="6" style="text-align:center;">Belum ada pesanan masuk.</td></tr>`;
           return;
         }
 
@@ -251,17 +256,19 @@ document.addEventListener("DOMContentLoaded", function () {
           const order = doc.data();
           const row = document.createElement("tr");
           row.innerHTML = `
-          <td>${formatTime(order.createdAt)}<br><small>${formatDate(
+              <td>${formatTime(order.createdAt)}<br><small>${formatDate(
             order.createdAt
           )}</small></td>
-          <td>${order.customerName}</td>
-          <td>${formatRupiah(order.total)}</td>
-          <td>${order.classSchedule} (${order.classroom})</td>
-          <td><select class="status-select" data-id="${doc.id}"></select></td>
-          <td><button class="action-btn view-details-btn" data-id="${
-            doc.id
-          }"><i class="ri-eye-line"></i></button></td>
-        `;
+              <td>${order.customerName}</td>
+              <td>${formatRupiah(order.total)}</td>
+              <td>${order.classSchedule} (${order.classroom})</td>
+              <td><select class="status-select" data-id="${
+                doc.id
+              }"></select></td>
+              <td><button class="button view-details-btn" data-id="${
+                doc.id
+              }">Detail</button></td>
+          `;
 
           const statusSelect = row.querySelector(".status-select");
           ["pending", "completed", "cancelled"].forEach((status) => {
@@ -289,6 +296,7 @@ document.addEventListener("DOMContentLoaded", function () {
           row
             .querySelector(".view-details-btn")
             .addEventListener("click", () => showOrderDetails(order));
+
           orderTableBody.appendChild(row);
         });
       });
@@ -330,6 +338,8 @@ document.addEventListener("DOMContentLoaded", function () {
       (modal.style.display = "none");
   }
 
+  // --- Render Tabel Produk & Modal ---
+  const productsRef = db.collection("products");
   function renderProductTable() {
     const productTableBody = document.querySelector("#product-table tbody");
     const modal = document.getElementById("product-modal");
@@ -344,13 +354,16 @@ document.addEventListener("DOMContentLoaded", function () {
       productForm.reset();
       document.getElementById("product-id").value = "";
       imagePreview.style.display = "none";
+
       if (type === "edit") {
         modalTitle.textContent = "Edit Produk";
-        Object.keys(data).forEach((key) => {
-          const el = document.getElementById(`product-${key.toLowerCase()}`);
-          if (el) el.value = data[key];
-        });
         document.getElementById("product-id").value = data.id;
+        document.getElementById("product-name").value = data.name;
+        document.getElementById("product-price").value = data.price;
+        document.getElementById("product-cost").value = data.cost || 0;
+        document.getElementById("product-category").value = data.category;
+        document.getElementById("product-composition").value =
+          data.composition || "";
         imageUrlInput.value = data.imageUrl;
         imagePreview.src = data.imageUrl;
         imagePreview.style.display = "block";
@@ -375,41 +388,37 @@ document.addEventListener("DOMContentLoaded", function () {
       imagePreview.style.display = imageUrlInput.value ? "block" : "none";
     });
 
-    db.collection("products")
-      .orderBy("name")
-      .onSnapshot((snapshot) => {
-        if (!productTableBody) return;
-        productTableBody.innerHTML = "";
-        snapshot.forEach((doc) => {
-          const product = { id: doc.id, ...doc.data() };
-          const row = document.createElement("tr");
-          row.innerHTML = `
-          <td><img src="${product.imageUrl}" alt="${
-            product.name
-          }" class="product-image-cell"></td>
-          <td>${product.name}</td>
-          <td>${formatRupiah(product.price)}</td>
-          <td>${formatRupiah(product.cost || 0)}</td>
-          <td>${product.category}</td>
-          <td>
-            <button class="action-btn edit-btn"><i class="ri-pencil-line"></i></button>
-            <button class="action-btn delete-btn"><i class="ri-delete-bin-line"></i></button>
-          </td>
-        `;
-          row
-            .querySelector(".edit-btn")
-            .addEventListener("click", () => openModal("edit", product));
-          row
-            .querySelector(".delete-btn")
-            .addEventListener("click", async () => {
-              if (confirm(`Yakin ingin menghapus ${product.name}?`)) {
-                await db.collection("products").doc(product.id).delete();
-                showAdminNotification("Produk berhasil dihapus.");
-              }
-            });
-          productTableBody.appendChild(row);
+    productsRef.orderBy("createdAt", "desc").onSnapshot((snapshot) => {
+      if (!productTableBody) return;
+      productTableBody.innerHTML = "";
+      snapshot.forEach((doc) => {
+        const product = { id: doc.id, ...doc.data() };
+        const row = document.createElement("tr");
+        row.innerHTML = `
+              <td><img src="${product.imageUrl}" alt="${
+          product.name
+        }" class="product-image-cell"></td>
+              <td>${product.name}</td>
+              <td>${formatRupiah(product.price)}</td>
+              <td>${formatRupiah(product.cost || 0)}</td>
+              <td>${product.category}</td>
+              <td>
+                <button class="action-btn edit-btn"><i class="ri-pencil-line"></i></button>
+                <button class="action-btn delete-btn"><i class="ri-delete-bin-line"></i></button>
+              </td>
+          `;
+        row
+          .querySelector(".edit-btn")
+          .addEventListener("click", () => openModal("edit", product));
+        row.querySelector(".delete-btn").addEventListener("click", async () => {
+          if (confirm(`Yakin ingin menghapus ${product.name}?`)) {
+            await productsRef.doc(product.id).delete();
+            showAdminNotification("Produk berhasil dihapus.");
+          }
         });
+        productTableBody.appendChild(row);
       });
+    });
 
     productForm.addEventListener("submit", async (e) => {
       e.preventDefault();
@@ -421,17 +430,219 @@ document.addEventListener("DOMContentLoaded", function () {
         category: document.getElementById("product-category").value,
         composition: document.getElementById("product-composition").value,
         imageUrl: document.getElementById("product-image-url").value,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
       };
 
       if (id) {
-        await db.collection("products").doc(id).update(productData);
+        await productsRef.doc(id).update(productData);
         showAdminNotification("Produk berhasil diperbarui!");
       } else {
         productData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
-        await db.collection("products").add(productData);
+        await productsRef.add(productData);
         showAdminNotification("Produk berhasil ditambahkan!");
       }
       closeModal();
     });
   }
+
+  // --- FUNGSI BARU: MENGELOLA MENU SPESIAL ---
+  async function renderSpecialsManagement() {
+    const kopiSelect = document.getElementById("special-kopi-select");
+    const matchaSelect = document.getElementById("special-matcha-select");
+    const saveKopiBtn = document.getElementById("save-kopi-special");
+    const saveMatchaBtn = document.getElementById("save-matcha-special");
+
+    if (!kopiSelect || !matchaSelect) return;
+
+    // Ambil semua produk dari Firestore
+    const productsSnapshot = await db.collection("products").get();
+    const products = [];
+    productsSnapshot.forEach((doc) =>
+      products.push({ id: doc.id, ...doc.data() })
+    );
+
+    // Isi dropdown untuk kopi
+    products
+      .filter((p) => p.category === "kopi")
+      .forEach((p) => {
+        const option = new Option(p.name, p.id);
+        kopiSelect.add(option);
+      });
+
+    // Isi dropdown untuk matcha
+    products
+      .filter((p) => p.category === "matcha")
+      .forEach((p) => {
+        const option = new Option(p.name, p.id);
+        matchaSelect.add(option);
+      });
+
+    // Ambil data spesial yang saat ini aktif dan set di dropdown
+    const specialKopiDoc = await db
+      .collection("specials")
+      .doc("kopi-special")
+      .get();
+    if (specialKopiDoc.exists) {
+      kopiSelect.value = specialKopiDoc.data().productId;
+    }
+    const specialMatchaDoc = await db
+      .collection("specials")
+      .doc("matcha-special")
+      .get();
+    if (specialMatchaDoc.exists) {
+      matchaSelect.value = specialMatchaDoc.data().productId;
+    }
+
+    // Fungsi untuk menyimpan
+    const saveSpecial = async (docId, selectedProductId) => {
+      if (!selectedProductId) {
+        // Jika admin memilih "Tidak ada", hapus dokumen spesial
+        await db.collection("specials").doc(docId).delete();
+        showAdminNotification("Menu spesial berhasil dihapus.");
+        return;
+      }
+
+      // Cari data produk lengkap berdasarkan ID yang dipilih
+      const selectedProduct = products.find((p) => p.id === selectedProductId);
+      if (selectedProduct) {
+        const specialData = {
+          productId: selectedProductId,
+          name: selectedProduct.name,
+          description:
+            "Perpaduan rasa yang unik dan menyegarkan, wajib dicoba!", // Anda bisa menambahkan deskripsi di form jika mau
+          imageUrl: selectedProduct.imageUrl,
+          category: selectedProduct.category,
+        };
+        // Set (update atau buat baru) dokumen di Firestore
+        await db.collection("specials").doc(docId).set(specialData);
+        showAdminNotification("Menu spesial berhasil diperbarui!");
+      }
+    };
+
+    // Event listener untuk tombol simpan
+    saveKopiBtn.addEventListener("click", () =>
+      saveSpecial("kopi-special", kopiSelect.value)
+    );
+    saveMatchaBtn.addEventListener("click", () =>
+      saveSpecial("matcha-special", matchaSelect.value)
+    );
+  }
+  // --- LOGIKA BARU: CRUD (CREATE, READ, UPDATE, DELETE) UNTUK SPESIAL ---
+  function setupSpecialsCRUD() {
+    const specialsRef = db.collection("specials");
+    const listContainer = document.getElementById("specials-list-container");
+    const modal = document.getElementById("special-modal");
+    const modalTitle = document.getElementById("special-modal-title");
+    const form = document.getElementById("special-form");
+    const addBtn = document.getElementById("add-special-btn");
+
+    const formFields = {
+      id: document.getElementById("special-id"),
+      name: document.getElementById("special-name"),
+      description: document.getElementById("special-description"),
+      imageUrl: document.getElementById("special-image-url"),
+      category: document.getElementById("special-category"),
+      preview: document.getElementById("special-image-preview"),
+    };
+
+    // Fungsi untuk membuka modal (baik untuk 'add' atau 'edit')
+    const openModal = (data = {}) => {
+      form.reset();
+      formFields.id.value = data.id || "";
+      formFields.name.value = data.name || "";
+      formFields.description.value = data.description || "";
+      formFields.imageUrl.value = data.imageUrl || "";
+      formFields.category.value = data.category || "kopi";
+
+      formFields.preview.src = data.imageUrl || "#";
+      formFields.preview.style.display = data.imageUrl ? "block" : "none";
+
+      modalTitle.textContent = data.id
+        ? "Edit Menu Spesial"
+        : "Tambah Menu Spesial";
+      modal.style.display = "block";
+    };
+
+    const closeModal = () => (modal.style.display = "none");
+
+    // Event listener untuk tombol dan modal
+    addBtn.addEventListener("click", () => openModal());
+    modal.querySelector(".close-btn").addEventListener("click", closeModal);
+    formFields.imageUrl.addEventListener("input", () => {
+      formFields.preview.src = formFields.imageUrl.value;
+      formFields.preview.style.display = formFields.imageUrl.value
+        ? "block"
+        : "none";
+    });
+
+    // READ: Tampilkan daftar spesial secara real-time
+    specialsRef.orderBy("createdAt", "desc").onSnapshot((snapshot) => {
+      listContainer.innerHTML = "";
+      if (snapshot.empty) {
+        listContainer.innerHTML =
+          "<p>Belum ada menu spesial yang ditambahkan.</p>";
+        return;
+      }
+      snapshot.forEach((doc) => {
+        const special = { id: doc.id, ...doc.data() };
+        const card = document.createElement("div");
+        card.className = "special-card";
+        card.innerHTML = `
+          <img src="${special.imageUrl}" alt="${special.name}" class="special-card__image">
+          <div class="special-card__content">
+            <h3 class="special-card__name">${special.name}</h3>
+            <p class="special-card__description">${special.description}</p>
+            <div class="special-card__footer">
+              <button class="button edit-special-btn"><i class="ri-pencil-line"></i> Edit</button>
+              <button class="button button-danger delete-special-btn"><i class="ri-delete-bin-line"></i> Hapus</button>
+            </div>
+          </div>
+        `;
+
+        // EDIT button
+        card
+          .querySelector(".edit-special-btn")
+          .addEventListener("click", () => openModal(special));
+
+        // DELETE button
+        card
+          .querySelector(".delete-special-btn")
+          .addEventListener("click", async () => {
+            if (
+              confirm(`Yakin ingin menghapus menu spesial "${special.name}"?`)
+            ) {
+              await specialsRef.doc(special.id).delete();
+              showAdminNotification("Menu spesial berhasil dihapus.");
+            }
+          });
+
+        listContainer.appendChild(card);
+      });
+    });
+
+    // CREATE & UPDATE: Logika saat form disubmit
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const id = formFields.id.value;
+      const data = {
+        name: formFields.name.value,
+        description: formFields.description.value,
+        imageUrl: formFields.imageUrl.value,
+        category: formFields.category.value,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+      };
+
+      if (id) {
+        // Update
+        await specialsRef.doc(id).update(data);
+        showAdminNotification("Menu spesial berhasil diperbarui!");
+      } else {
+        // Create
+        data.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+        await specialsRef.add(data);
+        showAdminNotification("Menu spesial berhasil ditambahkan!");
+      }
+      closeModal();
+    });
+  } // Akhir dari setupSpecialsCRUD
 });

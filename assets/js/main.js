@@ -1,7 +1,10 @@
 document.addEventListener("DOMContentLoaded", () => {
   // Pastikan Firebase sudah siap
   if (typeof firebase === "undefined" || !firebase.firestore) {
-    console.error("Firebase tidak terinisialisasi.");
+    console.error("Firebase tidak terinisialisasi dengan benar.");
+    // Tampilkan pesan error yang lebih jelas di halaman jika Firebase gagal dimuat
+    document.body.innerHTML =
+      "<h1>Error Kritis: Firebase Gagal Dimuat. Periksa koneksi internet dan file firebase-config.js</h1>";
     return;
   }
   const db = firebase.firestore();
@@ -70,20 +73,20 @@ document.addEventListener("DOMContentLoaded", () => {
           card.dataset.price = product.price;
           card.dataset.imageUrl = product.imageUrl;
           card.innerHTML = `
-              <div class="products__images">
-                <img src="${product.imageUrl}" alt="${
+            <div class="products__images">
+              <img src="${product.imageUrl}" alt="${
             product.name
           }" class="products__coffee" />
-              </div>
-              <div class="products__data">
-                <h3 class="products__name">${product.name.toUpperCase()}</h3>
-                <span class="products__price">${formatRupiah(
-                  product.price
-                )}</span>
-              </div>
-              <div class="products__buttons">
-                <button class="button products__button-action choose-options-btn">Pilih Opsi</button>
-              </div>`;
+            </div>
+            <div class="products__data">
+              <h3 class="products__name">${product.name.toUpperCase()}</h3>
+              <span class="products__price">${formatRupiah(
+                product.price
+              )}</span>
+            </div>
+            <div class="products__buttons">
+              <button class="button products__button-action choose-options-btn">Pilih Opsi</button>
+            </div>`;
           productsContainer.appendChild(card);
         }
       });
@@ -168,7 +171,6 @@ document.addEventListener("DOMContentLoaded", () => {
     } else {
       cartItems.forEach((item) => {
         if (!item || !item.options) {
-          // BUG FIX
           console.warn("Skipping malformed cart item:", item);
           return;
         }
@@ -237,11 +239,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const sugarOptions = document.getElementById("sugar-options");
     const iceOptions = document.getElementById("ice-options");
     modalProductDetails.innerHTML = `
-          <img src="${product.imageUrl}" alt="${
+      <img src="${product.imageUrl}" alt="${
       product.name
     }" id="modal-product-image">
-          <h3>${product.name}</h3>
-          <span>${formatRupiah(product.price)}</span>`;
+      <h3>${product.name}</h3>
+      <span>${formatRupiah(product.price)}</span>`;
     sugarOptions.querySelector(".active")?.classList.remove("active");
     sugarOptions
       .querySelector('[data-value="Normal Sugar"]')
@@ -255,6 +257,64 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const closeCustomizationModal = () =>
     customizationModal.classList.remove("show-modal");
+
+  /*=============== FUNGSI SPESIAL & SKELETON (DIPINDAHKAN KE DALAM) ===============*/
+  const specialSection = document.getElementById("special");
+
+  function showSpecialSkeleton(container) {
+    container.innerHTML = "";
+    for (let i = 0; i < 2; i++) {
+      const skeletonCard = document.createElement("div");
+      skeletonCard.className = "special__card skeleton-card";
+      skeletonCard.innerHTML = `
+        <div class="special__content">
+          <div class="skeleton skeleton-h3"></div>
+          <div class="skeleton skeleton-p"></div>
+          <div class="skeleton skeleton-btn"></div>
+        </div>
+        <div class="skeleton skeleton-img"></div>`;
+      container.appendChild(skeletonCard);
+    }
+  }
+
+  async function renderSpecials() {
+    const specialContainer = document.querySelector(".special__container");
+    if (!specialContainer) return;
+
+    showSpecialSkeleton(specialContainer);
+
+    try {
+      const specialsSnapshot = await db.collection("specials").get();
+
+      specialContainer.innerHTML = "";
+
+      if (specialsSnapshot.empty) {
+        if (specialSection) specialSection.style.display = "none";
+        return;
+      }
+
+      specialsSnapshot.forEach((doc) => {
+        const special = doc.data();
+        const card = document.createElement("div");
+        card.className =
+          special.category === "matcha"
+            ? "special__card matcha-special"
+            : "special__card";
+        card.innerHTML = `
+          <div class="special__badge">Spesial!</div>
+          <div class="special__content">
+            <h3 class="special__name">${special.name}</h3>
+            <p class="special__description">${special.description}</p>
+            <a href="#products" class="button">Pesan Sekarang</a>
+          </div>
+          <img src="${special.imageUrl}" alt="${special.name}" class="special__img" />`;
+        specialContainer.appendChild(card);
+      });
+    } catch (error) {
+      console.error("TERJADI ERROR SAAT MENGAMBIL DATA SPESIAL:", error);
+      specialContainer.innerHTML = `<p class="info-text">Gagal memuat menu spesial. Error: ${error.message}. Pastikan aturan Firestore sudah benar.</p>`;
+    }
+  }
 
   /*=============== MASTER EVENT LISTENER (EVENT DELEGATION) ===============*/
   document.addEventListener("click", (e) => {
@@ -329,9 +389,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (target.closest(".mobile-nav__link")) {
-      // Cek apakah browser mendukung getaran
       if (window.navigator.vibrate) {
-        window.navigator.vibrate(50); // Getaran selama 50ms
+        window.navigator.vibrate(50);
       }
     }
 
@@ -377,7 +436,7 @@ document.addEventListener("DOMContentLoaded", () => {
       link.classList.toggle("active-link", isActive);
 
       if (isActive && link.closest(".mobile-nav")) {
-        const linkIndex = Array.from(mobileNav.children).indexOf(link) - 1; // -1 for indicator
+        const linkIndex = Array.from(mobileNav.children).indexOf(link) - 1;
         if (mobileNavIndicator) {
           mobileNavIndicator.style.transform = `translateX(${
             linkIndex * 100
@@ -401,7 +460,6 @@ document.addEventListener("DOMContentLoaded", () => {
     { passive: true }
   );
 
-  // Footer Animation
   const footer = document.getElementById("footer");
   const footerNamesContainer = document.querySelector(".footer__names");
   const glowLine = document.querySelector(".footer__glow-line");
@@ -424,6 +482,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   /*=============== INITIAL LOAD ===============*/
   renderProducts();
+  renderSpecials(); // Panggil fungsi yang sudah ada di dalam scope
   updateCart();
   scrollActive();
 
@@ -433,7 +492,7 @@ document.addEventListener("DOMContentLoaded", () => {
     distance: "80px",
     duration: 2500,
     delay: 200,
-    reset: false, // Animasi aktif di semua perangkat dan tidak berulang
+    reset: false,
     easing: "cubic-bezier(0.5, 0, 0, 1)",
   });
   sr.reveal(".special__card", {
@@ -444,7 +503,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
   sr.reveal(".products__filter-btn", { interval: 100, origin: "top" });
   sr.reveal(".products__card", { interval: 100, origin: "top" });
-});
+}); // AKHIR DARI BLOK "DOMContentLoaded"
 
 /*=============== SERVICE WORKER REGISTRATION ===============*/
 if ("serviceWorker" in navigator) {

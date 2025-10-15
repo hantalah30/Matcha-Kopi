@@ -46,6 +46,12 @@
                     <span>Produk</span>
                   </a>
                 </li>
+                <li>
+                  <a href="#specials" class="sidebar__link">
+                    <i class="ri-star-line"></i>
+                    <span>Spesial</span>
+                  </a>
+                </li>
               </ul>
             </div>
           </div>
@@ -143,6 +149,20 @@
             </table>
           </div>
         </section>
+
+        <section id="page-specials" class="admin-page">
+          <div class="section-header">
+            <h1>Atur Menu Spesial</h1>
+            <button id="add-special-btn" class="button">
+              <i class="ri-add-line"></i> Tambah Spesial Baru
+            </button>
+          </div>
+
+          <div
+            id="specials-list-container"
+            class="specials-list-container"
+          ></div>
+        </section>
       </main>
     </div>
 
@@ -190,6 +210,37 @@
         <span class="close-btn">&times;</span>
         <h2>Detail Pesanan</h2>
         <div id="order-details-content"></div>
+      </div>
+    </div>
+
+    <div id="special-modal" class="modal">
+      <div class="modal-content">
+        <span class="close-btn">&times;</span>
+        <h2 id="special-modal-title">Tambah Menu Spesial</h2>
+        <form id="special-form">
+          <input type="hidden" id="special-id" />
+          <div class="input-group">
+            <label for="special-name">Nama Menu Spesial</label>
+            <input type="text" id="special-name" required />
+          </div>
+          <div class="input-group">
+            <label for="special-description">Deskripsi</label>
+            <textarea id="special-description" rows="3" required></textarea>
+          </div>
+          <div class="input-group">
+            <label for="special-image-url">URL Gambar</label>
+            <input type="url" id="special-image-url" required />
+            <img id="special-image-preview" src="#" alt="Preview" />
+          </div>
+          <div class="input-group">
+            <label for="special-category">Kategori</label>
+            <select id="special-category" required>
+              <option value="kopi">Kopi</option>
+              <option value="matcha">Matcha</option>
+            </select>
+          </div>
+          <button type="submit" class="button">Simpan</button>
+        </form>
       </div>
     </div>
 
