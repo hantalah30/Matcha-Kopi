@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", function () {
     loadDashboardData();
     renderOrderTable();
     renderProductTable();
-    setupSpecialsCRUD(); // FUNGSI BARU UNTUK MENGELOLA SPESIAL
+    setupSpecialsCRUD();
   }
 
   function setupEventListeners() {
@@ -226,7 +226,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // --- Render Tabel Pesanan ---
+  // --- Render Tabel Pesanan (DENGAN FUNGSI HAPUS) ---
   function renderOrderTable() {
     const orderTableBody = document.querySelector("#order-table tbody");
     if (!orderTableBody) return;
@@ -253,8 +253,10 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         snapshot.forEach((doc) => {
-          const order = doc.data();
+          const order = { id: doc.id, ...doc.data() }; // Sertakan ID dokumen
           const row = document.createElement("tr");
+
+          // --- PERUBAHAN DI SINI: Menambahkan tombol hapus ---
           row.innerHTML = `
               <td>${formatTime(order.createdAt)}<br><small>${formatDate(
             order.createdAt
@@ -263,11 +265,16 @@ document.addEventListener("DOMContentLoaded", function () {
               <td>${formatRupiah(order.total)}</td>
               <td>${order.classSchedule} (${order.classroom})</td>
               <td><select class="status-select" data-id="${
-                doc.id
+                order.id
               }"></select></td>
-              <td><button class="button view-details-btn" data-id="${
-                doc.id
-              }">Detail</button></td>
+              <td>
+                <button class="action-btn view-details-btn" data-id="${
+                  order.id
+                }"><i class="ri-eye-line"></i></button>
+                <button class="action-btn delete-order-btn" data-id="${
+                  order.id
+                }"><i class="ri-delete-bin-line"></i></button>
+              </td>
           `;
 
           const statusSelect = row.querySelector(".status-select");
@@ -296,6 +303,26 @@ document.addEventListener("DOMContentLoaded", function () {
           row
             .querySelector(".view-details-btn")
             .addEventListener("click", () => showOrderDetails(order));
+
+          // --- LOGIKA BARU UNTUK TOMBOL HAPUS ---
+          row
+            .querySelector(".delete-order-btn")
+            .addEventListener("click", async (e) => {
+              const orderId = e.currentTarget.dataset.id;
+              if (
+                confirm(
+                  `Yakin ingin menghapus pesanan dari "${order.customerName}"? Tindakan ini tidak bisa dibatalkan.`
+                )
+              ) {
+                try {
+                  await db.collection("orders").doc(orderId).delete();
+                  showAdminNotification("Pesanan berhasil dihapus.");
+                } catch (error) {
+                  console.error("Gagal menghapus pesanan: ", error);
+                  showAdminNotification("Gagal menghapus pesanan.", false);
+                }
+              }
+            });
 
           orderTableBody.appendChild(row);
         });

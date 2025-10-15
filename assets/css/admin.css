@@ -873,3 +873,7 @@ body:not(.dark-mode) .slider .dark-icon {
   border-radius: 8px;
   border: 1px solid var(--border-color);
 }
+
+.delete-order-btn {
+  color: var(--danger-color);
+}
