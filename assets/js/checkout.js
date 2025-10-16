@@ -51,7 +51,6 @@ document.addEventListener("DOMContentLoaded", () => {
   checkoutTotalPrice.innerText = formatRupiah(total);
   document.getElementById("card-total-preview").innerText = formatRupiah(total);
 
-  // --- FUNGSI Generate data untuk sertifikat ---
   const certificateNumber = document.getElementById("certificate-number");
   const certificateDate = document.getElementById("certificate-date");
 
@@ -66,30 +65,52 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // --- FUNGSI UNTUK MENGUNDUH SERTIFIKAT (PERBAIKAN FINAL) ---
+  // --- FUNGSI UNDUH SERTIFIKAT KUALITAS HD (PERBAIKAN FINAL) ---
   const downloadBtn = document.getElementById("download-cert-btn");
   const certificateCard = document.getElementById("certificate-card");
 
   if (downloadBtn && certificateCard) {
     downloadBtn.addEventListener("click", () => {
-      downloadBtn.innerHTML = '<i class="ri-loader-4-line"></i> Mengunduh...';
+      downloadBtn.innerHTML =
+        '<i class="ri-loader-4-line"></i> Memproses HD...';
       downloadBtn.disabled = true;
 
+      const scale = 3; // Skala 3x untuk hasil HD yang tajam
       const options = {
-        scale: 3,
+        scale: scale,
         useCORS: true,
-        backgroundColor: null,
-        scrollX: -window.scrollX,
-        scrollY: -window.scrollY,
-        windowWidth: document.documentElement.offsetWidth,
-        windowHeight: document.documentElement.offsetHeight,
+        backgroundColor: null, // Buat latar belakang transparan
       };
 
       html2canvas(certificateCard, options)
         .then((canvas) => {
+          // Buat canvas baru untuk menggambar background gradien
+          const finalCanvas = document.createElement("canvas");
+          const ctx = finalCanvas.getContext("2d");
+          finalCanvas.width = canvas.width;
+          finalCanvas.height = canvas.height;
+
+          // Buat gradien sesuai CSS (145deg, #FFF7E6, #FFEEC4)
+          const gradient = ctx.createLinearGradient(
+            0,
+            0,
+            finalCanvas.width,
+            finalCanvas.height
+          );
+          gradient.addColorStop(0, "#FFF7E6");
+          gradient.addColorStop(1, "#FFEEC4");
+
+          // Gambar gradien sebagai background
+          ctx.fillStyle = gradient;
+          ctx.fillRect(0, 0, finalCanvas.width, finalCanvas.height);
+
+          // Gambar hasil screenshot (dengan background transparan) di atas gradien
+          ctx.drawImage(canvas, 0, 0);
+
+          // Unduh canvas final yang sudah digabung
           const link = document.createElement("a");
-          link.download = `sertifikat-titik-koma-${Date.now()}.png`;
-          link.href = canvas.toDataURL("image/png");
+          link.download = `sertifikat-titik-koma-HD-${Date.now()}.png`;
+          link.href = finalCanvas.toDataURL("image/png", 1.0); // Kualitas 100%
           link.click();
 
           downloadBtn.innerHTML =
@@ -98,9 +119,7 @@ document.addEventListener("DOMContentLoaded", () => {
         })
         .catch((err) => {
           console.error("Gagal membuat canvas:", err);
-          alert(
-            "Maaf, gagal mengunduh sertifikat. Pastikan koneksi internet stabil dan coba lagi."
-          );
+          alert("Maaf, gagal mengunduh sertifikat. Coba lagi.");
           downloadBtn.innerHTML =
             '<i class="ri-download-2-line"></i> Unduh Sertifikat';
           downloadBtn.disabled = false;
