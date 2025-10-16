@@ -66,23 +66,49 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // --- FUNGSI Untuk Mengunduh Sertifikat ---
+  // --- FUNGSI Untuk Mengunduh Sertifikat (DIPERBAIKI) ---
   const downloadBtn = document.getElementById("download-cert-btn");
   const certificateCard = document.getElementById("certificate-card");
 
   if (downloadBtn && certificateCard) {
     downloadBtn.addEventListener("click", () => {
+      // Simpan gaya asli untuk dikembalikan nanti
+      const originalStyle = {
+        width: certificateCard.style.width,
+        position: certificateCard.style.position,
+        left: certificateCard.style.left,
+        top: certificateCard.style.top,
+      };
+
+      // Terapkan gaya sementara untuk rendering resolusi tinggi
+      Object.assign(certificateCard.style, {
+        position: "absolute",
+        left: "0",
+        top: "0",
+        width: "800px", // Paksa lebar menjadi besar
+      });
+
       const options = {
-        scale: 2,
+        scale: 3, // Skala ditingkatkan untuk kejernihan maksimal
         useCORS: true,
         backgroundColor: null,
       };
-      html2canvas(certificateCard, options).then((canvas) => {
-        const link = document.createElement("a");
-        link.download = `sertifikat-titik-koma-${Date.now()}.png`;
-        link.href = canvas.toDataURL("image/png");
-        link.click();
-      });
+
+      html2canvas(certificateCard, options)
+        .then((canvas) => {
+          const link = document.createElement("a");
+          link.download = `sertifikat-titik-koma-${Date.now()}.png`;
+          link.href = canvas.toDataURL("image/png");
+          link.click();
+
+          // Kembalikan gaya elemen ke kondisi semula setelah selesai
+          Object.assign(certificateCard.style, originalStyle);
+        })
+        .catch((err) => {
+          console.error("Gagal membuat canvas:", err);
+          // Pastikan gaya tetap kembali normal meskipun terjadi error
+          Object.assign(certificateCard.style, originalStyle);
+        });
     });
   }
 
