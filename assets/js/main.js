@@ -258,61 +258,167 @@ document.addEventListener("DOMContentLoaded", () => {
   const closeCustomizationModal = () =>
     customizationModal.classList.remove("show-modal");
 
-  /*=============== FUNGSI SPESIAL & SKELETON (DIPINDAHKAN KE DALAM) ===============*/
+  /*=============== FUNGSI SPESIAL & REVIEW (DIPINDAHKAN KE DALAM) ===============*/
   const specialSection = document.getElementById("special");
 
-  function showSpecialSkeleton(container) {
+  function showSkeleton(container, count = 2, type = "special") {
     container.innerHTML = "";
-    for (let i = 0; i < 2; i++) {
+    for (let i = 0; i < count; i++) {
       const skeletonCard = document.createElement("div");
-      skeletonCard.className = "special__card skeleton-card";
-      skeletonCard.innerHTML = `
-        <div class="special__content">
-          <div class="skeleton skeleton-h3"></div>
-          <div class="skeleton skeleton-p"></div>
-          <div class="skeleton skeleton-btn"></div>
-        </div>
-        <div class="skeleton skeleton-img"></div>`;
+      if (type === "special") {
+        skeletonCard.className = "special__card skeleton-card";
+        skeletonCard.innerHTML = `
+              <div class="special__content">
+                <div class="skeleton skeleton-h3"></div>
+                <div class="skeleton skeleton-p"></div>
+                <div class="skeleton skeleton-btn"></div>
+              </div>
+              <div class="skeleton skeleton-img"></div>`;
+      } else {
+        // type === 'review'
+        skeletonCard.className = "review-card";
+        skeletonCard.innerHTML = `
+              <div class="review-card__header">
+                <span class="skeleton" style="width: 100px; height: 20px;"></span>
+                <div class="skeleton" style="width: 80px; height: 20px;"></div>
+              </div>
+              <p class="skeleton" style="width: 100%; height: 40px;"></p>
+            `;
+      }
       container.appendChild(skeletonCard);
     }
   }
 
+  // --- FUNGSI BARU UNTUK "PANGGUNG SPESIAL" INTERAKTIF ---
   async function renderSpecials() {
-    const specialContainer = document.querySelector(".special__container");
-    if (!specialContainer) return;
+    const specialContainer = document.getElementById("special-container");
+    const specialSection = document.getElementById("special");
+    if (!specialContainer || !specialSection) return;
 
-    showSpecialSkeleton(specialContainer);
+    // Tampilkan skeleton loading
+    specialContainer.innerHTML = `
+            <div class="special-stage skeleton-card">
+                <div class="special-stage__content"></div>
+            </div>
+            <div class="special-stage skeleton-card">
+                <div class="special-stage__content"></div>
+            </div>
+        `;
 
     try {
       const specialsSnapshot = await db.collection("specials").get();
 
-      specialContainer.innerHTML = "";
-
       if (specialsSnapshot.empty) {
-        if (specialSection) specialSection.style.display = "none";
+        specialSection.style.display = "none";
         return;
       }
 
+      specialContainer.innerHTML = ""; // Kosongkan skeleton
+
       specialsSnapshot.forEach((doc) => {
         const special = doc.data();
-        const card = document.createElement("div");
-        card.className =
-          special.category === "matcha"
-            ? "special__card matcha-special"
-            : "special__card";
-        card.innerHTML = `
-          <div class="special__badge">Spesial!</div>
-          <div class="special__content">
-            <h3 class="special__name">${special.name}</h3>
-            <p class="special__description">${special.description}</p>
-            <a href="#products" class="button">Pesan Sekarang</a>
-          </div>
-          <img src="${special.imageUrl}" alt="${special.name}" class="special__img" />`;
-        specialContainer.appendChild(card);
+        const stage = document.createElement("div");
+        stage.className = `special-stage ${special.category}-special`;
+
+        stage.innerHTML = `
+                    <div class="special-stage__bg"></div>
+                    <div class="special-stage__particles"></div>
+                    <div class="special-stage__spotlight"></div>
+                    <div class="special-stage__badge">Edisi Terbatas</div>
+                    <div class="special-stage__content">
+                        <img src="${special.imageUrl}" alt="${special.name}" class="special-stage__img">
+                        <h3 class="special-stage__name">${special.name}</h3>
+                        <p class="special-stage__description">${special.description}</p>
+                        <a href="#products" class="button">Pesan Sekarang</a>
+                    </div>
+                `;
+        specialContainer.appendChild(stage);
+
+        // LOGIKA INTERAKTIF 3D PARALLAX
+        stage.addEventListener("mousemove", (e) => {
+          const rect = stage.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+          const centerX = rect.width / 2;
+          const centerY = rect.height / 2;
+
+          const rotateX = (y - centerY) / 20; // Intensitas rotasi X
+          const rotateY = (centerX - x) / 20; // Intensitas rotasi Y
+
+          stage.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+
+          const img = stage.querySelector(".special-stage__img");
+          img.style.transform = `translateZ(80px) rotateX(${
+            rotateX * 1.5
+          }deg) rotateY(${rotateY * 1.5}deg)`;
+        });
+
+        stage.addEventListener("mouseleave", () => {
+          stage.style.transform = "rotateX(0deg) rotateY(0deg)";
+          const img = stage.querySelector(".special-stage__img");
+          img.style.transform = "translateZ(50px)";
+        });
       });
     } catch (error) {
-      console.error("TERJADI ERROR SAAT MENGAMBIL DATA SPESIAL:", error);
-      specialContainer.innerHTML = `<p class="info-text">Gagal memuat menu spesial. Error: ${error.message}. Pastikan aturan Firestore sudah benar.</p>`;
+      console.error("Gagal memuat spesial:", error);
+      specialContainer.innerHTML = `<p class="info-text">Gagal memuat menu spesial.</p>`;
+    }
+  }
+
+  // --- FUNGSI BARU UNTUK MENAMPILKAN "DINDING ULASAN" INTERAKTIF ---
+  async function renderReviews() {
+    const reviewsWall = document.getElementById("reviews-wall");
+    const reviewsSection = document.getElementById("reviews");
+    if (!reviewsWall || !reviewsSection) return;
+
+    try {
+      const reviewsSnapshot = await db
+        .collection("reviews")
+        .orderBy("createdAt", "desc")
+        .limit(12)
+        .get();
+
+      if (reviewsSnapshot.empty) {
+        reviewsSection.style.display = "none";
+        return;
+      }
+
+      reviewsWall.innerHTML = "";
+
+      reviewsSnapshot.forEach((doc) => {
+        const review = doc.data();
+        const initial = review.name.charAt(0).toUpperCase();
+
+        let starsHTML = "";
+        for (let i = 1; i <= 5; i++) {
+          starsHTML += `<i class="${
+            i <= review.rating ? "ri-star-fill" : "ri-star-line"
+          }"></i>`;
+        }
+
+        // Tentukan ikon berdasarkan kategori
+        const categoryIcon =
+          review.category === "kopi"
+            ? '<i class="ri-cup-line review-card__category-icon"></i>'
+            : '<i class="ri-leaf-line review-card__category-icon"></i>';
+
+        const card = document.createElement("div");
+        card.className = `review-card ${review.category}`;
+        card.innerHTML = `
+                    <div class="review-card__header">
+                        <div class="review-card__avatar">${initial}</div>
+                        <div class="review-card__info">
+                            <h3 class="review-card__name">${review.name} ${categoryIcon}</h3>
+                            <div class="review-card__stars">${starsHTML}</div>
+                        </div>
+                    </div>
+                    <p class="review-card__text">"${review.reviewText}"</p>
+                `;
+        reviewsWall.appendChild(card);
+      });
+    } catch (error) {
+      console.error("Gagal memuat ulasan:", error);
+      reviewsWall.innerHTML = `<p class="info-text container">Gagal memuat ulasan. Error: ${error.message}</p>`;
     }
   }
 
@@ -482,7 +588,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   /*=============== INITIAL LOAD ===============*/
   renderProducts();
-  renderSpecials(); // Panggil fungsi yang sudah ada di dalam scope
+  renderSpecials();
+  renderReviews();
   updateCart();
   scrollActive();
 
@@ -518,3 +625,18 @@ if ("serviceWorker" in navigator) {
       );
   });
 }
+
+// --- EVENT LISTENER UNTUK TAB REVIEW ---
+const reviewFilterBtns = document.querySelectorAll(".reviews__filter-btn");
+reviewFilterBtns.forEach((btn) => {
+  btn.addEventListener("click", () => {
+    reviewFilterBtns.forEach((b) => b.classList.remove("active"));
+    btn.classList.add("active");
+
+    const filter = btn.dataset.filter;
+    document.querySelectorAll(".reviews__content").forEach((content) => {
+      content.classList.remove("active");
+    });
+    document.getElementById(`${filter}-reviews`).classList.add("active");
+  });
+});

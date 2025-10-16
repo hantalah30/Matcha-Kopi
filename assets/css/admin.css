@@ -1,39 +1,33 @@
-@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap");
+/*=============== GOOGLE FONTS ===============*/
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Saira:wght@500;600;700&display=swap");
 
+/*=============== VARIABLES CSS ===============*/
 :root {
   --first-color: hsl(28, 80%, 50%);
   --first-color-alt: hsl(28, 78%, 45%);
   --white-color: #fff;
-
-  /* Light Theme */
-  --body-bg: #f4f7fa;
-  --card-bg: #fff;
-  --text-color: #334155;
-  --title-color: #0f172a;
-  --border-color: #e2e8f0;
-  --sidebar-bg: #1e293b;
-  --sidebar-text: #cbd5e1;
-  --sidebar-logo: #fff;
-  --sidebar-link-active: var(--first-color);
-  --input-bg: #f8fafc;
-
-  /* Common Colors */
+  --body-bg: hsl(222, 47%, 11%);
+  --card-bg: hsl(215, 28%, 17%);
+  --text-color: hsl(215, 16%, 65%);
+  --title-color: hsl(210, 40%, 96%);
+  --border-color: hsla(215, 28%, 50%, 0.2); /* Dibuat lebih transparan */
+  --sidebar-bg: hsla(222, 47%, 11%, 0.8); /* Warna dasar kaca */
+  --sidebar-text: hsl(215, 16%, 75%);
+  --input-bg: hsl(215, 28%, 22%);
   --success-color: #28a745;
   --danger-color: #d9534f;
-  --info-color: #3b82f6;
-  --warning-color: #f59e0b;
 }
 
-body.dark-mode {
-  /* Dark Theme */
-  --body-bg: #0f172a;
-  --card-bg: #1e293b;
-  --text-color: #94a3b8;
-  --title-color: #f1f5f9;
-  --border-color: #334155;
-  --sidebar-bg: #0f172a;
-  --sidebar-text: #94a3b8;
-  --input-bg: #334155;
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+body {
+  font-family: "Montserrat", sans-serif;
+  background-color: var(--body-bg);
+  color: var(--text-color);
+  line-height: 1.6;
 }
 
 * {
@@ -264,7 +258,11 @@ body.dark-mode .login-box.glass-effect {
 .admin-layout {
   display: grid;
   grid-template-columns: 240px 1fr;
-  transition: grid-template-columns 0.3s;
+  transition: grid-template-columns 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+}
+.page-wrapper {
+  position: relative;
+  transition: filter 0.3s;
 }
 .main-content {
   padding: 1.5rem;
@@ -276,81 +274,190 @@ body.dark-mode .login-box.glass-effect {
   align-items: center;
   margin-bottom: 2rem;
 }
+/* ===== SIDEBAR BARU YANG INTERAKTIF ===== */
 .sidebar {
   background-color: var(--sidebar-bg);
-  color: var(--sidebar-text);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   height: 100vh;
   position: sticky;
   top: 0;
-  display: flex;
-  flex-direction: column;
-  transition: all 0.3s;
+  transition: width 0.4s cubic-bezier(0.25, 1, 0.5, 1);
   z-index: 1001;
+  border-right: 1px solid var(--border-color);
 }
 .sidebar__nav {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   height: 100%;
-  padding: 1.5rem 1rem;
+  padding: 1rem 0.75rem;
+  overflow: hidden;
+}
+
+.sidebar__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0.75rem;
+  margin-bottom: 1.5rem;
 }
 .sidebar__logo {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  color: var(--sidebar-logo);
+  color: var(--title-color);
+  font-family: "Saira", sans-serif;
   font-weight: 700;
   font-size: 1.25rem;
-  margin-bottom: 2.5rem;
   text-decoration: none;
+  white-space: nowrap;
 }
 .sidebar__logo-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.sidebar__logo-text {
+  transition: opacity 0.2s, width 0.2s;
+}
+
+.sidebar__toggle {
+  background: none;
+  border: none;
+  color: var(--sidebar-text);
   font-size: 1.5rem;
+  cursor: pointer;
+  transition: transform 0.4s, color 0.3s;
+  flex-shrink: 0;
+}
+.sidebar__toggle:hover {
   color: var(--first-color);
 }
+
 .sidebar__list {
   list-style: none;
+  position: relative; /* Untuk indikator */
 }
+
+/* INDIKATOR AKTIF YANG BERGERAK */
+.sidebar__active-indicator {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 48px; /* Sesuaikan dengan tinggi link */
+  background-color: var(--first-color);
+  border-radius: 0.5rem;
+  z-index: 1;
+  transition: top 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
 .sidebar__link {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.9rem 1rem;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  height: 48px;
   border-radius: 0.5rem;
   color: var(--sidebar-text);
   text-decoration: none;
   font-weight: 500;
-  transition: background-color 0.3s, color 0.3s;
+  white-space: nowrap;
+  position: relative;
+  z-index: 2; /* Di atas indikator */
+  transition: color 0.3s;
 }
 .sidebar__link:hover {
-  background-color: var(--first-color-alt);
   color: var(--white-color);
 }
 .sidebar__link.active-link {
-  background-color: var(--sidebar-link-active);
   color: var(--white-color);
 }
+
 .sidebar__link i {
-  font-size: 1.25rem;
-}
-.sidebar-toggle {
-  display: none;
-  background: none;
-  border: none;
-  color: var(--title-color);
   font-size: 1.5rem;
-  cursor: pointer;
+  flex-shrink: 0;
+  transition: transform 0.3s;
 }
+.sidebar__link span {
+  transition: opacity 0.2s, width 0.2s;
+}
+.sidebar__logout {
+  margin-top: 1rem;
+}
+
+/* STATE KETIKA SIDEBAR DICIUTKAN (COLLAPSED) */
 body.sidebar-collapsed .admin-layout {
   grid-template-columns: 80px 1fr;
 }
+body.sidebar-collapsed .sidebar {
+  width: 80px;
+}
 body.sidebar-collapsed .sidebar__logo-text,
 body.sidebar-collapsed .sidebar__link span {
-  display: none;
+  opacity: 0;
+  visibility: hidden;
+  width: 0;
 }
 body.sidebar-collapsed .sidebar__logo {
   justify-content: center;
 }
+body.sidebar-collapsed .sidebar__toggle {
+  transform: rotate(180deg);
+}
+body.sidebar-collapsed .sidebar__link {
+  justify-content: center;
+}
+body.sidebar-collapsed .sidebar__link:hover i {
+  transform: scale(1.1);
+}
+
+/* TOOLTIPS CERDAS */
+body.sidebar-collapsed .sidebar__link[data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  left: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  margin-left: 15px;
+  background-color: var(--first-color);
+  color: var(--white-color);
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s 0.2s, transform 0.3s 0.2s;
+  pointer-events: none;
+}
+body.sidebar-collapsed .sidebar__link[data-tooltip]:hover::after {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(-50%) translateX(5px);
+}
+
+/* MAIN CONTENT & HEADER */
+/* MAIN CONTENT & HEADER */
+.main-header {
+  display: flex;
+  justify-content: flex-start; /* Tombol menu selalu di kiri */
+  align-items: center;
+  margin-bottom: 2rem;
+  padding: 0 1.5rem;
+  height: 60px;
+}
+.main-content {
+  padding: 0 1.5rem 1.5rem;
+}
+#sidebar-toggle-mobile {
+  display: none;
+} /* Tombol hamburger di mobile */
+#sidebar-toggle-mobile {
+  display: none;
+} /* Tombol hamburger di mobile */
 .admin-page {
   display: none;
 }
@@ -731,27 +838,37 @@ body:not(.dark-mode) .slider .dark-icon {
     grid-template-columns: 1fr;
   }
 }
+/* RESPONSIVE UNTUK SIDEBAR */
+/* RESPONSIVE UNTUK SIDEBAR MOBILE */
 @media screen and (max-width: 768px) {
   .admin-layout {
     grid-template-columns: 1fr;
   }
   .sidebar {
     position: fixed;
-    left: -100%;
+    left: -240px; /* Sembunyikan di luar layar */
+    width: 240px;
+    box-shadow: 10px 0 20px rgba(0, 0, 0, 0.2);
   }
   body.sidebar-show .sidebar {
     left: 0;
-    box-shadow: 10px 0 20px rgba(0, 0, 0, 0.1);
   }
-  .sidebar-toggle {
+  body.sidebar-show .page-wrapper::before {
+    /* Overlay gelap */
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: hsla(0, 0%, 0%, 0.4);
+    z-index: 1000;
+  }
+  #sidebar-toggle-desktop {
+    display: none;
+  }
+  #sidebar-toggle-mobile {
     display: block;
-  }
-  .main-content {
-    padding-left: 1.5rem;
-  }
-  .controls-container {
-    flex-direction: column;
-    align-items: stretch;
   }
 }
 @media (max-width: 992px) {
@@ -876,4 +993,85 @@ body:not(.dark-mode) .slider .dark-icon {
 
 .delete-order-btn {
   color: var(--danger-color);
+}
+
+/* ===== GAYA BARU UNTUK HALAMAN MANAJEMEN ULASAN ===== */
+
+.reviews-list-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.5rem;
+}
+
+.admin-review-card {
+  background-color: var(--card-bg);
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-review-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.admin-review-card__name {
+  color: var(--title-color);
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.admin-review-card__category {
+  font-size: 0.8rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  font-weight: 600;
+}
+.admin-review-card__category.kopi {
+  background-color: hsla(28, 80%, 50%, 0.1);
+  color: var(--first-color);
+}
+.admin-review-card__category.matcha {
+  background-color: hsla(88, 50%, 55%, 0.1);
+  color: hsl(88, 50%, 55%);
+}
+
+.admin-review-card__stars {
+  display: flex;
+  gap: 0.2rem;
+  color: #f59e0b;
+}
+.admin-review-card__text {
+  color: var(--text-color);
+  margin-bottom: 1.5rem;
+  flex-grow: 1;
+}
+.admin-review-card__date {
+  font-size: 0.8rem;
+  color: var(--text-color);
+  margin-bottom: 1.5rem;
+}
+.admin-review-card__actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: auto;
+}
+.admin-review-card__actions .button {
+  width: 100%;
+  padding: 0.75rem;
+}
+
+/* Modal Edit Ulasan */
+.rating-stars-edit {
+  display: flex;
+  gap: 0.5rem;
+  font-size: 2rem;
+  color: #f59e0b;
+}
+.rating-stars-edit i {
+  cursor: pointer;
 }

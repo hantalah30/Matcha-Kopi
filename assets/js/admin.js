@@ -22,14 +22,34 @@ document.addEventListener("DOMContentLoaded", function () {
     renderOrderTable();
     renderProductTable();
     setupSpecialsCRUD();
+    setupReviewsCRUD(); // PANGGIL FUNGSI BARU
   }
 
   function setupEventListeners() {
+    // --- LOGIKA BARU UNTUK TOGGLE SIDEBAR ---
+    const sidebarToggleDesktop = document.getElementById(
+      "sidebar-toggle-desktop"
+    );
+    const sidebarToggleMobile = document.getElementById(
+      "sidebar-toggle-mobile"
+    );
+    const body = document.body;
+
+    // Toggle untuk menciutkan di desktop
+    sidebarToggleDesktop.addEventListener("click", () => {
+      body.classList.toggle("sidebar-collapsed");
+    });
+
+    // Toggle untuk menampilkan/menyembunyikan di mobile
+    sidebarToggleMobile.addEventListener("click", () => {
+      body.classList.toggle("sidebar-show");
+    });
+
     // Navigasi Halaman
     const sidebarLinks = document.querySelectorAll(".sidebar__link");
     sidebarLinks.forEach((link) => {
       link.addEventListener("click", (e) => {
-        if (link.id === "logout-btn") return;
+        if (link.id === "logout-btn") return; // Logout ditangani terpisah
         e.preventDefault();
 
         sidebarLinks.forEach((l) => l.classList.remove("active-link"));
@@ -42,19 +62,15 @@ document.addEventListener("DOMContentLoaded", function () {
         document
           .getElementById(`page-${targetPageId}`)
           .classList.add("active-page");
+
+        // Otomatis tutup sidebar di mobile setelah link diklik
+        body.classList.remove("sidebar-show");
       });
     });
 
-    // Toggle Sidebar untuk Mobile
-    const sidebarToggle = document.getElementById("sidebar-toggle");
-    if (sidebarToggle) {
-      sidebarToggle.addEventListener("click", () => {
-        document.body.classList.toggle("sidebar-show");
-      });
-    }
-
     // Logout
-    document.getElementById("logout-btn").addEventListener("click", () => {
+    document.getElementById("logout-btn").addEventListener("click", (e) => {
+      e.preventDefault();
       auth.signOut().then(() => window.location.replace("login"));
     });
 
@@ -672,4 +688,118 @@ document.addEventListener("DOMContentLoaded", function () {
       closeModal();
     });
   } // Akhir dari setupSpecialsCRUD
+  // --- LOGIKA BARU: CRUD UNTUK ULASAN PELANGGAN ---
+  function setupReviewsCRUD() {
+    const reviewsRef = db.collection("reviews");
+    const listContainer = document.getElementById("reviews-list-container");
+    const modal = document.getElementById("review-modal");
+    const form = document.getElementById("review-edit-form");
+    const starsEditContainer = document.getElementById("rating-stars-edit");
+
+    if (!listContainer || !modal) return;
+
+    let currentEditRating = 0;
+
+    // Fungsi untuk membuka modal edit
+    const openEditModal = (review) => {
+      form.reset();
+      form.querySelector("#review-id").value = review.id;
+      form.querySelector("#review-name-edit").value = review.name;
+      form.querySelector("#review-text-edit").value = review.reviewText;
+
+      currentEditRating = review.rating;
+      updateStars(starsEditContainer, currentEditRating);
+
+      modal.style.display = "block";
+    };
+
+    const closeModal = () => (modal.style.display = "none");
+    modal.querySelector(".close-btn").addEventListener("click", closeModal);
+
+    // Interaksi bintang di modal edit
+    const updateStars = (container, rating) => {
+      container.querySelectorAll("i").forEach((star) => {
+        star.className =
+          star.dataset.value <= rating ? "ri-star-fill" : "ri-star-line";
+      });
+    };
+    starsEditContainer.addEventListener("click", (e) => {
+      if (e.target.tagName === "I") {
+        currentEditRating = e.target.dataset.value;
+        updateStars(starsEditContainer, currentEditRating);
+      }
+    });
+
+    // READ: Tampilkan daftar ulasan
+    reviewsRef.orderBy("createdAt", "desc").onSnapshot((snapshot) => {
+      listContainer.innerHTML = "";
+      if (snapshot.empty) {
+        listContainer.innerHTML = "<p>Belum ada ulasan dari pelanggan.</p>";
+        return;
+      }
+      snapshot.forEach((doc) => {
+        const review = { id: doc.id, ...doc.data() };
+
+        let starsHTML = "";
+        for (let i = 1; i <= 5; i++) {
+          starsHTML += `<i class="${
+            i <= review.rating ? "ri-star-fill" : "ri-star-line"
+          }"></i>`;
+        }
+
+        const card = document.createElement("div");
+        card.className = "admin-review-card";
+        card.innerHTML = `
+          <div class="admin-review-card__header">
+            <div>
+              <h3 class="admin-review-card__name">${review.name}</h3>
+              <div class="admin-review-card__stars">${starsHTML}</div>
+            </div>
+            <span class="admin-review-card__category ${review.category}">${
+          review.category
+        }</span>
+          </div>
+          <p class="admin-review-card__text">"${review.reviewText}"</p>
+          <small class="admin-review-card__date">Dibuat pada: ${
+            review.createdAt ? formatDate(review.createdAt) : "N/A"
+          }</small>
+          <div class="admin-review-card__actions">
+            <button class="button edit-review-btn"><i class="ri-pencil-line"></i> Edit</button>
+            <button class="button button-danger delete-review-btn"><i class="ri-delete-bin-line"></i> Hapus</button>
+          </div>
+        `;
+
+        card
+          .querySelector(".edit-review-btn")
+          .addEventListener("click", () => openEditModal(review));
+        card
+          .querySelector(".delete-review-btn")
+          .addEventListener("click", async () => {
+            if (
+              confirm(`Yakin ingin menghapus ulasan dari "${review.name}"?`)
+            ) {
+              await reviewsRef.doc(review.id).delete();
+              showAdminNotification("Ulasan berhasil dihapus.");
+            }
+          });
+
+        listContainer.appendChild(card);
+      });
+    });
+
+    // UPDATE: Logika saat form edit disubmit
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const id = form.querySelector("#review-id").value;
+      const data = {
+        name: form.querySelector("#review-name-edit").value,
+        reviewText: form.querySelector("#review-text-edit").value,
+        rating: parseInt(currentEditRating),
+      };
+
+      await reviewsRef.doc(id).update(data);
+      showAdminNotification("Ulasan berhasil diperbarui!");
+      closeModal();
+    });
+  }
 });

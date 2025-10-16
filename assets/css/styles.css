@@ -477,159 +477,221 @@ body.matcha-theme .button:hover {
 .button-dark:hover {
   background-color: hsl(28, 95%, 8%);
 }
+/* ===== BAGIAN SPESIAL BARU (DENGAN WARNA TEMATIK) ===== */
 .special {
-  background-color: #fff;
-  position: relative; /* Diperlukan untuk spotlight */
-  overflow: hidden; /* Agar spotlight tidak keluar */
-}
-
-/* Efek Spotlight */
-.special__spotlight {
-  position: absolute;
-  width: 500px;
-  height: 500px;
-  border-radius: 50%;
-  background: radial-gradient(
-    circle,
-    hsla(45, 100%, 80%, 0.5) 0%,
-    transparent 70%
+  /* PERUBAHAN DI SINI: Menggunakan gradasi dari warna tema */
+  background: linear-gradient(
+    135deg,
+    var(--kopi-bg-color) 0%,
+    var(--matcha-bg-color) 100%
   );
-  pointer-events: none;
-  transform: translate(-50%, -50%);
-  transition: background 0.5s, opacity 0.5s;
-  opacity: 0;
-}
-.special:hover .special__spotlight {
-  opacity: 1;
+  padding-block: 6rem;
+  overflow: hidden;
 }
 
 .special .section__title {
-  color: var(--dark-color);
+  color: var(--kopi-title-color);
+  margin-bottom: 3rem;
 }
+
 .special__container {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 2.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 3rem;
+  perspective: 2000px;
 }
 
-/* Kartu Spesial dengan Peningkatan */
-.special__card {
+/* Panggung untuk setiap item spesial */
+.special-stage {
   position: relative;
-  background: linear-gradient(135deg, hsl(38, 95%, 98%), hsl(45, 95%, 95%));
-  padding: 2.5rem 2rem 2rem;
   border-radius: 1.5rem;
-  text-align: center;
   overflow: hidden;
-  border: 1px solid hsl(38, 50%, 90%);
-  transition: transform 0.4s, box-shadow 0.4s;
-  z-index: 2; /* Agar di atas spotlight */
-}
-.special__card:hover {
-  transform: translateY(-10px) scale(1.03);
-  box-shadow: 0 20px 40px hsla(38, 60%, 80%, 0.8);
+  transform-style: preserve-3d;
+  transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1);
 }
 
-.special__card.matcha-special {
-  background: linear-gradient(135deg, hsl(90, 60%, 98%), hsl(85, 50%, 95%));
-  border-color: hsl(90, 50%, 90%);
-}
-.special__card.matcha-special:hover {
-  box-shadow: 0 20px 40px hsla(90, 60%, 80%, 0.8);
-}
-
-/* Badge "Spesial!" */
-.special__badge {
+.special-stage__bg {
   position: absolute;
-  top: -1px;
-  right: -1px;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #1a1a1a; /* Warna latar panggung yang lebih gelap */
+  border-radius: 1.5rem;
+  border: 1px solid hsla(28, 15%, 30%, 1); /* Border default */
+  transition: border-color 0.4s;
+}
+
+/* Partikel animasi di latar belakang */
+.special-stage__particles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239C92AC' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  animation: move-particles 20s linear infinite;
+  z-index: 1;
+}
+@keyframes move-particles {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 120px 60px;
+  }
+}
+
+.special-stage__content {
+  position: relative;
+  z-index: 3;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+/* Spotlight dari bawah (WARNA BARU) */
+.special-stage__spotlight {
+  position: absolute;
+  bottom: -50%;
+  left: 50%;
+  width: 150%;
+  padding-bottom: 150%;
+  background: radial-gradient(
+    circle,
+    var(--kopi-first-color-alt) 0%,
+    transparent 70%
+  );
+  opacity: 0.3; /* Opacity awal */
+  border-radius: 50%;
+  transform: translateX(-50%);
+  transition: all 0.5s;
+  z-index: 2;
+}
+.special-stage.matcha-special .special-stage__spotlight {
+  background: radial-gradient(
+    circle,
+    var(--matcha-first-color-alt) 0%,
+    transparent 70%
+  );
+}
+
+/* Gambar Produk dengan Efek 3D */
+.special-stage__img {
+  max-width: 200px;
+  margin-bottom: 1.5rem;
+  transform: translateZ(50px);
+  transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+  filter: drop-shadow(0 20px 20px hsla(0, 0%, 0%, 0.4));
+}
+
+.special-stage__name {
+  font-family: var(--second-font);
+  font-size: var(--h1-font-size);
+  color: var(--kopi-title-color);
+  margin-bottom: 0.75rem;
+  transform: translateZ(30px);
+}
+.special-stage__description {
+  color: var(--kopi-text-color);
+  max-width: 250px;
+  margin-bottom: 1.5rem;
+  transform: translateZ(20px);
+  line-height: 1.6;
+}
+
+/* Tombol yang muncul saat hover */
+.special-stage .button {
+  transform: translateZ(40px) scale(0.9);
+  opacity: 0;
+  transition: transform 0.4s 0.1s, opacity 0.4s 0.1s;
+}
+
+/* Badge "Edisi Terbatas" (WARNA BARU) */
+.special-stage__badge {
+  position: absolute;
+  top: 1.5rem;
+  right: -1rem;
   background-color: var(--kopi-first-color);
   color: var(--white-color);
-  padding: 0.5rem 2rem;
+  padding: 0.5rem 1rem;
   font-size: var(--small-font-size);
   font-weight: var(--font-semi-bold);
-  transform: rotate(45deg) translate(28%, -5%);
-  transform-origin: top right;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 0.5rem;
+  transform: rotate(15deg);
+  z-index: 4;
+  animation: pulse-badge-kopi 2s infinite;
 }
-.matcha-special .special__badge {
+.special-stage.matcha-special .special-stage__badge {
   background-color: var(--matcha-first-color);
   color: var(--dark-color);
+  animation-name: pulse-badge-matcha;
+}
+@keyframes pulse-badge-kopi {
+  0%,
+  100% {
+    transform: rotate(15deg) scale(1);
+    box-shadow: 0 0 15px hsla(28, 80%, 50%, 0.5);
+  }
+  50% {
+    transform: rotate(15deg) scale(1.05);
+    box-shadow: 0 0 25px hsla(28, 80%, 50%, 0.8);
+  }
+}
+@keyframes pulse-badge-matcha {
+  0%,
+  100% {
+    transform: rotate(15deg) scale(1);
+    box-shadow: 0 0 15px hsla(88, 50%, 55%, 0.5);
+  }
+  50% {
+    transform: rotate(15deg) scale(1.05);
+    box-shadow: 0 0 25px hsla(88, 50%, 55%, 0.8);
+  }
 }
 
-.special__content {
-  color: hsl(28, 30%, 30%);
+/* INTERAKSI HOVER (DITINGKATKAN) */
+.special-stage:hover .special-stage__spotlight {
+  bottom: -30%;
+  opacity: 0.6;
 }
-.special__name {
-  font-size: var(--h1-font-size);
-  margin-bottom: 0.5rem;
-  color: hsl(28, 50%, 20%);
+.special-stage:hover .special-stage__bg {
+  border-color: var(--kopi-first-color); /* Border menyala */
 }
-.special__description {
-  font-size: var(--normal-font-size);
-  margin-bottom: 1.5rem;
-  max-width: 220px;
-  margin-inline: auto;
-}
-.special__img {
-  width: 150px;
-  margin-inline: auto;
-  margin-top: 1.5rem;
-  filter: drop-shadow(0 4px 12px hsla(0, 0%, 0%, 0.2));
-  transition: transform 0.4s;
-}
-.special__card:hover .special__img {
-  transform: scale(1.1);
+.special-stage.matcha-special:hover .special-stage__bg {
+  border-color: var(--matcha-first-color); /* Border menyala */
 }
 
-/* Efek Loading Skeleton */
-.skeleton {
-  background-color: #e0e0e0;
-  border-radius: 4px;
-  animation: pulse 1.5s infinite ease-in-out;
+.special-stage:hover .special-stage__img {
+  transform: translateZ(80px) rotate(-5deg) scale(1.1);
+}
+.special-stage:hover .button {
+  transform: translateZ(40px) scale(1);
+  opacity: 1;
+}
+
+/* Skeleton Loading */
+.special-stage.skeleton-card {
+  background-color: #1a1a1a;
+  animation: pulse 2s infinite;
 }
 @keyframes pulse {
   0% {
-    background-color: #e0e0e0;
+    background-color: #1a1a1a;
   }
   50% {
-    background-color: #f0f0f0;
+    background-color: #2a2a2a;
   }
   100% {
-    background-color: #e0e0e0;
+    background-color: #1a1a1a;
   }
 }
-.special__card.skeleton-card {
-  background: #fff;
-  border-color: #f0f0f0;
+.special-stage.skeleton-card .special-stage__content {
+  opacity: 0;
 }
-.skeleton-card .special__content * {
-  visibility: hidden; /* Sembunyikan teks asli */
-}
-.skeleton-card .skeleton-h3 {
-  width: 70%;
-  height: 24px;
-  margin: 0 auto 0.75rem auto;
-}
-.skeleton-card .skeleton-p {
-  width: 100%;
-  height: 32px;
-  margin: 0 auto 1.5rem auto;
-}
-.skeleton-card .skeleton-btn {
-  width: 120px;
-  height: 40px;
-  margin: 0 auto;
-  border-radius: 0.5rem;
-}
-.skeleton-card .special__img {
-  visibility: hidden;
-}
-.skeleton-card .skeleton-img {
-  width: 150px;
-  height: 150px;
-  border-radius: 50%;
-  margin: 1.5rem auto 0 auto;
-}
+
 .products__filter {
   display: flex;
   justify-content: center;
@@ -1171,4 +1233,155 @@ body.matcha-theme .option-btn.active {
     bottom: 0;
     border-radius: 0;
   }
+}
+
+/* ===== BAGIAN ULASAN BARU (DINDING ULASAN DENGAN GLOW) ===== */
+.reviews {
+  background-color: var(--kopi-bg-color);
+  padding-block: 6rem;
+  position: relative;
+}
+
+.reviews .section__title {
+  color: var(--kopi-title-color);
+}
+.section__subtitle {
+  text-align: center;
+  color: var(--kopi-text-color);
+  margin-top: -2.5rem;
+  margin-bottom: 3rem;
+  max-width: 500px;
+  margin-inline: auto;
+}
+
+.reviews__wall-container {
+  position: relative;
+}
+
+.reviews__wall {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 2rem; /* Sedikit lebih banyak ruang */
+}
+
+/* Desain Kartu Ulasan Baru yang Interaktif */
+.review-card {
+  background: hsla(28, 15%, 18%, 0.7);
+  padding: 1.5rem;
+  border-radius: 1rem;
+  border: 1px solid hsla(28, 15%, 25%, 1);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  position: relative;
+  overflow: hidden;
+  transform-style: preserve-3d; /* Untuk efek 3D */
+  perspective: 1000px;
+}
+
+/* EFEK GLOW INTERAKTIF */
+.review-card::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 200%; /* Ukuran glow besar */
+  padding-bottom: 200%;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    hsla(28, 80%, 50%, 0.3) 0%,
+    transparent 70%
+  );
+  transform: translate(-50%, -50%) scale(0);
+  transition: transform 0.5s, opacity 0.5s;
+  opacity: 0;
+  z-index: 1;
+}
+
+.review-card.matcha::after {
+  background: radial-gradient(
+    circle,
+    hsla(88, 50%, 55%, 0.3) 0%,
+    transparent 70%
+  );
+}
+
+.review-card:hover::after {
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+}
+
+.review-card:hover {
+  transform: translateY(-10px) rotateX(5deg) rotateY(-5deg);
+  border-color: hsla(28, 80%, 50%, 0.5);
+  box-shadow: 0 20px 40px hsla(28, 80%, 5%, 0.4);
+}
+.review-card.matcha:hover {
+  border-color: hsla(88, 50%, 55%, 0.5);
+  box-shadow: 0 20px 40px hsla(88, 50%, 15%, 0.4);
+}
+
+.review-card__header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  z-index: 2;
+}
+
+/* Avatar dengan Inisial Nama */
+.review-card__avatar {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  background-color: var(--kopi-first-color);
+  color: var(--white-color);
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  font-size: 1.4rem;
+  flex-shrink: 0;
+  border: 2px solid var(--white-color);
+}
+.matcha .review-card__avatar {
+  background-color: var(--matcha-first-color);
+  color: var(--dark-color);
+}
+
+.review-card__info {
+  text-align: left;
+}
+.review-card__name {
+  font-weight: var(--font-semi-bold);
+  color: var(--kopi-title-color);
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.review-card__category-icon {
+  font-size: 1rem;
+  color: var(--kopi-first-color);
+}
+.matcha .review-card__category-icon {
+  color: var(--matcha-first-color);
+}
+.review-card__stars {
+  display: flex;
+  color: #f59e0b;
+  font-size: 0.9rem;
+}
+
+.review-card__text {
+  font-style: italic;
+  color: var(--kopi-text-color);
+  line-height: 1.6;
+  font-size: 0.9rem;
+  margin: 0;
+  position: relative;
+  z-index: 2;
+  background-color: hsla(28, 15%, 15%, 0.5);
+  padding: 1rem;
+  border-radius: 0.5rem;
 }

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Terima Kasih! - TITIK KO;MA</title>
+    <link
+      rel="shortcut icon"
+      href="assets/img/favicon2.png"
+      type="image/x-icon"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css"
+    />
+    <link rel="stylesheet" href="assets/css/styles.css" />
+    <link rel="stylesheet" href="assets/css/checkout.css" />
+  </head>
+  <body>
+    <header class="header shadow-header" id="header">
+      <nav class="nav container">
+        <a
+          href="index.html"
+          class="nav__logo"
+          style="display: flex; align-items: center; gap: 0.5rem"
+        >
+          <img
+            src="assets/img/favicon2.png"
+            alt="Logo"
+            style="width: 24px; height: 24px; border-radius: 50%"
+          />
+          <span>TITIK KO;MA</span>
+        </a>
+      </nav>
+    </header>
+
+    <main class="main">
+      <section class="review-section section">
+        <div class="review-container container">
+          <div class="review-box">
+            <i class="ri-heart-pulse-line review-icon"></i>
+            <h1>Terima Kasih Atas Pesanan Anda!</h1>
+            <p>
+              Sebelum melanjutkan, kami akan sangat senang jika Anda bersedia
+              memberikan ulasan singkat. Ulasan Anda sangat berarti bagi kami!
+            </p>
+
+            <form id="review-form">
+              <div class="rating-stars" id="rating-stars">
+                <i class="ri-star-line" data-value="1"></i>
+                <i class="ri-star-line" data-value="2"></i>
+                <i class="ri-star-line" data-value="3"></i>
+                <i class="ri-star-line" data-value="4"></i>
+                <i class="ri-star-line" data-value="5"></i>
+              </div>
+
+              <div class="review-form-group">
+                <input
+                  type="text"
+                  id="reviewer-name"
+                  placeholder="Nama Anda"
+                  required
+                />
+              </div>
+
+              <div class="review-form-group">
+                <textarea
+                  id="review-text"
+                  rows="4"
+                  placeholder="Tulis ulasan Anda di sini..."
+                  required
+                ></textarea>
+              </div>
+
+              <button
+                type="submit"
+                class="button review-submit-btn"
+                id="submit-review-btn"
+              >
+                <span class="button__text">Kirim Ulasan & Lanjutkan</span>
+                <span class="button__loading-spinner"></span>
+              </button>
+            </form>
+
+            <a href="#" id="skip-link" class="skip-link"
+              >Lewati & Lanjutkan ke WhatsApp ></a
+            >
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="assets/js/firebase-config.js"></script>
+    <script src="assets/js/review.js"></script>
+  </body>
+</html>

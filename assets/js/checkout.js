@@ -76,10 +76,10 @@ document.addEventListener("DOMContentLoaded", () => {
     checkoutButton.disabled = true;
 
     const orderData = {
-      customerName: nameInput.value,
+      customerName: document.getElementById("name").value,
       phone: document.getElementById("phone").value,
-      classSchedule: classScheduleInput.value,
-      classroom: classroomInput.value,
+      classSchedule: document.getElementById("class-schedule").value,
+      classroom: document.getElementById("classroom").value,
       paymentMethod: document.querySelector(
         'input[name="payment-method"]:checked'
       ).value,
@@ -89,42 +89,37 @@ document.addEventListener("DOMContentLoaded", () => {
       status: "pending",
     };
 
-    // 1. Simpan ke Firestore
+    // 1. Simpan pesanan ke Firestore
     db.collection("orders")
       .add(orderData)
       .then(() => {
-        // 2. Jika berhasil, siapkan pesan dan URL WhatsApp
+        // 2. Siapkan pesan dan URL WhatsApp
         let message = `Halo, saya mau pesan:\n\n`;
         items.forEach((item) => {
-          message += `- ${item.name} (${item.quantity}x)\n`;
-          message += `  (Opsi: ${item.options.sugar}, ${item.options.ice})\n\n`;
+          message += `- ${item.name} (${item.quantity}x)\n  (Opsi: ${item.options.sugar}, ${item.options.ice})\n\n`;
         });
-        message += `*Total: ${formatRupiah(total)}*\n\n`;
-        message += `*Detail Pemesan:*\n`;
-        message += `Nama: ${orderData.customerName}\n`;
-        message += `No. HP: ${orderData.phone}\n`;
-        message += `Lokasi: ${orderData.classSchedule} / ${orderData.classroom}\n`;
-        message += `Bayar: ${orderData.paymentMethod}\n\n`;
-        message += `Terima kasih!`;
-
-        const phoneNumber = "6287899451847"; // GANTI DENGAN NOMOR WA ANDA
+        message += `*Total: ${formatRupiah(
+          total
+        )}*\n\n*Detail Pemesan:*\nNama: ${orderData.customerName}\nNo. HP: ${
+          orderData.phone
+        }\nLokasi: ${orderData.classSchedule} / ${
+          orderData.classroom
+        }\nBayar: ${orderData.paymentMethod}\n\nTerima kasih!`;
+        const phoneNumber = "6287899451847";
         const whatsappUrl = `https://api.whatsapp.com/send?phone=${phoneNumber}&text=${encodeURIComponent(
           message
         )}`;
 
         // 3. Tampilkan animasi sukses
         successOverlay.classList.add("show");
-        localStorage.removeItem("kopiMatchaCart"); // Kosongkan keranjang
+        localStorage.removeItem("kopiMatchaCart");
 
-        // 4. Coba redirect setelah animasi
+        // 4. ALIHKAN KE HALAMAN THANKYOU/REVIEW, BUKAN LANGSUNG KE WHATSAPP
         setTimeout(() => {
-          window.location.href = whatsappUrl;
-          // Sebagai fallback jika redirect gagal (misalnya diblokir browser)
-          // Tampilkan pesan dengan link yang bisa diklik manual.
-          document.querySelector(
-            "#success-overlay p"
-          ).innerHTML = `Pesanan berhasil! Jika tidak dialihkan, <a href="${whatsappUrl}" target="_blank" style="color: white; text-decoration: underline;">klik di sini untuk melanjutkan ke WhatsApp</a>.`;
-        }, 2500);
+          window.location.href = `thankyou.html?items=${encodeURIComponent(
+            JSON.stringify(items)
+          )}&wa_url=${encodeURIComponent(whatsappUrl)}`;
+        }, 2000);
       })
       .catch((error) => {
         console.error("Gagal menyimpan pesanan: ", error);

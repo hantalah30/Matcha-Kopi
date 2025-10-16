@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Admin Dashboard - KOPI & MATCHA</title>
+    <title>Admin Dashboard - TITIK KO;MA</title>
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css"
@@ -21,42 +21,68 @@
       <aside class="sidebar" id="sidebar">
         <nav class="sidebar__nav">
           <div>
-            <a href="#" class="sidebar__logo">
-              <i class="ri-cup-line sidebar__logo-icon"></i>
-              <span class="sidebar__logo-text">KopiMatcha</span>
-            </a>
+            <div class="sidebar__header">
+              <a href="#" class="sidebar__logo">
+                <img
+                  src="assets/img/favicon2.png"
+                  alt="Logo"
+                  class="sidebar__logo-icon"
+                />
+                <span class="sidebar__logo-text">TITIK KO;MA</span>
+              </a>
+              <button class="sidebar__toggle" id="sidebar-toggle-desktop">
+                <i class="ri-arrow-left-double-line"></i>
+              </button>
+            </div>
 
             <div class="sidebar__menu">
               <ul class="sidebar__list">
                 <li>
-                  <a href="#dashboard" class="sidebar__link active-link">
-                    <i class="ri-dashboard-3-line"></i>
-                    <span>Dashboard</span>
-                  </a>
+                  <a
+                    href="#dashboard"
+                    class="sidebar__link active-link"
+                    data-tooltip="Dashboard"
+                    ><i class="ri-dashboard-3-line"></i
+                    ><span>Dashboard</span></a
+                  >
                 </li>
                 <li>
-                  <a href="#orders" class="sidebar__link">
-                    <i class="ri-list-check-2"></i>
-                    <span>Pesanan</span>
-                  </a>
+                  <a href="#orders" class="sidebar__link" data-tooltip="Pesanan"
+                    ><i class="ri-list-check-2"></i><span>Pesanan</span></a
+                  >
                 </li>
                 <li>
-                  <a href="#products" class="sidebar__link">
-                    <i class="ri-settings-3-line"></i>
-                    <span>Produk</span>
-                  </a>
+                  <a
+                    href="#products"
+                    class="sidebar__link"
+                    data-tooltip="Produk"
+                    ><i class="ri-shopping-basket-line"></i
+                    ><span>Produk</span></a
+                  >
                 </li>
                 <li>
-                  <a href="#specials" class="sidebar__link">
-                    <i class="ri-star-line"></i>
-                    <span>Spesial</span>
-                  </a>
+                  <a
+                    href="#specials"
+                    class="sidebar__link"
+                    data-tooltip="Spesial"
+                    ><i class="ri-star-line"></i><span>Spesial</span></a
+                  >
+                </li>
+                <li>
+                  <a href="#reviews" class="sidebar__link" data-tooltip="Ulasan"
+                    ><i class="ri-feedback-line"></i><span>Ulasan</span></a
+                  >
                 </li>
               </ul>
             </div>
           </div>
 
-          <a href="#" id="logout-btn" class="sidebar__link sidebar__logout">
+          <a
+            href="#"
+            id="logout-btn"
+            class="sidebar__link sidebar__logout"
+            data-tooltip="Logout"
+          >
             <i class="ri-logout-box-r-line"></i>
             <span>Logout</span>
           </a>
@@ -65,104 +91,117 @@
 
       <main class="main-content">
         <header class="main-header">
-          <button id="sidebar-toggle" class="sidebar-toggle">
+          <button id="sidebar-toggle-mobile" class="sidebar__toggle">
             <i class="ri-menu-line"></i>
           </button>
           <div class="header-actions"></div>
         </header>
 
-        <section id="page-dashboard" class="admin-page active-page">
-          <h1>Dashboard</h1>
-          <div class="stats-container">
-            <div class="stat-card">
-              <h3>
-                <i class="ri-calendar-event-line"></i> Pendapatan Hari Ini
-              </h3>
-              <p id="revenue-today">Rp 0</p>
+        <div class="page-content">
+          <section id="page-dashboard" class="admin-page active-page">
+            <h1>Dashboard</h1>
+            <div class="stats-container">
+              <div class="stat-card">
+                <h3>
+                  <i class="ri-calendar-event-line"></i> Pendapatan Hari Ini
+                </h3>
+                <p id="revenue-today">Rp 0</p>
+              </div>
+              <div class="stat-card">
+                <h3><i class="ri-wallet-3-line"></i> Total Pendapatan</h3>
+                <p id="total-revenue">Rp 0</p>
+              </div>
+              <div class="stat-card">
+                <h3>
+                  <i class="ri-shopping-bag-3-line"></i> Total Item Terjual
+                </h3>
+                <p id="total-items-sold">0</p>
+              </div>
+              <div class="stat-card">
+                <h3><i class="ri-trophy-line"></i> Produk Terlaris</h3>
+                <p id="best-seller">-</p>
+              </div>
             </div>
-            <div class="stat-card">
-              <h3><i class="ri-wallet-3-line"></i> Total Pendapatan</h3>
-              <p id="total-revenue">Rp 0</p>
+            <div class="charts-container">
+              <div class="chart-card">
+                <h3>Penjualan 7 Hari Terakhir</h3>
+                <canvas id="salesChart"></canvas>
+              </div>
+              <div class="chart-card">
+                <h3>Komposisi Kategori</h3>
+                <canvas id="categoryChart"></canvas>
+              </div>
             </div>
-            <div class="stat-card">
-              <h3><i class="ri-shopping-bag-3-line"></i> Total Item Terjual</h3>
-              <p id="total-items-sold">0</p>
-            </div>
-            <div class="stat-card">
-              <h3><i class="ri-trophy-line"></i> Produk Terlaris</h3>
-              <p id="best-seller">-</p>
-            </div>
-          </div>
-          <div class="charts-container">
-            <div class="chart-card">
-              <h3>Penjualan 7 Hari Terakhir</h3>
-              <canvas id="salesChart"></canvas>
-            </div>
-            <div class="chart-card">
-              <h3>Komposisi Kategori</h3>
-              <canvas id="categoryChart"></canvas>
-            </div>
-          </div>
-        </section>
+          </section>
 
-        <section id="page-orders" class="admin-page">
-          <div class="section-header">
-            <h1>Manajemen Pesanan</h1>
-          </div>
-          <div class="order-table-container">
-            <table id="order-table">
-              <thead>
-                <tr>
-                  <th>Waktu</th>
-                  <th>Pelanggan</th>
-                  <th>Total</th>
-                  <th>Lokasi</th>
-                  <th>Status</th>
-                  <th>Aksi</th>
-                </tr>
-              </thead>
-              <tbody></tbody>
-            </table>
-          </div>
-        </section>
+          <section id="page-orders" class="admin-page">
+            <div class="section-header">
+              <h1>Manajemen Pesanan</h1>
+            </div>
+            <div class="order-table-container">
+              <table id="order-table">
+                <thead>
+                  <tr>
+                    <th>Waktu</th>
+                    <th>Pelanggan</th>
+                    <th>Total</th>
+                    <th>Lokasi</th>
+                    <th>Status</th>
+                    <th>Aksi</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </section>
 
-        <section id="page-products" class="admin-page">
-          <div class="section-header">
-            <h1>Manajemen Produk</h1>
-            <button id="add-product-btn" class="button">
-              <i class="ri-add-line"></i> Tambah Produk
-            </button>
-          </div>
-          <div class="product-table-container">
-            <table id="product-table">
-              <thead>
-                <tr>
-                  <th>Gambar</th>
-                  <th>Nama</th>
-                  <th>Harga Jual</th>
-                  <th>Modal</th>
-                  <th>Kategori</th>
-                  <th>Aksi</th>
-                </tr>
-              </thead>
-              <tbody></tbody>
-            </table>
-          </div>
-        </section>
+          <section id="page-products" class="admin-page">
+            <div class="section-header">
+              <h1>Manajemen Produk</h1>
+              <button id="add-product-btn" class="button">
+                <i class="ri-add-line"></i> Tambah Produk
+              </button>
+            </div>
+            <div class="product-table-container">
+              <table id="product-table">
+                <thead>
+                  <tr>
+                    <th>Gambar</th>
+                    <th>Nama</th>
+                    <th>Harga Jual</th>
+                    <th>Modal</th>
+                    <th>Kategori</th>
+                    <th>Aksi</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </section>
 
-        <section id="page-specials" class="admin-page">
-          <div class="section-header">
-            <h1>Atur Menu Spesial</h1>
-            <button id="add-special-btn" class="button">
-              <i class="ri-add-line"></i> Tambah Spesial Baru
-            </button>
-          </div>
+          <section id="page-specials" class="admin-page">
+            <div class="section-header">
+              <h1>Atur Menu Spesial</h1>
+              <button id="add-special-btn" class="button">
+                <i class="ri-add-line"></i> Tambah Spesial Baru
+              </button>
+            </div>
+            <div
+              id="specials-list-container"
+              class="specials-list-container"
+            ></div>
+          </section>
 
-          <div
-            id="specials-list-container"
-            class="specials-list-container"
-          ></div>
-        </section>
+          <section id="page-reviews" class="admin-page">
+            <div class="section-header">
+              <h1>Manajemen Ulasan Pelanggan</h1>
+            </div>
+            <div
+              id="reviews-list-container"
+              class="reviews-list-container"
+            ></div>
+          </section>
+        </div>
       </main>
     </div>
 
@@ -173,32 +212,35 @@
         <form id="product-form">
           <input type="hidden" id="product-id" />
           <div class="input-group">
-            <label for="product-name">Nama Produk</label>
-            <input type="text" id="product-name" required />
+            <label for="product-name">Nama Produk</label
+            ><input type="text" id="product-name" required />
           </div>
           <div class="input-group">
-            <label for="product-price">Harga Jual (IDR)</label>
-            <input type="number" id="product-price" step="500" required />
+            <label for="product-price">Harga Jual (IDR)</label
+            ><input type="number" id="product-price" step="500" required />
           </div>
           <div class="input-group">
-            <label for="product-cost">Modal per Cup (IDR)</label>
-            <input type="number" id="product-cost" step="100" required />
+            <label for="product-cost">Modal per Cup (IDR)</label
+            ><input type="number" id="product-cost" step="100" required />
           </div>
           <div class="input-group">
-            <label for="product-category">Kategori</label>
-            <select id="product-category" required>
+            <label for="product-category">Kategori</label
+            ><select id="product-category" required>
               <option value="kopi">Kopi</option>
               <option value="matcha">Matcha</option>
             </select>
           </div>
           <div class="input-group">
-            <label for="product-composition">Komposisi</label>
-            <textarea id="product-composition" rows="3"></textarea>
+            <label for="product-composition">Komposisi</label
+            ><textarea id="product-composition" rows="3"></textarea>
           </div>
           <div class="input-group">
-            <label for="product-image-url">URL Gambar Produk</label>
-            <input type="url" id="product-image-url" required />
-            <img id="image-preview" src="#" alt="Preview" />
+            <label for="product-image-url">URL Gambar Produk</label
+            ><input type="url" id="product-image-url" required /><img
+              id="image-preview"
+              src="#"
+              alt="Preview"
+            />
           </div>
           <button type="submit" class="button">Simpan</button>
         </form>
@@ -220,26 +262,58 @@
         <form id="special-form">
           <input type="hidden" id="special-id" />
           <div class="input-group">
-            <label for="special-name">Nama Menu Spesial</label>
-            <input type="text" id="special-name" required />
+            <label for="special-name">Nama Menu Spesial</label
+            ><input type="text" id="special-name" required />
           </div>
           <div class="input-group">
-            <label for="special-description">Deskripsi</label>
-            <textarea id="special-description" rows="3" required></textarea>
+            <label for="special-description">Deskripsi</label
+            ><textarea id="special-description" rows="3" required></textarea>
           </div>
           <div class="input-group">
-            <label for="special-image-url">URL Gambar</label>
-            <input type="url" id="special-image-url" required />
-            <img id="special-image-preview" src="#" alt="Preview" />
+            <label for="special-image-url">URL Gambar</label
+            ><input type="url" id="special-image-url" required /><img
+              id="special-image-preview"
+              src="#"
+              alt="Preview"
+            />
           </div>
           <div class="input-group">
-            <label for="special-category">Kategori</label>
-            <select id="special-category" required>
+            <label for="special-category">Kategori</label
+            ><select id="special-category" required>
               <option value="kopi">Kopi</option>
               <option value="matcha">Matcha</option>
             </select>
           </div>
           <button type="submit" class="button">Simpan</button>
+        </form>
+      </div>
+    </div>
+
+    <div id="review-modal" class="modal">
+      <div class="modal-content">
+        <span class="close-btn">&times;</span>
+        <h2 id="review-modal-title">Edit Ulasan</h2>
+        <form id="review-edit-form">
+          <input type="hidden" id="review-id" />
+          <div class="input-group">
+            <label for="review-name-edit">Nama Pelanggan</label
+            ><input type="text" id="review-name-edit" required />
+          </div>
+          <div class="input-group">
+            <label for="review-text-edit">Teks Ulasan</label
+            ><textarea id="review-text-edit" rows="4" required></textarea>
+          </div>
+          <div class="input-group">
+            <label>Rating</label>
+            <div class="rating-stars-edit" id="rating-stars-edit">
+              <i class="ri-star-line" data-value="1"></i
+              ><i class="ri-star-line" data-value="2"></i
+              ><i class="ri-star-line" data-value="3"></i
+              ><i class="ri-star-line" data-value="4"></i
+              ><i class="ri-star-line" data-value="5"></i>
+            </div>
+          </div>
+          <button type="submit" class="button">Simpan Perubahan</button>
         </form>
       </div>
     </div>
