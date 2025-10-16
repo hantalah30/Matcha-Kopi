@@ -51,7 +51,42 @@ document.addEventListener("DOMContentLoaded", () => {
   checkoutTotalPrice.innerText = formatRupiah(total);
   document.getElementById("card-total-preview").innerText = formatRupiah(total);
 
-  // Fungsi update kartu pratinjau (tetap sama)
+  // --- FUNGSI Generate data untuk sertifikat ---
+  const certificateNumber = document.getElementById("certificate-number");
+  const certificateDate = document.getElementById("certificate-date");
+
+  if (certificateNumber && certificateDate) {
+    const randomNum = Math.floor(1000 + Math.random() * 9000);
+    certificateNumber.textContent = `TK/${new Date().getFullYear()}/${randomNum}`;
+    const today = new Date();
+    certificateDate.textContent = today.toLocaleDateString("id-ID", {
+      day: "2-digit",
+      month: "long",
+      year: "numeric",
+    });
+  }
+
+  // --- FUNGSI Untuk Mengunduh Sertifikat ---
+  const downloadBtn = document.getElementById("download-cert-btn");
+  const certificateCard = document.getElementById("certificate-card");
+
+  if (downloadBtn && certificateCard) {
+    downloadBtn.addEventListener("click", () => {
+      const options = {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: null,
+      };
+      html2canvas(certificateCard, options).then((canvas) => {
+        const link = document.createElement("a");
+        link.download = `sertifikat-titik-koma-${Date.now()}.png`;
+        link.href = canvas.toDataURL("image/png");
+        link.click();
+      });
+    });
+  }
+
+  // Fungsi update kartu pratinjau
   const nameInput = document.getElementById("name");
   const classScheduleInput = document.getElementById("class-schedule");
   const classroomInput = document.getElementById("classroom");
@@ -68,7 +103,7 @@ document.addEventListener("DOMContentLoaded", () => {
     input.addEventListener("input", updateCardPreview)
   );
 
-  // --- PERBAIKAN TOTAL PADA FUNGSI SUBMIT ---
+  // --- Proses Submit Form ---
   checkoutForm.addEventListener("submit", (e) => {
     e.preventDefault();
     const checkoutButton = e.target.querySelector(".checkout__button");
@@ -89,11 +124,9 @@ document.addEventListener("DOMContentLoaded", () => {
       status: "pending",
     };
 
-    // 1. Simpan pesanan ke Firestore
     db.collection("orders")
       .add(orderData)
       .then(() => {
-        // 2. Siapkan pesan dan URL WhatsApp
         let message = `Halo, saya mau pesan:\n\n`;
         items.forEach((item) => {
           message += `- ${item.name} (${item.quantity}x)\n  (Opsi: ${item.options.sugar}, ${item.options.ice})\n\n`;
@@ -110,11 +143,9 @@ document.addEventListener("DOMContentLoaded", () => {
           message
         )}`;
 
-        // 3. Tampilkan animasi sukses
         successOverlay.classList.add("show");
         localStorage.removeItem("kopiMatchaCart");
 
-        // 4. ALIHKAN KE HALAMAN THANKYOU/REVIEW, BUKAN LANGSUNG KE WHATSAPP
         setTimeout(() => {
           window.location.href = `thankyou.html?items=${encodeURIComponent(
             JSON.stringify(items)

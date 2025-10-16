@@ -39,7 +39,7 @@
           style="display: flex; align-items: center; gap: 0.5rem"
         >
           <img
-            src="images/LOGO1.png"
+            src="assets/img/favicon3.png"
             alt="Logo"
             style="width: 50px; height: 50px; border-radius: 100%"
           />
@@ -61,9 +61,10 @@
                 <div class="certificate__content">
                   <p class="certificate__heading">
                     <img
-                      src="images/LOGO1.png"
+                      src="assets/img/favicon3.png"
                       alt="Logo"
                       class="certificate__logo"
+                      crossorigin="anonymous"
                       style="width: auto; height: auto; border-radius: 100%"
                     />
 
@@ -94,16 +95,79 @@
                   >
                     Rp 0
                   </h2>
+                  <div class="certificate__details-row">
+                    <div class="certificate__detail-item">
+                      <span class="certificate__detail-label"
+                        >No. Sertifikat</span
+                      >
+                      <span
+                        class="certificate__detail-value"
+                        id="certificate-number"
+                      ></span>
+                    </div>
+                    <div class="certificate__detail-item">
+                      <span class="certificate__detail-label"
+                        >Tanggal Terbit</span
+                      >
+                      <span
+                        class="certificate__detail-value"
+                        id="certificate-date"
+                      ></span>
+                    </div>
+                  </div>
                   <p class="certificate__footer">
                     Terima kasih telah memilih kami!
                   </p>
-                  <div class="certificate__stamp">
-                    <img src="assets/img/MatchaKopi.png" alt="Stamp" />
+                  <div class="certificate__signature-area">
+                    <div class="certificate__qr-code">
+                      <img
+                        src="https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=https://hantalah.github.io/Matcha-Kopi/"
+                        alt="QR Code"
+                        crossorigin="anonymous"
+                      />
+                    </div>
+                    <div class="certificate__signature">
+                      <p class="certificate__signature-name">HZG</p>
+                      <p class="certificate__signature-title">Master Barista</p>
+                    </div>
                   </div>
+                  <div class="certificate__stamp">
+                    <img
+                      src="assets/img/MatchaKopi.png"
+                      alt="Stamp"
+                      crossorigin="anonymous"
+                    />
+                  </div>
+                </div>
+                <div class="certificate__stars">
+                  <i
+                    class="ri-star-fill certificate__star"
+                    style="--s: 1; --d: 0.5s; top: 10%; left: 15%"
+                  ></i>
+                  <i
+                    class="ri-star-fill certificate__star"
+                    style="--s: 0.8; --d: 1s; top: 20%; right: 10%"
+                  ></i>
+                  <i
+                    class="ri-star-fill certificate__star"
+                    style="--s: 0.6; --d: 1.5s; bottom: 15%; left: 25%"
+                  ></i>
+                  <i
+                    class="ri-star-fill certificate__star"
+                    style="--s: 0.9; --d: 0.2s; bottom: 25%; right: 20%"
+                  ></i>
+                  <i
+                    class="ri-star-fill certificate__star"
+                    style="--s: 0.7; --d: 1.2s; top: 40%; left: 5%"
+                  ></i>
                 </div>
               </div>
               <div class="confetti-container" id="confetti-container"></div>
             </div>
+
+            <button class="button download-button" id="download-cert-btn">
+              <i class="ri-download-2-line"></i> Unduh Sertifikat
+            </button>
 
             <form class="checkout__form" id="checkout-form">
               <h3 class="checkout__form-title">Detail Pengiriman</h3>
@@ -215,7 +279,7 @@
 
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="assets/js/firebase-config.js"></script>
     <script src="assets/js/checkout.js"></script>
   </body>

@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap");
+
 /*=============== CHECKOUT PAGE (UPGRADED) ===============*/
 .checkout {
   background: linear-gradient(
@@ -559,4 +561,109 @@
   .checkout-card__preview {
     order: -1; /* Pindahkan kartu ke atas form di mobile */
   }
+}
+
+/* Styling Bintang pada Sertifikat */
+.certificate__border {
+  position: relative; /* Diperlukan untuk positioning absolut bintang */
+}
+
+.certificate__star {
+  position: absolute;
+  color: #ffd700; /* Warna emas */
+  font-size: calc(1rem * var(--s, 1));
+  text-shadow: 0 0 5px #ffd700, 0 0 10px #ffd700;
+  animation: shining 2s infinite ease-in-out;
+  animation-delay: var(--d, 0s);
+  z-index: 2; /* Pastikan bintang berada di belakang konten utama */
+}
+
+@keyframes shining {
+  0%,
+  100% {
+    opacity: 0.5;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Styling untuk Detail Tambahan Sertifikat */
+.certificate__details-row {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1.5rem;
+  padding: 0 1rem;
+  font-size: var(--small-font-size);
+  color: hsl(28, 30%, 45%);
+}
+
+.certificate__detail-item {
+  text-align: center;
+}
+
+.certificate__detail-label {
+  display: block;
+  font-weight: var(--font-medium);
+}
+
+.certificate__detail-value {
+  font-family: monospace; /* Font yang cocok untuk nomor seri */
+}
+
+/* Styling untuk Area Tanda Tangan dan QR Code */
+.certificate__signature-area {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-top: 2rem;
+  padding: 0 1rem;
+}
+
+.certificate__qr-code img {
+  width: 60px;
+  height: 60px;
+  border-radius: 4px;
+}
+
+.certificate__signature {
+  text-align: center;
+}
+
+.certificate__signature-name {
+  font-family: "Dancing Script", cursive; /* Anda bisa mengganti dengan font tanda tangan lain */
+  font-size: 1.5rem;
+  color: var(--kopi-first-color);
+  border-bottom: 1px solid hsl(28, 30%, 70%);
+  padding-bottom: 2px;
+}
+
+.certificate__signature-title {
+  font-size: 0.7rem;
+  color: hsl(28, 30%, 45%);
+  font-weight: var(--font-medium);
+}
+
+/* Styling untuk Tombol Unduh */
+.download-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  max-width: 450px;
+  margin-inline: auto;
+  margin-top: 1rem; /* Jarak dari kartu sertifikat */
+  background-color: #4caf50; /* Warna hijau yang menandakan aksi berhasil */
+}
+
+.download-button:hover {
+  background-color: #45a049;
+  box-shadow: 0 8px 24px hsla(122, 39%, 40%, 0.3);
+}
+
+.download-button i {
+  font-size: 1.2rem;
 }

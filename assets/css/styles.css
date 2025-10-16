@@ -479,12 +479,7 @@ body.matcha-theme .button:hover {
 }
 /* ===== BAGIAN SPESIAL BARU (DENGAN WARNA TEMATIK) ===== */
 .special {
-  /* PERUBAHAN DI SINI: Menggunakan gradasi dari warna tema */
-  background: linear-gradient(
-    135deg,
-    var(--kopi-bg-color) 0%,
-    var(--matcha-bg-color) 100%
-  );
+  background: var(--dark-color); /* Latar belakang gelap pekat */
   padding-block: 6rem;
   overflow: hidden;
 }
