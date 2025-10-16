@@ -29,7 +29,11 @@
 
 /* KARTU SERTIFIKAT BARU */
 .checkout-card__preview {
-  background: linear-gradient(145deg, hsl(38, 100%, 95%), hsl(45, 100%, 85%));
+  background: linear-gradient(
+    145deg,
+    #fff7e6,
+    #ffeec4
+  ); /* Menggunakan kode HEX untuk warna yang akurat */
   color: hsl(28, 50%, 20%);
   padding: 1.5rem;
   border-radius: 1rem;

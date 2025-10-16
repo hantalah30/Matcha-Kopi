@@ -66,32 +66,23 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // --- FUNGSI Untuk Mengunduh Sertifikat (DIPERBAIKI) ---
+  // --- FUNGSI UNTUK MENGUNDUH SERTIFIKAT (PERBAIKAN FINAL) ---
   const downloadBtn = document.getElementById("download-cert-btn");
   const certificateCard = document.getElementById("certificate-card");
 
   if (downloadBtn && certificateCard) {
     downloadBtn.addEventListener("click", () => {
-      // Simpan gaya asli untuk dikembalikan nanti
-      const originalStyle = {
-        width: certificateCard.style.width,
-        position: certificateCard.style.position,
-        left: certificateCard.style.left,
-        top: certificateCard.style.top,
-      };
-
-      // Terapkan gaya sementara untuk rendering resolusi tinggi
-      Object.assign(certificateCard.style, {
-        position: "absolute",
-        left: "0",
-        top: "0",
-        width: "800px", // Paksa lebar menjadi besar
-      });
+      downloadBtn.innerHTML = '<i class="ri-loader-4-line"></i> Mengunduh...';
+      downloadBtn.disabled = true;
 
       const options = {
-        scale: 3, // Skala ditingkatkan untuk kejernihan maksimal
+        scale: 3,
         useCORS: true,
         backgroundColor: null,
+        scrollX: -window.scrollX,
+        scrollY: -window.scrollY,
+        windowWidth: document.documentElement.offsetWidth,
+        windowHeight: document.documentElement.offsetHeight,
       };
 
       html2canvas(certificateCard, options)
@@ -101,18 +92,22 @@ document.addEventListener("DOMContentLoaded", () => {
           link.href = canvas.toDataURL("image/png");
           link.click();
 
-          // Kembalikan gaya elemen ke kondisi semula setelah selesai
-          Object.assign(certificateCard.style, originalStyle);
+          downloadBtn.innerHTML =
+            '<i class="ri-download-2-line"></i> Unduh Sertifikat';
+          downloadBtn.disabled = false;
         })
         .catch((err) => {
           console.error("Gagal membuat canvas:", err);
-          // Pastikan gaya tetap kembali normal meskipun terjadi error
-          Object.assign(certificateCard.style, originalStyle);
+          alert(
+            "Maaf, gagal mengunduh sertifikat. Pastikan koneksi internet stabil dan coba lagi."
+          );
+          downloadBtn.innerHTML =
+            '<i class="ri-download-2-line"></i> Unduh Sertifikat';
+          downloadBtn.disabled = false;
         });
     });
   }
 
-  // Fungsi update kartu pratinjau
   const nameInput = document.getElementById("name");
   const classScheduleInput = document.getElementById("class-schedule");
   const classroomInput = document.getElementById("classroom");
@@ -129,7 +124,6 @@ document.addEventListener("DOMContentLoaded", () => {
     input.addEventListener("input", updateCardPreview)
   );
 
-  // --- Proses Submit Form ---
   checkoutForm.addEventListener("submit", (e) => {
     e.preventDefault();
     const checkoutButton = e.target.querySelector(".checkout__button");
