@@ -51,7 +51,6 @@ document.addEventListener("DOMContentLoaded", () => {
   checkoutTotalPrice.innerText = formatRupiah(total);
   document.getElementById("card-total-preview").innerText = formatRupiah(total);
 
-  // --- FUNGSI Generate data untuk sertifikat ---
   const certificateNumber = document.getElementById("certificate-number");
   const certificateDate = document.getElementById("certificate-date");
 
@@ -66,7 +65,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // --- FUNGSI UNDUH SERTIFIKAT KUALITAS SUPER HD (PERBAIKAN FINAL) ---
+  // --- FUNGSI UNDUH SERTIFIKAT KUALITAS TERTINGGI (PERBAIKAN FINAL) ---
   const downloadBtn = document.getElementById("download-cert-btn");
   const certificateCard = document.getElementById("certificate-card");
 
@@ -76,11 +75,14 @@ document.addEventListener("DOMContentLoaded", () => {
         '<i class="ri-loader-4-line"></i> Memproses Kualitas Tertinggi...';
       downloadBtn.disabled = true;
 
+      // Tambahkan class sementara untuk mematikan efek yang mengganggu
+      certificateCard.classList.add("preparing-for-download");
+
       const options = {
-        scale: 5, // Skala 4x untuk hasil SUPER HD
+        scale: 5, // Skala 5x untuk kualitas ekstrem
         useCORS: true,
         backgroundColor: null,
-        letterRendering: true, // Optimasi untuk teks yang super tajam
+        letterRendering: true, // Render teks lebih tajam
         scrollX: -window.scrollX,
         scrollY: -window.scrollY,
         windowWidth: document.documentElement.offsetWidth,
@@ -108,17 +110,17 @@ document.addEventListener("DOMContentLoaded", () => {
           ctx.drawImage(canvas, 0, 0);
 
           const link = document.createElement("a");
-          link.download = `sertifikat-titik-koma-SuperHD-${Date.now()}.png`;
+          link.download = `sertifikat-titik-koma-UltraHD-${Date.now()}.png`;
           link.href = finalCanvas.toDataURL("image/png", 1.0);
           link.click();
-
-          downloadBtn.innerHTML =
-            '<i class="ri-download-2-line"></i> Unduh Sertifikat';
-          downloadBtn.disabled = false;
         })
         .catch((err) => {
           console.error("Gagal membuat canvas:", err);
           alert("Maaf, gagal mengunduh sertifikat. Coba lagi.");
+        })
+        .finally(() => {
+          // Pastikan class sementara dihapus, baik berhasil maupun gagal
+          certificateCard.classList.remove("preparing-for-download");
           downloadBtn.innerHTML =
             '<i class="ri-download-2-line"></i> Unduh Sertifikat';
           downloadBtn.disabled = false;
