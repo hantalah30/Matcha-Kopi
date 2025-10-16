@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (user) {
       initAdminApp();
     } else {
-      window.location.replace("login.html");
+      window.location.replace("login");
     }
   });
 
@@ -55,7 +55,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Logout
     document.getElementById("logout-btn").addEventListener("click", () => {
-      auth.signOut().then(() => window.location.replace("login.html"));
+      auth.signOut().then(() => window.location.replace("login"));
     });
 
     // Dark Mode Toggle
