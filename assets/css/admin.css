@@ -1075,3 +1075,89 @@ body:not(.dark-mode) .slider .dark-icon {
 .rating-stars-edit i {
   cursor: pointer;
 }
+
+/* Styling Pengaturan Pop-up */
+.popup-settings-container {
+  background-color: var(--card-bg);
+  padding: 2rem;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  max-width: 600px; /* Batasi lebar form */
+  margin: 0 auto; /* Tengahkankan form */
+}
+
+/* Styling untuk Toggle Switch */
+.toggle-group {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.toggle-group label {
+  margin-bottom: 0; /* Hapus margin bawah default dari label */
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: 0.4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  transition: 0.4s;
+}
+
+input:checked + .slider {
+  background-color: var(--first-color); /* Warna aktif sesuai tema */
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px var(--first-color);
+}
+
+input:checked + .slider:before {
+  transform: translateX(26px);
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
+#popup-form small {
+  display: block;
+  margin-top: -1rem;
+  margin-bottom: 1rem;
+  font-size: 0.8rem;
+  color: var(--text-color);
+}

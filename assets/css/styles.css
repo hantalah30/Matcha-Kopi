@@ -1380,3 +1380,90 @@ body.matcha-theme .option-btn.active {
   padding: 1rem;
   border-radius: 0.5rem;
 }
+
+/*=============== PROMO POPUP ===============*/
+.promo-popup {
+  position: fixed;
+  bottom: calc(
+    var(--mobile-nav-height) + 1.5rem
+  ); /* Muncul di atas nav mobile */
+  right: 1.5rem;
+  max-width: 300px;
+  background-color: var(
+    --card-bg,
+    #fff
+  ); /* Background dari admin.css atau fallback */
+  color: var(--text-color, #333); /* Warna teks dari admin.css atau fallback */
+  border-radius: 1rem;
+  box-shadow: 0 8px 24px hsla(0, 0%, 0%, 0.2);
+  padding: 1rem;
+  z-index: var(
+    --z-fixed
+  ); /* Pastikan di atas elemen lain tapi di bawah modal */
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(20px) scale(0.95);
+  transition: opacity 0.4s ease-out, visibility 0.4s ease-out,
+    transform 0.4s ease-out;
+  border: 1px solid var(--border-color, #e0e0e0);
+}
+
+.promo-popup.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0) scale(1);
+}
+
+.promo-popup__close {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: rgba(0, 0, 0, 0.3);
+  color: white;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.2rem;
+  cursor: pointer;
+  border: none;
+  transition: background-color 0.3s, transform 0.3s;
+}
+
+.promo-popup__close:hover {
+  background: rgba(0, 0, 0, 0.5);
+  transform: rotate(90deg);
+}
+
+.promo-popup a {
+  text-decoration: none;
+  color: inherit; /* Warna link mengikuti warna teks popup */
+  display: block; /* Agar seluruh area bisa diklik jika ada link */
+}
+
+.promo-popup__img {
+  width: 100%;
+  max-height: 150px; /* Batasi tinggi gambar */
+  object-fit: cover; /* Agar gambar tidak gepeng */
+  border-radius: 0.75rem;
+  margin-bottom: 0.75rem;
+  display: block;
+}
+
+.promo-popup__text {
+  font-size: var(--small-font-size);
+  line-height: 1.5;
+  text-align: center;
+  margin: 0; /* Hapus margin default */
+  padding: 0 0.5rem 0.5rem; /* Beri sedikit padding bawah */
+}
+
+/* Penyesuaian untuk Desktop */
+@media screen and (min-width: 769px) {
+  .promo-popup {
+    bottom: 2rem;
+    right: 2rem;
+  }
+}

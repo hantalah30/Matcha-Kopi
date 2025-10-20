@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="assets/css/admin.css" />
     <link
       rel="shortcut icon"
-      href="assets/img/favicon2.png"
+      href="assets/img/favicon3.png"
       type="image/x-icon"
     />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -24,7 +24,7 @@
             <div class="sidebar__header">
               <a href="#" class="sidebar__logo">
                 <img
-                  src="assets/img/favicon2.png"
+                  src="images/LOGO1.png"
                   alt="Logo"
                   class="sidebar__logo-icon"
                 />
@@ -72,6 +72,16 @@
                   <a href="#reviews" class="sidebar__link" data-tooltip="Ulasan"
                     ><i class="ri-feedback-line"></i><span>Ulasan</span></a
                   >
+                </li>
+                <li>
+                  <a
+                    href="#popup"
+                    class="sidebar__link"
+                    data-tooltip="Pop-up Promo"
+                  >
+                    <i class="ri-advertisement-line"></i
+                    ><span>Pop-up Promo</span>
+                  </a>
                 </li>
               </ul>
             </div>
@@ -144,13 +154,20 @@
                   <tr>
                     <th>Waktu</th>
                     <th>Pelanggan</th>
+                    <th>Pesanan</th>
                     <th>Total</th>
                     <th>Lokasi</th>
                     <th>Status</th>
                     <th>Aksi</th>
                   </tr>
                 </thead>
-                <tbody></tbody>
+                <tbody>
+                  <tr>
+                    <td colspan="7" style="text-align: center">
+                      Memuat pesanan...
+                    </td>
+                  </tr>
+                </tbody>
               </table>
             </div>
           </section>
@@ -174,7 +191,13 @@
                     <th>Aksi</th>
                   </tr>
                 </thead>
-                <tbody></tbody>
+                <tbody>
+                  <tr>
+                    <td colspan="6" style="text-align: center">
+                      Memuat produk...
+                    </td>
+                  </tr>
+                </tbody>
               </table>
             </div>
           </section>
@@ -186,20 +209,78 @@
                 <i class="ri-add-line"></i> Tambah Spesial Baru
               </button>
             </div>
-            <div
-              id="specials-list-container"
-              class="specials-list-container"
-            ></div>
+            <div id="specials-list-container" class="specials-list-container">
+              <p style="text-align: center">Memuat menu spesial...</p>
+            </div>
           </section>
 
           <section id="page-reviews" class="admin-page">
             <div class="section-header">
               <h1>Manajemen Ulasan Pelanggan</h1>
             </div>
-            <div
-              id="reviews-list-container"
-              class="reviews-list-container"
-            ></div>
+            <div id="reviews-list-container" class="reviews-list-container">
+              <p style="text-align: center">Memuat ulasan...</p>
+            </div>
+          </section>
+
+          <section id="page-popup" class="admin-page">
+            <div class="section-header">
+              <h1>Pengaturan Pop-up Promosi</h1>
+            </div>
+            <div class="popup-settings-container card-bg">
+              <form id="popup-form">
+                <div class="input-group">
+                  <label for="popup-image-url">URL Gambar Pop-up</label>
+                  <input
+                    type="url"
+                    id="popup-image-url"
+                    placeholder="https://..."
+                  />
+                  <img
+                    id="popup-image-preview"
+                    src="#"
+                    alt="Preview"
+                    style="
+                      display: none;
+                      max-width: 200px;
+                      margin-top: 1rem;
+                      border-radius: 8px;
+                      border: 1px solid var(--border-color);
+                    "
+                  />
+                </div>
+                <div class="input-group">
+                  <label for="popup-text">Teks Promosi</label>
+                  <textarea
+                    id="popup-text"
+                    rows="3"
+                    placeholder="Contoh: Diskon 20% khusus Matcha Latte!"
+                  ></textarea>
+                </div>
+                <div class="input-group">
+                  <label for="popup-link-url">URL Link (Opsional)</label>
+                  <input
+                    type="url"
+                    id="popup-link-url"
+                    placeholder="https://... atau #products"
+                  />
+                  <small
+                    >Jika diisi, klik pada pop-up akan mengarah ke URL
+                    ini.</small
+                  >
+                </div>
+                <div class="input-group toggle-group">
+                  <label for="popup-enabled">Aktifkan Pop-up?</label>
+                  <label class="switch">
+                    <input type="checkbox" id="popup-enabled" />
+                    <span class="slider round"></span>
+                  </label>
+                </div>
+                <button type="submit" class="button">
+                  <i class="ri-save-line"></i> Simpan Pengaturan Pop-up
+                </button>
+              </form>
+            </div>
           </section>
         </div>
       </main>
@@ -240,6 +321,12 @@
               id="image-preview"
               src="#"
               alt="Preview"
+              style="
+                display: none;
+                max-width: 100px;
+                margin-top: 1rem;
+                border-radius: 8px;
+              "
             />
           </div>
           <button type="submit" class="button">Simpan</button>
@@ -275,6 +362,12 @@
               id="special-image-preview"
               src="#"
               alt="Preview"
+              style="
+                display: none;
+                max-width: 100px;
+                margin-top: 1rem;
+                border-radius: 8px;
+              "
             />
           </div>
           <div class="input-group">

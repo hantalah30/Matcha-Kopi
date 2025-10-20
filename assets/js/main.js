@@ -586,12 +586,108 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  /*=============== PROMO POPUP LOGIC (PERBAIKAN) ===============*/
+  const promoPopupElement = document.getElementById("promo-popup");
+  const promoPopupImage = document.getElementById("promo-popup-image");
+  const promoPopupText = document.getElementById("promo-popup-text");
+  const promoPopupCloseBtn = document.getElementById("promo-popup-close");
+  const promoPopupLink = document.getElementById("promo-popup-link");
+  const popupConfigRef = db.collection("settings").doc("popupConfig");
+  let popupTimeout;
+
+  const showPromoPopup = async () => {
+    console.log("Attempting to show promo popup...");
+
+    // Pengecekan elemen penting
+    if (
+      !promoPopupElement ||
+      !promoPopupImage ||
+      !promoPopupText ||
+      !promoPopupCloseBtn ||
+      !promoPopupLink
+    ) {
+      console.error("Popup elements not found in index.html!");
+      return;
+    }
+
+    // Jangan tampilkan jika sudah ditutup di sesi ini
+    if (sessionStorage.getItem("promoPopupClosed") === "true") {
+      console.log("Popup already closed in this session.");
+      return;
+    }
+
+    console.log("Fetching popup config from Firestore...");
+    try {
+      const doc = await popupConfigRef.get();
+      if (doc.exists) {
+        const config = doc.data();
+        console.log("Popup config fetched:", config);
+        // Validasi data penting
+        if (config.isEnabled && config.imageUrl && config.text) {
+          console.log("Popup is enabled and data is valid. Showing popup...");
+          promoPopupImage.src = config.imageUrl;
+          promoPopupText.textContent = config.text;
+
+          if (config.linkUrl) {
+            promoPopupLink.href = config.linkUrl;
+            promoPopupLink.style.cursor = "pointer"; // Pastikan kursor pointer jika ada link
+            promoPopupLink.target = "_blank"; // Selalu buka di tab baru
+            promoPopupLink.rel = "noopener noreferrer";
+          } else {
+            promoPopupLink.removeAttribute("href");
+            promoPopupLink.style.cursor = "default";
+            promoPopupLink.target = ""; // Hapus target jika tidak ada link
+            promoPopupLink.rel = "";
+          }
+
+          promoPopupElement.classList.add("show");
+
+          // Set timer auto-close (misal: 5 detik)
+          clearTimeout(popupTimeout);
+          popupTimeout = setTimeout(() => {
+            console.log("Auto-closing popup after timeout.");
+            hidePromoPopup();
+          }, 5000); // 5 detik
+        } else {
+          console.log("Popup is disabled or image/text is missing in config.");
+          promoPopupElement.classList.remove("show"); // Pastikan tidak tampil jika tidak valid
+        }
+      } else {
+        console.log("Popup config document does not exist in Firestore.");
+        promoPopupElement.classList.remove("show"); // Pastikan tidak tampil jika config tidak ada
+      }
+    } catch (error) {
+      console.error("!!! Firebase Read Error (Popup):", error);
+      // Jangan tampilkan popup jika gagal fetch
+      promoPopupElement.classList.remove("show");
+    }
+  };
+
+  const hidePromoPopup = () => {
+    if (promoPopupElement) {
+      promoPopupElement.classList.remove("show");
+      console.log("Hiding popup and setting sessionStorage flag.");
+    }
+    sessionStorage.setItem("promoPopupClosed", "true");
+    clearTimeout(popupTimeout);
+  };
+
+  if (promoPopupCloseBtn) {
+    promoPopupCloseBtn.addEventListener("click", (e) => {
+      e.preventDefault(); // Mencegah link diaktifkan jika tombol close diklik
+      e.stopPropagation(); // Mencegah klik menyebar ke link di bawahnya
+      hidePromoPopup();
+    });
+  } else {
+    console.error("Popup close button not found!");
+  }
   /*=============== INITIAL LOAD ===============*/
   renderProducts();
   renderSpecials();
-  renderReviews();
+  renderReviews(); // Jika Anda sudah menambahkan fungsi ini
   updateCart();
   scrollActive();
+  showPromoPopup(); // <--- Panggil fungsi popup di sini
 
   /*=============== SCROLL REVEAL ANIMATION ===============*/
   const sr = ScrollReveal({
