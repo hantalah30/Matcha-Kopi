@@ -6,7 +6,7 @@
     <title>Terima Kasih! - TITIK KO;MA</title>
     <link
       rel="shortcut icon"
-      href="assets/img/favicon2.png"
+      href="assets/img/favicon4.png"
       type="image/x-icon"
     />
     <link
@@ -15,19 +15,20 @@
     />
     <link rel="stylesheet" href="assets/css/styles.css" />
     <link rel="stylesheet" href="assets/css/checkout.css" />
+    <link rel="stylesheet" href="assets/css/thankyou.css" />
   </head>
   <body>
     <header class="header shadow-header" id="header">
       <nav class="nav container">
         <a
-          href="index.html"
+          href="/Matcha-Kopi/"
           class="nav__logo"
           style="display: flex; align-items: center; gap: 0.5rem"
         >
           <img
-            src="assets/img/favicon2.png"
+            src="images/LOGO1.png"
             alt="Logo"
-            style="width: 24px; height: 24px; border-radius: 50%"
+            style="width: 50px; height: 50px; border-radius: 100%"
           />
           <span>TITIK KO;MA</span>
         </a>
@@ -35,56 +36,74 @@
     </header>
 
     <main class="main">
-      <section class="review-section section">
-        <div class="review-container container">
-          <div class="review-box">
-            <i class="ri-heart-pulse-line review-icon"></i>
-            <h1>Terima Kasih Atas Pesanan Anda!</h1>
-            <p>
-              Sebelum melanjutkan, kami akan sangat senang jika Anda bersedia
-              memberikan ulasan singkat. Ulasan Anda sangat berarti bagi kami!
+      <section class="thankyou-section section">
+        <div class="thankyou-container container">
+          <div class="thankyou-card">
+            <div class="thankyou-icon">
+              <div class="success-checkmark">
+                <div class="check-icon">
+                  <span class="icon-line line-tip"></span>
+                  <span class="icon-line line-long"></span>
+                  <div class="icon-circle"></div>
+                  <div class="icon-fix"></div>
+                </div>
+              </div>
+            </div>
+            <h1>Pesanan Diterima!</h1>
+            <p class="thankyou-subtitle">
+              Terima kasih telah memesan di TITIK KO;MA. Pesanan Anda sedang
+              kami proses.
             </p>
 
-            <form id="review-form">
-              <div class="rating-stars" id="rating-stars">
-                <i class="ri-star-line" data-value="1"></i>
-                <i class="ri-star-line" data-value="2"></i>
-                <i class="ri-star-line" data-value="3"></i>
-                <i class="ri-star-line" data-value="4"></i>
-                <i class="ri-star-line" data-value="5"></i>
-              </div>
+            <div class="review-prompt">
+              <h2>Berikan Ulasan (Opsional)</h2>
+              <p>Bantu kami menjadi lebih baik! Ulasan Anda sangat berarti.</p>
+              <form id="review-form">
+                <div class="rating-stars" id="rating-stars">
+                  <i class="ri-star-line" data-value="1"></i>
+                  <i class="ri-star-line" data-value="2"></i>
+                  <i class="ri-star-line" data-value="3"></i>
+                  <i class="ri-star-line" data-value="4"></i>
+                  <i class="ri-star-line" data-value="5"></i>
+                </div>
+                <div class="review-form-group">
+                  <input
+                    type="text"
+                    id="reviewer-name"
+                    placeholder="Nama Anda (untuk ulasan)"
+                    required
+                  />
+                </div>
+                <div class="review-form-group">
+                  <textarea
+                    id="review-text"
+                    rows="3"
+                    placeholder="Tulis ulasan Anda di sini..."
+                    required
+                  ></textarea>
+                </div>
+                <button
+                  type="submit"
+                  class="button review-submit-btn"
+                  id="submit-review-btn"
+                >
+                  <span class="button__text"
+                    >Kirim Ulasan & Lanjut ke WhatsApp</span
+                  >
+                  <span class="button__loading-spinner"></span>
+                </button>
+              </form>
+            </div>
 
-              <div class="review-form-group">
-                <input
-                  type="text"
-                  id="reviewer-name"
-                  placeholder="Nama Anda"
-                  required
-                />
-              </div>
-
-              <div class="review-form-group">
-                <textarea
-                  id="review-text"
-                  rows="4"
-                  placeholder="Tulis ulasan Anda di sini..."
-                  required
-                ></textarea>
-              </div>
-
-              <button
-                type="submit"
-                class="button review-submit-btn"
-                id="submit-review-btn"
-              >
-                <span class="button__text">Kirim Ulasan & Lanjutkan</span>
-                <span class="button__loading-spinner"></span>
-              </button>
-            </form>
-
-            <a href="#" id="skip-link" class="skip-link"
-              >Lewati & Lanjutkan ke WhatsApp ></a
-            >
+            <div class="thankyou-next-step">
+              <p>
+                Atau lewati ulasan dan langsung konfirmasi pesanan Anda via
+                WhatsApp:
+              </p>
+              <a href="#" id="skip-link" class="button button-whatsapp">
+                <i class="ri-whatsapp-line"></i> Lanjut ke WhatsApp
+              </a>
+            </div>
           </div>
         </div>
       </section>
@@ -94,5 +113,18 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
     <script src="assets/js/firebase-config.js"></script>
     <script src="assets/js/review.js"></script>
+    <script>
+      // Script kecil untuk animasi checkmark di halaman ini
+      document.addEventListener("DOMContentLoaded", () => {
+        const checkIcon = document.querySelector(".check-icon");
+        if (checkIcon) {
+          // Tambahkan sedikit delay agar terlihat
+          setTimeout(() => (checkIcon.style.display = "block"), 100);
+          // Paksa reflow sebelum menambahkan kelas animasi
+          void checkIcon.offsetWidth;
+          checkIcon.classList.add("animate");
+        }
+      });
+    </script>
   </body>
 </html>
