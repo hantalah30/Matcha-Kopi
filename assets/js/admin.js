@@ -825,7 +825,7 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     });
 
-    // --- PENGATURAN POP-UP PROMOSI (PERBAIKAN FINAL) ---
+    // --- PENGATURAN POP-UP PROMOSI (PERBAIKAN TOTAL) ---
     function setupPopupSettings() {
       console.log("Setting up Popup Settings...");
       const popupForm = document.getElementById("popup-form");
@@ -834,12 +834,36 @@ document.addEventListener("DOMContentLoaded", function () {
       const textInput = document.getElementById("popup-text");
       const linkUrlInput = document.getElementById("popup-link-url");
       const enabledCheckbox = document.getElementById("popup-enabled");
-      const saveButton = popupForm
-        ? popupForm.querySelector('button[type="submit"]')
-        : null;
-      const settingsRef = db.collection("settings").doc("popupConfig"); // Referensi dokumen Firestore
+      const saveButton = document.getElementById("save-popup-button"); // Gunakan ID tombol
+      const saveButtonText = document.getElementById("save-popup-button-text");
+      const popupFormTitle = document.getElementById("popup-form-title");
+      const cancelEditBtn = document.getElementById("cancel-edit-popup-btn");
 
-      // Pengecekan elemen yang lebih ketat
+      // Elemen untuk display
+      const currentPopupDisplay = document.getElementById(
+        "current-popup-display"
+      );
+      const currentPopupContent = document.getElementById(
+        "current-popup-content"
+      );
+      const currentPopupImage = document.getElementById("current-popup-image");
+      const currentPopupText = document.getElementById("current-popup-text");
+      const currentPopupLinkInfo = document.getElementById(
+        "current-popup-link-info"
+      );
+      const currentPopupLink = document.getElementById("current-popup-link");
+      const currentPopupStatus = document.getElementById(
+        "current-popup-status"
+      );
+      const editPopupBtn = document.getElementById("edit-popup-btn");
+      const deletePopupBtn = document.getElementById("delete-popup-btn");
+      const noPopupMessage = document.getElementById("no-popup-message");
+      const formContainer = document.getElementById("popup-form-container");
+
+      const settingsRef = db.collection("settings").doc("popupConfig");
+      let currentConfigData = null; // Simpan data config saat ini
+
+      // Pengecekan elemen
       if (
         !popupForm ||
         !imageUrlInput ||
@@ -847,37 +871,90 @@ document.addEventListener("DOMContentLoaded", function () {
         !textInput ||
         !linkUrlInput ||
         !enabledCheckbox ||
-        !saveButton
+        !saveButton ||
+        !currentPopupDisplay ||
+        !editPopupBtn ||
+        !deletePopupBtn ||
+        !noPopupMessage ||
+        !formContainer ||
+        !cancelEditBtn
       ) {
         console.error(
-          "FATAL: Elemen form Pop-up atau tombol simpan tidak ditemukan. Fitur Pop-up tidak akan berfungsi."
+          "FATAL: Elemen penting untuk Pop-up tidak ditemukan. Periksa ID elemen di admin.html."
         );
         const popupSection = document.getElementById("page-popup");
         if (popupSection)
           popupSection.innerHTML =
-            "<h1>Pengaturan Pop-up Promo</h1><p style='color: red;'>Error: Elemen form penting tidak ditemukan dalam HTML. Periksa ID elemen.</p>";
-        return; // Hentikan fungsi jika elemen penting hilang
+            "<h1>Error: Elemen Pop-up tidak lengkap.</h1>";
+        return;
       }
 
       const setLoadingState = (isLoading, message = "Menyimpan...") => {
         if (isLoading) {
           saveButton.disabled = true;
-          saveButton.innerHTML = `<i class="ri-loader-4-line"></i> ${message}`;
+          saveButton.innerHTML = `<i class="ri-loader-4-line spinner"></i> ${message}`; // Tambahkan class spinner
         } else {
           saveButton.disabled = false;
-          saveButton.innerHTML =
-            '<i class="ri-save-line"></i> Simpan Pengaturan Pop-up';
+          // Kembalikan teks asli (yang disimpan di saveButtonText)
+          saveButton.innerHTML = `<i class="ri-save-line"></i> <span id="save-popup-button-text">${saveButtonText.textContent}</span>`;
+        }
+      };
+
+      const resetFormAndDisplay = () => {
+        popupForm.reset();
+        imagePreview.style.display = "none";
+        imagePreview.src = "#";
+        popupFormTitle.textContent = "Tambah Pop-up Baru";
+        saveButtonText.textContent = "Simpan Pengaturan";
+        currentPopupDisplay.style.display = "none";
+        noPopupMessage.style.display = "block";
+        formContainer.style.display = "block"; // Tampilkan form untuk menambah baru
+        cancelEditBtn.style.display = "none";
+        currentConfigData = null;
+      };
+
+      const displayCurrentPopup = (data) => {
+        currentConfigData = data; // Simpan data saat ini
+        if (data && data.imageUrl && data.text) {
+          // Pastikan data valid
+          currentPopupImage.src = data.imageUrl;
+          currentPopupImage.style.display = "block";
+          currentPopupText.textContent = data.text;
+
+          if (data.linkUrl) {
+            currentPopupLink.href = data.linkUrl;
+            currentPopupLink.textContent = data.linkUrl;
+            currentPopupLinkInfo.style.display = "block";
+          } else {
+            currentPopupLinkInfo.style.display = "none";
+          }
+
+          currentPopupStatus.textContent = data.isEnabled
+            ? "Status: Aktif"
+            : "Status: Tidak Aktif";
+          currentPopupStatus.style.color = data.isEnabled
+            ? "var(--success-color)"
+            : "var(--danger-color)";
+
+          currentPopupDisplay.style.display = "block";
+          noPopupMessage.style.display = "none";
+          formContainer.style.display = "none"; // Sembunyikan form saat view
+          cancelEditBtn.style.display = "none"; // Sembunyikan tombol batal
+        } else {
+          resetFormAndDisplay(); // Jika tidak ada data valid, reset
         }
       };
 
       const loadPopupConfig = async () => {
         console.log("Loading popup config from Firestore...");
-        setLoadingState(true, "Memuat..."); // Tampilkan loading saat memuat
+        // Tidak perlu loading state di sini karena display di-handle displayCurrentPopup
         try {
           const doc = await settingsRef.get();
           if (doc.exists) {
             const data = doc.data();
             console.log("Popup config data found:", data);
+            displayCurrentPopup(data); // Tampilkan data yang ada
+            // Juga isi form (untuk edit nanti), tapi jangan tampilkan form
             imageUrlInput.value = data.imageUrl || "";
             textInput.value = data.text || "";
             linkUrlInput.value = data.linkUrl || "";
@@ -886,42 +963,93 @@ document.addEventListener("DOMContentLoaded", function () {
             imagePreview.style.display = data.imageUrl ? "block" : "none";
           } else {
             console.log("Popup config document does not exist yet.");
-            imagePreview.style.display = "none";
-            imagePreview.src = "#";
-            // Kosongkan form jika data belum ada
-            popupForm.reset();
-            enabledCheckbox.checked = false; // Pastikan checkbox tidak aktif
+            resetFormAndDisplay(); // Reset jika tidak ada data
           }
-          showAdminNotification("Pengaturan pop-up dimuat.", true);
         } catch (error) {
           console.error("Gagal memuat konfigurasi pop-up:", error);
           showAdminNotification(
             `Gagal memuat pengaturan: ${error.message}`,
             false
           );
-          imagePreview.style.display = "none"; // Sembunyikan preview jika error
-          imagePreview.src = "#";
-        } finally {
-          setLoadingState(false); // Sembunyikan loading
+          resetFormAndDisplay(); // Reset jika error
         }
       };
 
-      // Muat data saat fungsi ini dipanggil (saat initAdminApp)
+      // Muat data saat fungsi ini dipanggil
       loadPopupConfig();
 
-      // Update preview saat URL gambar berubah
+      // Update preview saat URL gambar berubah di form
       imageUrlInput.addEventListener("input", () => {
         imagePreview.src = imageUrlInput.value || "#";
         imagePreview.style.display = imageUrlInput.value ? "block" : "none";
       });
 
-      // Event listener submit form (lebih robust)
+      // Event listener tombol EDIT
+      editPopupBtn.addEventListener("click", () => {
+        if (!currentConfigData) return; // Harusnya tidak terjadi jika tombol terlihat
+
+        // Isi form dengan data saat ini (seharusnya sudah terisi dari load)
+        imageUrlInput.value = currentConfigData.imageUrl || "";
+        textInput.value = currentConfigData.text || "";
+        linkUrlInput.value = currentConfigData.linkUrl || "";
+        enabledCheckbox.checked = currentConfigData.isEnabled || false;
+        imagePreview.src = currentConfigData.imageUrl || "#";
+        imagePreview.style.display = currentConfigData.imageUrl
+          ? "block"
+          : "none";
+
+        // Ubah tampilan
+        popupFormTitle.textContent = "Edit Pop-up";
+        saveButtonText.textContent = "Simpan Perubahan";
+        currentPopupDisplay.style.display = "none"; // Sembunyikan display
+        formContainer.style.display = "block"; // Tampilkan form
+        cancelEditBtn.style.display = "inline-block"; // Tampilkan tombol batal
+        formContainer.scrollIntoView({ behavior: "smooth" }); // Scroll ke form
+      });
+
+      // Event listener tombol Batal Edit
+      cancelEditBtn.addEventListener("click", () => {
+        // Cukup tampilkan lagi display yang sudah ada
+        if (currentConfigData) {
+          displayCurrentPopup(currentConfigData);
+        } else {
+          resetFormAndDisplay(); // Kembali ke state tambah baru jika tidak ada data
+        }
+      });
+
+      // Event listener tombol HAPUS
+      deletePopupBtn.addEventListener("click", async () => {
+        if (
+          confirm(
+            "Yakin ingin menghapus konfigurasi pop-up ini? Tindakan ini tidak bisa dibatalkan."
+          )
+        ) {
+          try {
+            await settingsRef.delete();
+            showAdminNotification("Konfigurasi pop-up berhasil dihapus.");
+            resetFormAndDisplay(); // Reset tampilan ke state awal (tambah baru)
+          } catch (error) {
+            console.error("Gagal menghapus konfigurasi pop-up:", error);
+            showAdminNotification(`Gagal menghapus: ${error.message}`, false);
+          }
+        }
+      });
+
+      // Event listener submit form (untuk Simpan Baru / Simpan Perubahan)
       popupForm.addEventListener("submit", async (e) => {
-        e.preventDefault(); // Panggil paling awal dan pastikan bekerja
-        e.stopPropagation(); // Hentikan event bubbling (jaga-jaga)
+        e.preventDefault();
         console.log("Popup form submission initiated...");
 
-        setLoadingState(true); // Tampilkan loading
+        // Validasi sederhana (karena sudah ada 'required' di HTML)
+        if (!imageUrlInput.value || !textInput.value) {
+          showAdminNotification(
+            "URL Gambar dan Teks Promosi wajib diisi.",
+            false
+          );
+          return;
+        }
+
+        setLoadingState(true);
 
         const saveData = {
           imageUrl: imageUrlInput.value.trim(),
@@ -934,18 +1062,18 @@ document.addEventListener("DOMContentLoaded", function () {
         console.log("Attempting to save data:", saveData);
 
         try {
-          // Gunakan set dengan merge untuk membuat/update dokumen
-          await settingsRef.set(saveData, { merge: true });
+          await settingsRef.set(saveData, { merge: true }); // set dgn merge:true akan membuat jika belum ada, atau update jika sudah ada
           console.log("Data successfully saved/updated in Firestore!");
           showAdminNotification("Pengaturan Pop-up berhasil disimpan!");
+          displayCurrentPopup(saveData); // Tampilkan data yang baru disimpan
         } catch (error) {
           console.error("!!! Firebase Save Error:", error);
           showAdminNotification(`Gagal menyimpan: ${error.message}`, false);
         } finally {
-          setLoadingState(false); // Sembunyikan loading
+          setLoadingState(false);
         }
-        return false; // Pengaman ekstra untuk mencegah refresh default
       });
+
       console.log("Popup settings event listeners attached.");
     }
 
