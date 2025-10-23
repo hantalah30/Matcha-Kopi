@@ -1,31 +1,73 @@
 /* CSS Khusus untuk Halaman Thank You */
 
-body {
-  background-color: var(--kopi-bg-color); /* Pastikan background sesuai tema */
+/* Variabel dari styles.css (jika belum ada, tambahkan ini) */
+:root {
+  --kopi-bg-color: hsl(25, 25%, 15%);
+  --kopi-title-color: hsl(28, 95%, 90%);
+  --kopi-text-color: hsl(28, 15%, 75%);
+  --matcha-bg-color: hsl(90, 20%, 18%);
+  --matcha-title-color: hsl(90, 70%, 92%);
+  --matcha-text-color: hsl(90, 10%, 80%);
+  --white-color: #fff;
+  --dark-color: hsl(28, 95%, 12%);
+  --success-color: #28a745;
+  --body-font: "Montserrat", sans-serif;
+  --second-font: "Saira", sans-serif;
+  --big-font-size: 2.5rem;
+  --h1-font-size: 1.5rem;
+  --h2-font-size: 1.25rem;
+  --normal-font-size: 0.938rem;
+  --small-font-size: 0.813rem;
+  --font-medium: 500;
+  /* Tambahkan variabel warna/background card dari admin.css atau buat baru */
+  --card-bg: var(--white-color); /* Default terang */
+  --title-color: var(--dark-color); /* Teks default terang */
+  --text-color: hsl(210, 8%, 45%); /* Abu-abu default terang */
+  --kopi-first-color: hsl(28, 80%, 50%); /* Warna Kopi */
+  --matcha-first-color: hsl(88, 50%, 55%); /* Warna Matcha */
+  --header-height: 3.5rem; /* Tinggi header */
 }
 
+body {
+  /* Menggunakan warna background dari tema Kopi default */
+  background-color: var(--kopi-bg-color);
+  color: var(--kopi-text-color); /* Warna teks default */
+  font-family: var(--body-font);
+}
+
+/* Penyesuaian agar tema Matcha juga bisa diterapkan jika diperlukan */
+body.matcha-theme {
+  background-color: var(--matcha-bg-color);
+  color: var(--matcha-text-color);
+}
+/* Anda mungkin perlu menambahkan class 'matcha-theme' ke body di thankyou.html via JS jika ingin tema berubah */
+
 .thankyou-section {
-  padding-block: 6rem 4rem;
-  min-height: calc(100vh - var(--header-height));
+  padding-block: 4rem 2rem; /* Kurangi padding atas dan bawah */
+  min-height: calc(
+    100vh - var(--header-height)
+  ); /* Tinggi minimal layar dikurangi header */
   display: flex;
-  align-items: center;
-  justify-content: center;
+  align-items: center; /* Vertikal tengah */
+  justify-content: center; /* Horizontal tengah */
+}
+
+/* Container untuk menjaga padding di layar kecil */
+.thankyou-container {
+  width: 100%;
+  padding-inline: 1rem; /* Padding kiri-kanan untuk layar kecil */
 }
 
 .thankyou-card {
-  background-color: var(
-    --card-bg
-  ); /* Menggunakan variabel dari admin.css jika tersedia */
-  /* Fallback jika --card-bg tidak ada */
-  background-color: #fff;
-  color: #333; /* Warna teks default untuk card terang */
-  padding: 2.5rem 2rem;
-  border-radius: 1.5rem;
+  background-color: var(--card-bg); /* Menggunakan variabel */
+  color: var(--text-color); /* Warna teks dari variabel */
+  padding: 2rem 1.5rem; /* Kurangi padding horizontal */
+  border-radius: 1rem; /* Sedikit kurangi radius */
   text-align: center;
-  max-width: 500px;
-  width: 100%;
-  box-shadow: 0 10px 30px hsla(0, 0%, 0%, 0.1);
-  margin: 2rem auto;
+  max-width: 500px; /* Lebar maksimum tetap */
+  width: 100%; /* Lebar penuh hingga max-width */
+  box-shadow: 0 8px 20px hsla(0, 0%, 0%, 0.1); /* Kurangi shadow sedikit */
+  margin: 1rem auto; /* Kurangi margin atas/bawah */
   opacity: 0;
   transform: translateY(20px);
   animation: fadeInCard 0.6s 0.2s ease-out forwards;
@@ -39,29 +81,43 @@ body {
 }
 
 .thankyou-icon {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem; /* Kurangi jarak bawah ikon */
   display: flex;
   justify-content: center;
 }
 
-/* Ambil styling checkmark dari checkout.css jika belum ada */
+/* Styling checkmark (sebaiknya sudah ada dan konsisten) */
 .success-checkmark {
-  width: 80px;
-  height: 80px;
-  margin: 0; /* Hapus margin default jika ada */
+  width: 60px; /* Kecilkan ukuran checkmark */
+  height: 60px;
+  margin: 0 auto; /* Tengahkankan */
 }
 .check-icon {
-  width: 80px;
-  height: 80px;
-  position: relative;
-  border-radius: 50%;
-  box-sizing: content-box;
-  border: 4px solid var(--success-color, #4caf50);
-  transform: scale(0); /* Mulai dari kecil */
-  /* Hapus animasi scaleIn dari checkout.css jika masih ada */
-  transition: transform 0.4s 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55); /* Bounce effect */
+  width: 60px; /* Sesuaikan */
+  height: 60px; /* Sesuaikan */
+  border-width: 3px; /* Tipiskan border */
 }
-/* Animasi checkmark via JS/HTML */
+/* Sesuaikan posisi garis checkmark jika perlu */
+.icon-line.line-tip {
+  top: 28px; /* Sesuaikan */
+  left: 10px; /* Sesuaikan */
+  height: 4px; /* Tipiskan */
+}
+.icon-line.line-long {
+  top: 24px; /* Sesuaikan */
+  right: 6px; /* Sesuaikan */
+  height: 4px; /* Tipiskan */
+}
+.icon-circle {
+  width: 60px; /* Sesuaikan */
+  height: 60px; /* Sesuaikan */
+  border-width: 3px; /* Tipiskan */
+}
+.icon-fix {
+  /* Mungkin tidak perlu jika checkmark SVG atau lebih sederhana */
+  display: none;
+}
+/* ... (Animasi checkmark tetap sama) ... */
 .check-icon.animate {
   transform: scale(1);
 }
@@ -71,150 +127,106 @@ body {
 .check-icon.animate .icon-line.line-long {
   animation: line-long 0.75s 0.6s ease-out forwards;
 }
-
-.icon-line {
-  height: 5px;
-  background-color: var(--success-color, #4caf50);
-  display: block;
-  border-radius: 2px;
-  position: absolute;
-  z-index: 10;
-}
-.icon-line.line-tip {
-  top: 38px;
-  left: 14px;
-  width: 0;
-  transform: rotate(45deg);
-}
-.icon-line.line-long {
-  top: 32px;
-  right: 8px;
-  width: 0;
-  transform: rotate(-45deg);
-}
-.icon-circle {
-  top: -4px;
-  left: -4px;
-  z-index: 10;
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  position: absolute;
-  box-sizing: content-box;
-  border: 4px solid hsla(122, 39%, 49%, 0.5);
-}
-.icon-fix {
-  /* Untuk menutupi sudut border */
-  top: 8px;
-  width: 5px;
-  left: 26px;
-  z-index: 1;
-  height: 85px;
-  position: absolute;
-  transform: rotate(-45deg);
-  background-color: inherit; /* Warna background card */
-  background-color: #fff;
-}
-
 @keyframes line-tip {
+  /* Sesuaikan nilai agar pas dengan ukuran baru */
   0% {
     width: 0;
     left: 1px;
-    top: 19px;
+    top: 14px;
   }
   54% {
     width: 0;
     left: 1px;
-    top: 19px;
+    top: 14px;
   }
   70% {
-    width: 25px;
-    left: -8px;
-    top: 37px;
-  }
+    width: 20px;
+    left: -6px;
+    top: 28px;
+  } /* Disesuaikan */
   84% {
-    width: 17px;
-    left: 21px;
-    top: 48px;
-  }
+    width: 14px;
+    left: 16px;
+    top: 35px;
+  } /* Disesuaikan */
   100% {
-    width: 25px;
-    left: 14px;
-    top: 38px;
-  }
+    width: 20px;
+    left: 10px;
+    top: 28px;
+  } /* Disesuaikan */
 }
 @keyframes line-long {
+  /* Sesuaikan nilai agar pas dengan ukuran baru */
   0% {
     width: 0;
-    right: 46px;
-    top: 54px;
-  }
+    right: 34px;
+    top: 40px;
+  } /* Disesuaikan */
   65% {
     width: 0;
-    right: 46px;
-    top: 54px;
-  }
+    right: 34px;
+    top: 40px;
+  } /* Disesuaikan */
   84% {
-    width: 55px;
+    width: 40px;
     right: 0px;
-    top: 35px;
-  }
+    top: 26px;
+  } /* Disesuaikan */
   100% {
-    width: 47px;
-    right: 8px;
-    top: 32px;
-  }
+    width: 35px;
+    right: 6px;
+    top: 24px;
+  } /* Disesuaikan */
 }
 
 .thankyou-card h1 {
-  font-size: var(--big-font-size);
-  color: var(--title-color, #0f172a);
-  margin-bottom: 0.75rem;
+  font-size: var(--h1-font-size); /* Gunakan ukuran H1 standar */
+  color: var(--title-color);
+  margin-bottom: 0.5rem; /* Kurangi jarak bawah */
 }
 
 .thankyou-subtitle {
-  color: var(--text-color, #334155);
-  font-size: var(--normal-font-size);
-  margin-bottom: 2.5rem;
-  max-width: 350px;
+  color: var(--text-color);
+  font-size: var(--normal-font-size); /* Ukuran font normal */
+  margin-bottom: 1.5rem; /* Kurangi jarak bawah */
+  max-width: 100%; /* Hapus batasan lebar subtitle */
   margin-inline: auto;
-  line-height: 1.6;
+  line-height: 1.5; /* Sedikit rapatkan line-height */
 }
 
 .review-prompt {
-  background-color: hsl(0, 0%, 95%);
-  padding: 1.5rem;
-  border-radius: 1rem;
-  margin-bottom: 2rem;
+  background-color: hsl(0, 0%, 95%); /* Background sedikit abu */
+  padding: 1rem; /* Kurangi padding */
+  border-radius: 0.75rem; /* Kurangi radius */
+  margin-bottom: 1.5rem; /* Kurangi jarak bawah */
 }
 
 .review-prompt h2 {
-  font-size: var(--h2-font-size);
-  color: var(--title-color, #0f172a);
+  font-size: var(--h2-font-size); /* Ukuran H2 standar */
+  color: var(--title-color);
   margin-bottom: 0.5rem;
 }
 
 .review-prompt p {
-  color: var(--text-color, #334155);
-  font-size: var(--small-font-size);
-  margin-bottom: 1.5rem;
+  color: var(--text-color);
+  font-size: var(--small-font-size); /* Ukuran font kecil */
+  margin-bottom: 1rem; /* Kurangi jarak bawah */
 }
 
 #review-form {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 0.75rem; /* Kurangi jarak antar elemen form */
 }
 
 .rating-stars {
   display: flex;
   justify-content: center;
   gap: 0.5rem;
-  font-size: 2rem;
-  color: hsl(40, 90%, 60%); /* Warna bintang */
+  font-size: 1.8rem; /* Kecilkan bintang sedikit */
+  color: hsl(40, 90%, 60%);
   margin-bottom: 0.5rem;
 }
-
 .rating-stars i {
   cursor: pointer;
   transition: transform 0.2s;
@@ -226,26 +238,39 @@ body {
 .review-form-group input,
 .review-form-group textarea {
   width: 100%;
-  padding: 0.8rem 1rem;
+  padding: 0.7rem 1rem; /* Kurangi padding vertikal input */
   border-radius: 0.5rem;
   border: 1px solid hsl(0, 0%, 85%);
   font-size: var(--normal-font-size);
   background-color: var(--white-color);
-  color: var(--text-color, #334155);
+  color: var(--text-color);
 }
 .review-form-group input:focus,
 .review-form-group textarea:focus {
   border-color: var(--kopi-first-color); /* Warna fokus Kopi */
-  box-shadow: 0 0 0 3px hsla(28, 80%, 50%, 0.2);
+  box-shadow: 0 0 0 2px hsla(28, 80%, 50%, 0.15); /* Shadow lebih tipis */
 }
 body.matcha-theme .review-form-group input:focus,
 body.matcha-theme .review-form-group textarea:focus {
   border-color: var(--matcha-first-color); /* Warna fokus Matcha */
-  box-shadow: 0 0 0 3px hsla(88, 50%, 55%, 0.2);
+  box-shadow: 0 0 0 2px hsla(88, 50%, 55%, 0.15); /* Shadow lebih tipis */
+}
+
+/* Styling tombol (sebaiknya sudah ada di styles.css) */
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.8rem 1.5rem; /* Kurangi padding vertikal tombol */
+  font-weight: var(--font-medium);
+  border-radius: 0.5rem;
+  cursor: pointer;
+  border: none;
+  transition: background-color 0.3s, box-shadow 0.3s;
+  position: relative; /* Untuk spinner */
 }
 
 .review-submit-btn {
-  /* Menggunakan warna tema kopi sebagai default */
   background-color: var(--kopi-first-color);
   color: var(--white-color);
 }
@@ -261,36 +286,84 @@ body.matcha-theme .review-submit-btn:hover {
 }
 
 .thankyou-next-step {
-  margin-top: 2rem;
-  padding-top: 1.5rem;
+  margin-top: 1.5rem; /* Kurangi jarak atas */
+  padding-top: 1rem; /* Kurangi padding atas */
   border-top: 1px solid hsl(0, 0%, 90%);
 }
 
 .thankyou-next-step p {
-  color: var(--text-color, #334155);
+  color: var(--text-color);
   font-size: var(--small-font-size);
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem; /* Kurangi jarak bawah */
 }
 
 .button-whatsapp {
   background-color: #25d366;
   color: white;
-  display: inline-flex;
-  align-items: center;
   gap: 0.5rem;
 }
 .button-whatsapp:hover {
   background-color: #1eae57;
-  box-shadow: 0 8px 24px hsla(145, 63%, 30%, 0.3);
+  box-shadow: 0 6px 18px hsla(145, 63%, 30%, 0.2); /* Kurangi shadow */
 }
 .button-whatsapp i {
-  font-size: 1.3rem;
-}
+  font-size: 1.2rem;
+} /* Kecilkan ikon WA sedikit */
 
-/* Spinner di tombol */
-.review-submit-btn .button__loading-spinner {
-  border-top-color: var(--white-color); /* Sesuaikan jika perlu */
+/* Spinner di tombol (sebaiknya sudah ada) */
+.button__loading-spinner {
+  position: absolute;
+  width: 18px; /* Kecilkan spinner */
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: var(--white-color);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  opacity: 0;
+  transition: opacity 0.3s;
+  /* Penempatan di tengah (mungkin perlu disesuaikan) */
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
+.button.loading .button__text {
+  visibility: hidden;
+}
+.button.loading .button__loading-spinner {
+  opacity: 1;
+}
+@keyframes spin {
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+} /* Sesuaikan animasi spin jika perlu */
+
 body.matcha-theme .review-submit-btn .button__loading-spinner {
   border-top-color: var(--dark-color);
+}
+
+/* Media Query untuk penyesuaian ekstra di layar sangat kecil */
+@media screen and (max-width: 360px) {
+  .thankyou-card {
+    padding: 1.5rem 1rem; /* Kurangi padding lagi */
+  }
+  .thankyou-card h1 {
+    font-size: 1.3rem; /* Kecilkan H1 lagi */
+  }
+  .thankyou-subtitle {
+    font-size: var(--small-font-size); /* Kecilkan subtitle */
+  }
+  .review-prompt h2 {
+    font-size: 1.1rem; /* Kecilkan H2 review */
+  }
+  .rating-stars {
+    font-size: 1.6rem; /* Kecilkan bintang lagi */
+  }
+  .button {
+    padding: 0.7rem 1.2rem; /* Kecilkan padding tombol */
+    font-size: var(--small-font-size); /* Kecilkan font tombol */
+  }
+  .button-whatsapp i {
+    font-size: 1rem; /* Kecilkan ikon WA */
+  }
 }

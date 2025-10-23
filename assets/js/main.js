@@ -586,14 +586,14 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  /*=============== PROMO POPUP LOGIC (PERBAIKAN) ===============*/
+  /*=============== PROMO POPUP LOGIC ===============*/
   const promoPopupElement = document.getElementById("promo-popup");
   const promoPopupImage = document.getElementById("promo-popup-image");
   const promoPopupText = document.getElementById("promo-popup-text");
   const promoPopupCloseBtn = document.getElementById("promo-popup-close");
   const promoPopupLink = document.getElementById("promo-popup-link");
   const popupConfigRef = db.collection("settings").doc("popupConfig");
-  let popupTimeout;
+  let popupTimeout; // Untuk auto-close jika diinginkan
 
   const showPromoPopup = async () => {
     console.log("Attempting to show promo popup...");
@@ -622,39 +622,43 @@ document.addEventListener("DOMContentLoaded", () => {
       if (doc.exists) {
         const config = doc.data();
         console.log("Popup config fetched:", config);
-        // Validasi data penting
+        // Validasi data penting & status aktif
         if (config.isEnabled && config.imageUrl && config.text) {
           console.log("Popup is enabled and data is valid. Showing popup...");
           promoPopupImage.src = config.imageUrl;
+          promoPopupImage.style.display = "block"; // Tampilkan gambar
           promoPopupText.textContent = config.text;
 
+          // Atur link jika ada
           if (config.linkUrl) {
             promoPopupLink.href = config.linkUrl;
-            promoPopupLink.style.cursor = "pointer"; // Pastikan kursor pointer jika ada link
-            promoPopupLink.target = "_blank"; // Selalu buka di tab baru
+            promoPopupLink.style.cursor = "pointer"; // Pastikan kursor pointer
+            // Pastikan link terbuka di tab baru jika itu yang diinginkan
+            promoPopupLink.target = "_blank";
             promoPopupLink.rel = "noopener noreferrer";
           } else {
+            // Jika tidak ada link, hapus atribut href dan ubah kursor
             promoPopupLink.removeAttribute("href");
             promoPopupLink.style.cursor = "default";
-            promoPopupLink.target = ""; // Hapus target jika tidak ada link
+            promoPopupLink.target = ""; // Hapus target
             promoPopupLink.rel = "";
           }
 
           promoPopupElement.classList.add("show");
 
-          // Set timer auto-close (misal: 5 detik)
-          clearTimeout(popupTimeout);
-          popupTimeout = setTimeout(() => {
-            console.log("Auto-closing popup after timeout.");
-            hidePromoPopup();
-          }, 5000); // 5 detik
+          // Opsional: Set timer auto-close (misal: 10 detik)
+          // clearTimeout(popupTimeout);
+          // popupTimeout = setTimeout(() => {
+          //     console.log("Auto-closing popup after timeout.");
+          //     hidePromoPopup();
+          // }, 10000); // 10 detik
         } else {
           console.log("Popup is disabled or image/text is missing in config.");
-          promoPopupElement.classList.remove("show"); // Pastikan tidak tampil jika tidak valid
+          promoPopupElement.classList.remove("show"); // Pastikan tidak tampil
         }
       } else {
         console.log("Popup config document does not exist in Firestore.");
-        promoPopupElement.classList.remove("show"); // Pastikan tidak tampil jika config tidak ada
+        promoPopupElement.classList.remove("show"); // Pastikan tidak tampil
       }
     } catch (error) {
       console.error("!!! Firebase Read Error (Popup):", error);
@@ -668,10 +672,11 @@ document.addEventListener("DOMContentLoaded", () => {
       promoPopupElement.classList.remove("show");
       console.log("Hiding popup and setting sessionStorage flag.");
     }
-    sessionStorage.setItem("promoPopupClosed", "true");
-    clearTimeout(popupTimeout);
+    sessionStorage.setItem("promoPopupClosed", "true"); // Tandai sudah ditutup di sesi ini
+    clearTimeout(popupTimeout); // Hapus timer auto-close jika ada
   };
 
+  // Tambahkan event listener ke tombol close popup
   if (promoPopupCloseBtn) {
     promoPopupCloseBtn.addEventListener("click", (e) => {
       e.preventDefault(); // Mencegah link diaktifkan jika tombol close diklik
@@ -681,13 +686,96 @@ document.addEventListener("DOMContentLoaded", () => {
   } else {
     console.error("Popup close button not found!");
   }
+
+  // ... (variabel popup sebelumnya) ...
+  const feedbackModal = document.getElementById("feedback-modal");
+  const openFeedbackBtn = document.getElementById("open-feedback-modal-btn");
+  const closeFeedbackBtn = document.getElementById("feedback-modal-close");
+  const feedbackForm = document.getElementById("feedback-form");
+  const submitFeedbackBtn = document.getElementById("submit-feedback-btn");
+  const feedbackSuccessMessage = document.getElementById(
+    "feedback-success-message"
+  );
+  const feedbackErrorMessage = document.getElementById(
+    "feedback-error-message"
+  );
+
+  /*=============== FEEDBACK MODAL LOGIC ===============*/
+  const openFeedbackModal = () => {
+    if (feedbackModal) {
+      feedbackModal.classList.add("show-modal");
+      feedbackSuccessMessage.style.display = "none"; // Sembunyikan pesan sukses/error
+      feedbackErrorMessage.style.display = "none";
+      feedbackForm.reset(); // Kosongkan form saat dibuka
+      submitFeedbackBtn.classList.remove("loading"); // Reset tombol
+      submitFeedbackBtn.disabled = false;
+    }
+  };
+
+  const closeFeedbackModal = () => {
+    if (feedbackModal) feedbackModal.classList.remove("show-modal");
+  };
+
+  // Event listener untuk membuka modal
+  if (openFeedbackBtn) {
+    openFeedbackBtn.addEventListener("click", openFeedbackModal);
+  }
+
+  // Event listener untuk menutup modal (tombol X dan klik di luar)
+  if (closeFeedbackBtn) {
+    closeFeedbackBtn.addEventListener("click", closeFeedbackModal);
+  }
+  if (feedbackModal) {
+    feedbackModal.addEventListener("click", (e) => {
+      if (e.target === feedbackModal) {
+        // Hanya jika klik area overlay
+        closeFeedbackModal();
+      }
+    });
+  }
+
+  // Event listener untuk submit form feedback
+  if (feedbackForm) {
+    feedbackForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      submitFeedbackBtn.classList.add("loading");
+      submitFeedbackBtn.disabled = true;
+      feedbackSuccessMessage.style.display = "none";
+      feedbackErrorMessage.style.display = "none";
+
+      const name = document.getElementById("feedback-name").value || "Anonim"; // Default 'Anonim' jika kosong
+      const message = document.getElementById("feedback-message").value;
+
+      try {
+        // Simpan ke Firestore koleksi 'feedback'
+        await db.collection("feedback").add({
+          name: name,
+          message: message,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        });
+        feedbackSuccessMessage.style.display = "block"; // Tampilkan pesan sukses
+        feedbackForm.reset(); // Kosongkan form
+        // Opsional: Tutup modal setelah beberapa detik
+        setTimeout(closeFeedbackModal, 2500);
+      } catch (error) {
+        console.error("Gagal mengirim feedback:", error);
+        feedbackErrorMessage.style.display = "block"; // Tampilkan pesan error
+      } finally {
+        // Hentikan loading terlepas dari sukses atau gagal (kecuali jika modal langsung ditutup)
+        // Jika tidak ada timeout close:
+        submitFeedbackBtn.classList.remove("loading");
+        submitFeedbackBtn.disabled = false;
+      }
+    });
+  }
+
   /*=============== INITIAL LOAD ===============*/
   renderProducts();
   renderSpecials();
-  renderReviews(); // Jika Anda sudah menambahkan fungsi ini
+  renderReviews(); // Panggil fungsi ini juga
   updateCart();
   scrollActive();
-  showPromoPopup(); // <--- Panggil fungsi popup di sini
+  showPromoPopup(); // <--- PANGGIL FUNGSI POPUP DI SINI
 
   /*=============== SCROLL REVEAL ANIMATION ===============*/
   const sr = ScrollReveal({

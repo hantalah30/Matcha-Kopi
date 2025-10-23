@@ -828,9 +828,6 @@ body:not(.dark-mode) .slider .dark-icon {
     grid-template-columns: 80px 1fr;
   }
   .sidebar__logo-text,
-  .sidebar__link span {
-    display: none;
-  }
   .sidebar__logo {
     justify-content: center;
   }
@@ -1160,4 +1157,709 @@ input:checked + .slider:before {
   margin-bottom: 1rem;
   font-size: 0.8rem;
   color: var(--text-color);
+}
+
+/* Styling untuk Container Tab */
+.order-tabs {
+  display: flex; /* Tombol tab berjajar horizontal */
+  gap: 0.5rem; /* Jarak antar tombol tab */
+  margin-bottom: 1.5rem; /* Jarak bawah dari tombol ke konten */
+  border-bottom: 2px solid var(--border-color); /* Garis bawah pemisah */
+}
+
+/* Styling untuk Tombol Tab */
+.tab-btn {
+  padding: 0.75rem 1.5rem; /* Padding tombol */
+  background-color: transparent; /* Background transparan */
+  border: none; /* Hilangkan border default */
+  border-bottom: 3px solid transparent; /* Border bawah transparan (untuk efek aktif) */
+  color: var(--text-color); /* Warna teks */
+  font-weight: 600; /* Tebal font */
+  cursor: pointer; /* Kursor pointer */
+  transition: color 0.3s, border-bottom-color 0.3s; /* Efek transisi */
+  margin-bottom: -2px; /* Agar border aktif sejajar dengan garis container */
+}
+
+/* Efek Hover Tombol Tab */
+.tab-btn:hover {
+  color: var(--title-color); /* Warna teks saat hover */
+}
+
+/* Styling Tombol Tab yang Aktif */
+.tab-btn.active {
+  color: var(--first-color); /* Warna teks aktif */
+  border-bottom-color: var(--first-color); /* Warna border bawah aktif */
+}
+
+/* Konten Status Pesanan (Section) */
+.order-status-section {
+  display: none; /* Sembunyikan semua section secara default */
+}
+
+/* Tampilkan Section yang Aktif */
+.order-status-section.active {
+  display: block; /* Tampilkan */
+  animation: fadeIn 0.5s ease-out; /* Animasi muncul */
+}
+
+/* Judul H2 dalam Section Status */
+.order-status-section h2 {
+  color: var(--title-color); /* Warna judul */
+  font-size: 1.3rem; /* Ukuran font judul */
+  margin-bottom: 1rem; /* Jarak bawah */
+  padding-bottom: 0.5rem; /* Padding bawah */
+  border-bottom: 1px dashed var(--border-color); /* Garis bawah putus-putus */
+}
+
+/* Styling untuk Pemisah Tanggal (H3) */
+.order-date-separator {
+  margin-top: 2rem; /* Jarak atas */
+  margin-bottom: 1rem; /* Jarak bawah */
+  padding: 0.5rem 1rem; /* Padding */
+  background-color: hsla(
+    215,
+    28%,
+    25%,
+    0.5
+  ); /* Background agak gelap transparan */
+  color: var(--title-color); /* Warna teks */
+  font-size: 1rem; /* Ukuran font */
+  font-weight: 600; /* Tebal font */
+  border-radius: 6px; /* Sudut melengkung */
+  border-left: 4px solid var(--first-color); /* Garis kiri sebagai penanda */
+}
+/* Hapus margin atas untuk pemisah tanggal pertama di setiap section */
+.order-status-section .order-date-separator:first-of-type {
+  margin-top: 0;
+}
+
+/* Pesan Loading/Info di dalam container tabel */
+.order-table-container .loading-message,
+.order-table-container .info-text {
+  text-align: center; /* Teks di tengah */
+  padding: 2rem; /* Padding */
+  color: var(--text-color); /* Warna teks */
+}
+
+/* Beri jarak antara pemisah tanggal dan tabel */
+.order-status-section .order-table-container table {
+  margin-top: 1rem; /* Jarak atas tabel dari header tanggal */
+}
+
+/* Penyesuaian Warna Dropdown Status (Penting untuk Dark Mode) */
+.status-select {
+  padding: 0.5rem;
+  border-radius: 6px;
+  border: 1px solid;
+  font-weight: 600;
+  background: transparent; /* Pastikan background transparan */
+  /* Warna teks akan diambil dari kelas status di bawah */
+}
+
+/* Warna Teks & Border Dropdown Status */
+.status-select.status-pending {
+  color: var(
+    --warning-color,
+    #ffc107
+  ); /* Warna teks kuning (dengan fallback) */
+  border-color: var(--warning-color, #ffc107); /* Warna border kuning */
+}
+.status-select.status-completed {
+  color: var(--success-color, #28a745); /* Warna teks hijau */
+  border-color: var(--success-color, #28a745); /* Warna border hijau */
+}
+.status-select.status-cancelled {
+  color: var(--danger-color, #dc3545); /* Warna teks merah */
+  border-color: var(--danger-color, #dc3545); /* Warna border merah */
+}
+
+/* Styling option agar terbaca di dark mode (tergantung browser) */
+.status-select option {
+  background-color: var(--card-bg); /* Samakan dengan background card */
+  color: var(--text-color); /* Warna teks standar */
+}
+
+/* Definisikan variabel warna jika belum ada (sesuaikan jika perlu) */
+:root {
+  /* ... variabel warna yang sudah ada ... */
+  --warning-color: #ffc107; /* Kuning */
+  --info-color: #17a2b8; /* Biru Info */
+  /* ... variabel warna yang sudah ada ... */
+}
+
+/* Penyesuaian Responsive untuk Tab */
+@media screen and (max-width: 768px) {
+  .order-tabs {
+    justify-content: space-around; /* Agar tab lebih merata di mobile */
+    overflow-x: auto; /* Memungkinkan scroll jika tab tidak muat */
+    white-space: nowrap; /* Mencegah tombol tab wrap */
+  }
+  .tab-btn {
+    padding: 0.75rem 1rem; /* Padding lebih kecil untuk mobile */
+    flex-shrink: 0; /* Mencegah tombol menyusut */
+  }
+}
+
+/* ===== Styling Pengaturan Pop-up di Admin ===== */
+.current-popup-display {
+  background-color: var(--card-bg);
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  margin-bottom: 2rem;
+  max-width: 600px;
+  margin-inline: auto;
+}
+.current-popup-display h2 {
+  color: var(--title-color);
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+}
+.current-popup-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Tengahkan konten */
+  gap: 1rem;
+  text-align: center; /* Teks di tengah */
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+#current-popup-image {
+  max-width: 200px; /* Batasi lebar gambar preview */
+  max-height: 150px;
+  border-radius: 8px;
+  object-fit: contain; /* Agar gambar tidak gepeng */
+}
+#current-popup-text {
+  color: var(--text-color);
+}
+#current-popup-link-info strong {
+  color: var(--title-color);
+}
+#current-popup-link {
+  color: var(--first-color);
+  word-break: break-all; /* Agar link panjang tidak merusak layout */
+}
+#current-popup-status {
+  font-weight: 600;
+}
+.current-popup-actions {
+  display: flex;
+  justify-content: center; /* Tombol di tengah */
+  gap: 1rem;
+}
+
+/* Form Pop-up */
+.popup-settings-container {
+  background-color: var(--card-bg);
+  padding: 2rem;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  max-width: 600px; /* Batasi lebar form */
+  margin: 2rem auto 0; /* Jarak atas jika form ditampilkan */
+}
+.popup-settings-container h2 {
+  color: var(--title-color);
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+/* Styling untuk Toggle Switch */
+.toggle-group {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+  padding: 0.75rem 1rem; /* Beri padding agar lebih rapi */
+  background-color: var(--input-bg); /* Background berbeda untuk toggle */
+  border-radius: 8px;
+}
+
+.toggle-group label {
+  margin-bottom: 0; /* Hapus margin bawah default dari label */
+  color: var(--title-color);
+  font-weight: 600;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 50px; /* Ukuran lebih kecil */
+  height: 28px; /* Ukuran lebih kecil */
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  /* Nama kelas ini mungkin bentrok, pastikan unik jika perlu */
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--text-color); /* Warna saat non-aktif */
+  transition: 0.4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 20px; /* Ukuran handle */
+  width: 20px; /* Ukuran handle */
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  transition: 0.4s;
+}
+
+input:checked + .slider {
+  background-color: var(--first-color); /* Warna saat aktif */
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px var(--first-color);
+}
+
+input:checked + .slider:before {
+  transform: translateX(22px); /* Jarak geser handle */
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 28px; /* Sesuaikan radius */
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
+#popup-form small {
+  display: block;
+  margin-top: -1rem; /* Naikkan sedikit */
+  margin-bottom: 1.5rem; /* Beri jarak bawah */
+  font-size: 0.8rem;
+  color: var(--text-color);
+}
+/* Spinner pada tombol save */
+#save-popup-button .spinner {
+  width: 16px;
+  height: 16px;
+  border-width: 2px;
+  display: inline-block; /* Agar sejajar dengan ikon */
+  vertical-align: middle;
+  margin-right: 0.5rem;
+}
+
+/* ===== Styling Feedback Section di Admin ===== */
+.feedback-list-container {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(300px, 1fr)
+  ); /* Kolom responsif */
+  gap: 1.5rem; /* Jarak antar kartu */
+}
+
+.feedback-card {
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column; /* Konten ditumpuk vertikal */
+  box-shadow: 0 4px 6px hsla(0, 0%, 0%, 0.05);
+}
+
+.feedback-card__header {
+  display: flex;
+  justify-content: space-between; /* Nama kiri, waktu kanan */
+  align-items: flex-start; /* Sejajarkan ke atas */
+  margin-bottom: 1rem;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0.75rem;
+}
+
+.feedback-card__name {
+  font-weight: 600;
+  color: var(--title-color);
+  font-size: 1.1rem;
+}
+
+.feedback-card__timestamp {
+  font-size: var(--small-font-size);
+  color: var(--text-color);
+  text-align: right;
+  white-space: nowrap; /* Agar tanggal tidak wrap */
+  padding-left: 1rem; /* Jarak dari nama jika nama panjang */
+}
+
+.feedback-card__message {
+  color: var(--text-color);
+  line-height: 1.6;
+  flex-grow: 1; /* Biarkan pesan mengisi ruang */
+  margin-bottom: 1.5rem; /* Jarak sebelum tombol hapus */
+  white-space: pre-wrap; /* Jaga format paragraf/enter dari user */
+}
+
+.feedback-card__actions {
+  margin-top: auto; /* Dorong tombol ke bawah */
+  text-align: right; /* Tombol rata kanan */
+}
+
+/* Penyesuaian tombol hapus */
+.delete-feedback-btn {
+  /* Bisa gunakan class .button .button-danger atau styling khusus */
+  padding: 0.5rem 1rem; /* Padding lebih kecil */
+}
+
+/*=============== RESPONSIVE ADMIN DASHBOARD ===============*/
+
+/* === Target Layar Medium (Tablet, < 992px) === */
+@media screen and (max-width: 992px) {
+  /* Layout Utama */
+  .admin-layout {
+    /* Sidebar sudah diatur di sini sebelumnya (jadi 80px), tidak perlu diubah lagi */
+    grid-template-columns: 80px 1fr; /* Pastikan ini sudah ada */
+  }
+
+  /* Konten Utama */
+  .main-content {
+    padding: 1rem; /* Kurangi padding konten utama */
+  }
+  .main-header {
+    padding: 0 1rem; /* Sesuaikan padding header */
+    margin-bottom: 1.5rem; /* Kurangi jarak bawah header */
+  }
+
+  /* Kartu Statistik */
+  .stats-container {
+    grid-template-columns: repeat(
+      auto-fit,
+      minmax(180px, 1fr)
+    ); /* Kolom lebih kecil */
+    gap: 1rem; /* Jarak antar kartu lebih kecil */
+  }
+  .stat-card {
+    padding: 1rem; /* Padding kartu lebih kecil */
+  }
+  .stat-card h3 {
+    font-size: 0.8rem; /* Ukuran font judul kartu */
+    margin-bottom: 0.5rem;
+  }
+  .stat-card h3 i {
+    font-size: 1rem; /* Ukuran ikon judul kartu */
+  }
+  .stat-card p {
+    font-size: 1.5rem; /* Ukuran font angka statistik */
+  }
+
+  /* Kontainer Grafik */
+  .charts-container {
+    grid-template-columns: 1fr; /* Grafik jadi satu kolom */
+    gap: 1rem;
+  }
+  .chart-card {
+    padding: 1rem; /* Padding kartu grafik */
+  }
+  .chart-card h3 {
+    font-size: 1rem; /* Ukuran judul grafik */
+  }
+
+  /* Kontrol (Search & Filter) */
+  .controls-container {
+    gap: 0.75rem; /* Jarak antar elemen kontrol */
+    margin-bottom: 1rem;
+  }
+  .search-wrapper input {
+    padding: 0.6rem 1rem 0.6rem 2.2rem; /* Padding search input */
+    font-size: 0.9rem;
+  }
+  .search-wrapper i {
+    left: 0.8rem; /* Posisi ikon search */
+  }
+  .filter-btn {
+    padding: 0.4rem 0.8rem; /* Padding tombol filter */
+    font-size: 0.9rem;
+  }
+
+  /* Tabel */
+  table th,
+  table td {
+    padding: 0.75rem; /* Padding sel tabel */
+    font-size: 0.9rem; /* Ukuran font tabel */
+    white-space: normal; /* Izinkan teks wrap jika perlu, kecuali kolom aksi */
+  }
+  /* Jaga agar tombol aksi tidak wrap */
+  table td:last-child {
+    white-space: nowrap;
+  }
+  .product-image-cell {
+    width: 40px;
+    height: 40px; /* Ukuran gambar produk lebih kecil */
+  }
+  .status-select {
+    padding: 0.4rem; /* Padding dropdown status */
+    font-size: 0.85rem;
+  }
+  .action-btn {
+    font-size: 1.1rem; /* Ukuran ikon aksi */
+    margin-right: 0.5rem;
+  }
+  .button i {
+    /* Ikon pada tombol biasa */
+    margin-right: 0.3rem;
+  }
+
+  /* Modal */
+  .modal-content {
+    padding: 1.5rem; /* Padding modal */
+    margin: 10% auto; /* Margin atas lebih besar */
+  }
+  .modal-content.modal-sm {
+    max-width: 90%; /* Modal kecil bisa lebih lebar */
+  }
+  .close-btn {
+    top: 0.5rem;
+    right: 1rem; /* Posisi tombol close modal */
+    font-size: 24px;
+  }
+  .modal-actions {
+    margin-top: 1.5rem; /* Jarak tombol aksi modal */
+    gap: 0.75rem;
+  }
+
+  /* Section Spesial */
+  .specials-list-container {
+    grid-template-columns: repeat(
+      auto-fit,
+      minmax(280px, 1fr)
+    ); /* Sedikit lebih kecil */
+    gap: 1rem;
+  }
+  .special-card__content {
+    padding: 1rem;
+  }
+  .special-card__name {
+    font-size: 1.1rem;
+  }
+  .special-card__footer {
+    padding-top: 0.75rem;
+  }
+  .special-card__footer .button {
+    padding: 0.6rem;
+    font-size: 0.9rem;
+  }
+
+  /* Section Ulasan */
+  .reviews-list-container {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+  }
+  .admin-review-card {
+    padding: 1rem;
+  }
+  .admin-review-card__name {
+    font-size: 1rem;
+  }
+  .admin-review-card__text {
+    font-size: 0.85rem;
+    margin-bottom: 1rem;
+  }
+  .admin-review-card__actions .button {
+    padding: 0.6rem;
+    font-size: 0.9rem;
+  }
+
+  /* Section Feedback */
+  .feedback-list-container {
+    grid-template-columns: 1fr; /* Feedback jadi 1 kolom */
+    gap: 1rem;
+  }
+  .feedback-card {
+    padding: 1rem;
+  }
+  .feedback-card__header {
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+  }
+  .feedback-card__name {
+    font-size: 1rem;
+  }
+  .feedback-card__message {
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+  }
+  .delete-feedback-btn {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.85rem;
+  }
+
+  /* Pengaturan Pop-up */
+  .current-popup-display,
+  .popup-settings-container {
+    padding: 1rem;
+  }
+  #current-popup-image {
+    max-width: 150px; /* Kecilkan preview pop-up */
+  }
+}
+
+/* === Target Layar Kecil (Ponsel, < 768px) === */
+@media screen and (max-width: 768px) {
+  /* Layout Utama */
+  .admin-layout {
+    grid-template-columns: 1fr; /* Hanya konten utama */
+    /* Sidebar diatur via JS (position: fixed) */
+  }
+
+  /* Header */
+  .main-header {
+    height: 50px; /* Tinggi header lebih kecil */
+  }
+  #sidebar-toggle-mobile {
+    display: block; /* Tampilkan tombol hamburger */
+    font-size: 1.3rem;
+  }
+  .header-actions {
+    /* Jika ada elemen lain di header kanan, sesuaikan di sini */
+  }
+
+  /* Judul Halaman */
+  .admin-page h1,
+  .section-header h1 {
+    font-size: 1.3rem; /* Ukuran judul utama lebih kecil */
+    margin-bottom: 1rem;
+  }
+  .section-header {
+    flex-direction: column; /* Tombol tambah jadi di bawah judul */
+    align-items: flex-start; /* Rata kiri */
+    gap: 0.75rem;
+  }
+  /* Tombol tambah (misal: Tambah Produk) */
+  .section-header .button {
+    width: 100%; /* Tombol jadi full width */
+    padding: 0.7rem;
+    font-size: 0.9rem;
+  }
+
+  /* Kartu Statistik */
+  .stats-container {
+    /* Biarkan auto-fit bekerja, mungkin jadi 1 atau 2 kolom */
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  }
+  .stat-card p {
+    font-size: 1.3rem;
+  }
+
+  /* Tabel */
+  /* Membuat container tabel bisa di-scroll horizontal */
+  .product-table-container,
+  .order-table-container {
+    overflow-x: auto; /* Aktifkan scroll horizontal */
+    -webkit-overflow-scrolling: touch; /* Scrolling lebih mulus di iOS */
+    padding: 0.5rem; /* Kurangi padding container tabel */
+  }
+  /* Beri sedikit padding di dalam tabel agar tidak terlalu mepet */
+  table {
+    min-width: 600px; /* Atur lebar minimal tabel agar scroll muncul jika perlu */
+    /* Anda bisa sesuaikan min-width ini */
+  }
+  table th,
+  table td {
+    padding: 0.6rem 0.5rem; /* Padding sel lebih kecil */
+    font-size: 0.85rem;
+    white-space: nowrap; /* Paksa nowrap agar tidak merusak layout kolom */
+  }
+  /* Kecuali kolom Pesanan di tabel order, bisa wrap */
+  #order-table td:nth-child(3),
+  #order-table th:nth-child(3) {
+    white-space: normal;
+    min-width: 150px; /* Beri lebar minimal agar tidak terlalu sempit */
+  }
+  #order-table td:nth-child(3) ul {
+    font-size: 0.8rem; /* Kecilkan font detail pesanan */
+  }
+
+  /* Modal (pastikan muat di layar kecil) */
+  .modal-content {
+    width: 95%; /* Lebar modal hampir penuh */
+    margin: 5% auto; /* Sedikit margin atas/bawah */
+    max-height: 90vh; /* Batasi tinggi modal */
+    overflow-y: auto; /* Scroll jika konten modal panjang */
+  }
+  .modal-content h2 {
+    /* Judul modal */
+    font-size: 1.2rem;
+  }
+  /* Kecilkan input di dalam modal */
+  .modal .input-group input,
+  .modal .input-group select,
+  .modal .input-group textarea {
+    padding: 0.7rem 1rem 0.7rem 2.5rem;
+    font-size: 0.9rem;
+  }
+  .modal .input-group label {
+    font-size: 0.85rem;
+  }
+  .modal .input-icon {
+    /* Ikon di input modal */
+    left: 0.8rem;
+    font-size: 1rem;
+  }
+
+  /* Pengaturan Pop-up di mobile */
+  #current-popup-image {
+    max-width: 120px;
+  }
+  .toggle-group {
+    padding: 0.5rem 0.8rem;
+  }
+  .toggle-group label {
+    font-size: 0.9rem;
+  }
+  .switch {
+    /* Kecilkan toggle switch */
+    width: 45px;
+    height: 24px;
+  }
+  .slider:before {
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+  }
+  input:checked + .slider:before {
+    transform: translateX(21px);
+  }
+  .slider.round {
+    border-radius: 24px;
+  }
+}
+
+/* === Target Layar Sangat Kecil (< 576px) === */
+@media screen and (max-width: 576px) {
+  /* Kartu Statistik jadi 1 kolom */
+  .stats-container {
+    grid-template-columns: 1fr;
+  }
+
+  /* Modal bisa lebih full screen */
+  .modal-content {
+    width: 98%;
+    margin: 2% auto;
+    padding: 1rem;
+  }
+  .modal .modal-actions {
+    flex-direction: column; /* Tombol aksi modal jadi vertikal */
+    gap: 0.5rem;
+  }
+  .modal .modal-actions .button {
+    width: 100%;
+  }
 }

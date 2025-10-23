@@ -155,6 +155,12 @@ body.matcha-theme .header.shadow-header {
   justify-content: space-between;
   align-items: center;
 }
+
+/* Ganti nilai font-size di sini */
+.nav__cart i {
+  font-size: 1.8rem; /* Contoh: Ukuran diperbesar */
+  color: var(--white-color);
+}
 .nav__logo {
   color: var(--white-color);
   font-family: var(--second-font);
@@ -875,91 +881,91 @@ body.matcha-theme .scrollup {
 .show-scroll {
   bottom: calc(var(--mobile-nav-height) + 1rem);
 }
+/*=============== CART (PENYESUAIAN LAYOUT) ===============*/
 .cart {
   position: fixed;
   top: 0;
   right: -100%;
   width: 100%;
-  max-width: 380px;
-  height: 100vh;
-  background-color: #fff;
-  z-index: 1001;
+  max-width: 380px; /* Lebar maksimum keranjang */
+  height: 100vh; /* Tinggi penuh layar */
+  background-color: #fff; /* Warna background keranjang */
+  z-index: 1001; /* Pastikan di atas elemen lain */
   box-shadow: -4px 0 12px hsla(0, 0%, 0%, 0.1);
   transition: right 0.4s ease-in-out;
-  padding: 1.5rem;
+  /* Jadikan cart sebagai flex container kolom */
   display: flex;
   flex-direction: column;
+  overflow: hidden; /* Sembunyikan overflow pada container utama */
 }
+
 .cart.show-cart {
   right: 0;
 }
+
 .cart__header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   border-bottom: 1px solid hsl(0, 0%, 90%);
-  padding-bottom: 1rem;
+  padding: 1.5rem; /* Beri padding yang konsisten */
+  flex-shrink: 0; /* Header tidak boleh menyusut */
 }
+
 .cart__title {
   color: #333;
   font-size: var(--h2-font-size);
 }
+
 .cart__header .ri-close-line {
   font-size: 1.5rem;
   color: #333;
   cursor: pointer;
   transition: transform 0.3s, color 0.3s;
 }
+
 .cart__header .ri-close-line:hover {
-  color: var(--kopi-first-color);
+  color: var(--kopi-first-color); /* Warna hover bisa disesuaikan */
   transform: rotate(90deg);
 }
+
+/* Area Konten Item Keranjang */
 .cart__content {
-  flex-grow: 1;
-  overflow-y: auto;
-  padding-block: 1.5rem;
+  flex-grow: 1; /* Biarkan area ini mengisi ruang tersisa */
+  overflow-y: auto; /* Aktifkan scroll vertikal jika konten meluap */
+  padding: 1.5rem; /* Padding untuk konten */
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  /* Tambahkan padding bawah agar item terakhir tidak tertutup footer */
+  padding-bottom: 1rem;
 }
+
+/* Pesan Keranjang Kosong */
+.cart__empty-message {
+  text-align: center;
+  color: #888;
+  margin-top: 2rem;
+  font-style: italic;
+}
+
+/* Styling untuk item (tetap sama) */
 .cart__item {
   display: grid;
   grid-template-columns: 80px 1fr;
   gap: 1rem;
   align-items: center;
-  animation: fadeIn 0.4s ease-out;
+  /* Hapus border-bottom dari sini jika ada, agar pemisah lebih konsisten */
+  /* border-bottom: 1px solid hsl(0, 0%, 95%); */
+  /* padding-bottom: 1rem; */
 }
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+/* Tambahkan garis pemisah antar item jika diinginkan */
+.cart__item:not(:last-child) {
+  border-bottom: 1px solid hsl(0, 0%, 95%);
+  padding-bottom: 1.5rem;
 }
-.cart__item.removing {
-  animation: fadeOut 0.4s ease-in forwards;
-}
-@keyframes fadeOut {
-  from {
-    opacity: 1;
-    transform: scale(1);
-  }
-  to {
-    opacity: 0;
-    transform: scale(0.9);
-  }
-}
-.fly-to-cart-animation {
-  position: fixed;
-  z-index: 1002;
-  border-radius: 50%;
-  object-fit: contain;
-  transition: all 0.8s cubic-bezier(0.55, 0.055, 0.675, 0.19);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-}
+
+/* ... (styling .cart__item-img, .cart__item-details, dll tetap sama) ... */
 .cart__item-img {
   width: 80px;
   height: 80px;
@@ -976,14 +982,24 @@ body.matcha-theme .scrollup {
   color: #333;
   font-weight: var(--font-medium);
 }
+.cart__item-options small {
+  /* Styling untuk opsi gula/es */
+  color: #666;
+  font-size: var(--small-font-size);
+}
 .cart__item-price {
-  color: var(--kopi-first-color);
+  color: var(--kopi-first-color); /* Sesuaikan dengan tema */
   font-weight: var(--font-semi-bold);
+}
+body.matcha-theme .cart__item-price {
+  /* Warna harga untuk tema matcha */
+  color: var(--matcha-first-color);
 }
 .cart__item-actions {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  justify-content: space-between; /* Posisikan hapus ke kanan */
+  margin-top: 0.5rem; /* Sedikit jarak */
 }
 .cart__item-quantity-controls {
   display: flex;
@@ -997,34 +1013,23 @@ body.matcha-theme .scrollup {
   background-color: hsl(0, 0%, 90%);
   cursor: pointer;
   color: #333;
+  border: none; /* Pastikan tidak ada border */
+  display: flex; /* Untuk centering icon/text */
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem; /* Ukuran icon +/- */
+  line-height: 1;
 }
 .cart__item-quantity {
   font-size: var(--normal-font-size);
   font-weight: var(--font-medium);
-}
-.cart__item-remove {
-  font-size: 1.25rem;
-  color: var(--kopi-first-color);
-  cursor: pointer;
-  transition: transform 0.3s, color 0.3s;
-}
-.cart__item-remove:hover {
-  color: hsl(0, 80%, 50%);
-  transform: scale(1.1);
-}
-.nav__cart {
-  position: relative;
-  cursor: pointer;
-  transition: color 0.4s;
-}
-.nav__cart i {
-  font-size: 1.5rem;
-  color: var(--white-color);
+  min-width: 20px; /* Agar angka tidak mepet saat 1 digit */
+  text-align: center;
 }
 .cart__item-count {
   position: absolute;
-  top: -6px;
-  right: -6px;
+  top: 8px;
+  right: -10px;
   background-color: var(--kopi-first-color);
   color: var(--white-color);
   width: 18px;
@@ -1037,12 +1042,59 @@ body.matcha-theme .scrollup {
   font-weight: var(--font-semi-bold);
   transition: transform 0.3s, background-color 0.6s;
 }
-body.matcha-theme .cart__item-count {
-  background-color: var(--matcha-first-color);
-  color: var(--dark-color);
+.cart__item-remove {
+  font-size: 1.25rem;
+  color: var(--kopi-first-color); /* Sesuaikan dengan tema */
+  cursor: pointer;
+  transition: transform 0.3s, color 0.3s;
 }
-.nav__cart:hover .cart__item-count {
+body.matcha-theme .cart__item-remove {
+  /* Warna hapus tema matcha */
+  color: var(--matcha-first-color);
+}
+.cart__item-remove:hover {
+  color: hsl(0, 80%, 50%); /* Warna merah saat hover */
   transform: scale(1.1);
+}
+
+/* Area Footer Keranjang */
+.cart__footer {
+  padding: 1.5rem; /* Padding footer */
+  border-top: 1px solid hsl(0, 0%, 90%); /* Garis pemisah atas */
+  background-color: #fff; /* Pastikan background solid */
+  flex-shrink: 0; /* Footer tidak boleh menyusut */
+  box-shadow: 0 -4px 10px hsla(0, 0%, 0%, 0.05); /* Shadow tipis di atas */
+}
+
+.cart__total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center; /* Sejajarkan teks total */
+  margin-bottom: 1rem; /* Jarak antara total dan tombol checkout */
+}
+
+.cart__total-title,
+.cart__total-price {
+  font-size: var(--h3-font-size);
+  color: #333; /* Warna teks total */
+  font-weight: var(--font-semi-bold);
+}
+
+.cart__total-price {
+  color: var(--kopi-first-color); /* Warna harga total sesuai tema */
+}
+body.matcha-theme .cart__total-price {
+  /* Warna harga total tema matcha */
+  color: var(--matcha-first-color);
+}
+
+.cart__checkout-button {
+  width: 100%; /* Tombol memenuhi lebar footer */
+  /* Styling button (warna, dll) diambil dari kelas .button */
+}
+/* Pastikan tombol checkout disembunyikan jika keranjang kosong (diatur via JS) */
+#cart-checkout-button[style*="display: none"] {
+  display: none !important;
 }
 .notification {
   position: fixed;
@@ -1384,16 +1436,11 @@ body.matcha-theme .option-btn.active {
 /*=============== PROMO POPUP ===============*/
 .promo-popup {
   position: fixed;
-  bottom: calc(
-    var(--mobile-nav-height) + 1.5rem
-  ); /* Muncul di atas nav mobile */
+  bottom: -100%; /* Mulai dari bawah layar */
   right: 1.5rem;
   max-width: 300px;
-  background-color: var(
-    --card-bg,
-    #fff
-  ); /* Background dari admin.css atau fallback */
-  color: var(--text-color, #333); /* Warna teks dari admin.css atau fallback */
+  background-color: var(--white-color); /* Background terang */
+  color: var(--dark-color); /* Teks gelap */
   border-radius: 1rem;
   box-shadow: 0 8px 24px hsla(0, 0%, 0%, 0.2);
   padding: 1rem;
@@ -1404,14 +1451,16 @@ body.matcha-theme .option-btn.active {
   visibility: hidden;
   transform: translateY(20px) scale(0.95);
   transition: opacity 0.4s ease-out, visibility 0.4s ease-out,
-    transform 0.4s ease-out;
-  border: 1px solid var(--border-color, #e0e0e0);
+    transform 0.4s ease-out, bottom 0.5s ease-out; /* Tambahkan transisi bottom */
+  border: 1px solid #e0e0e0;
 }
 
 .promo-popup.show {
   opacity: 1;
   visibility: visible;
   transform: translateY(0) scale(1);
+  /* Sesuaikan posisi bottom agar muncul di atas nav mobile */
+  bottom: calc(var(--mobile-nav-height) + 1.5rem);
 }
 
 .promo-popup__close {
@@ -1430,6 +1479,8 @@ body.matcha-theme .option-btn.active {
   cursor: pointer;
   border: none;
   transition: background-color 0.3s, transform 0.3s;
+  line-height: 1; /* Pastikan 'x' di tengah */
+  padding: 0; /* Hapus padding default */
 }
 
 .promo-popup__close:hover {
@@ -1446,10 +1497,11 @@ body.matcha-theme .option-btn.active {
 .promo-popup__img {
   width: 100%;
   max-height: 150px; /* Batasi tinggi gambar */
-  object-fit: cover; /* Agar gambar tidak gepeng */
+  object-fit: contain; /* Agar gambar tidak gepeng tapi terlihat utuh */
   border-radius: 0.75rem;
   margin-bottom: 0.75rem;
   display: block;
+  background-color: #f0f0f0; /* Warna background jika gambar transparan */
 }
 
 .promo-popup__text {
@@ -1462,8 +1514,105 @@ body.matcha-theme .option-btn.active {
 
 /* Penyesuaian untuk Desktop */
 @media screen and (min-width: 769px) {
-  .promo-popup {
+  .promo-popup.show {
+    /* Posisi berbeda di desktop */
     bottom: 2rem;
     right: 2rem;
   }
+}
+
+/*=============== FEEDBACK BUTTON & MODAL ===============*/
+.footer__feedback {
+  margin-top: 2rem; /* Jarak dari konten footer sebelumnya */
+  text-align: center; /* Tombol di tengah */
+}
+
+/* Modal Feedback (mirip customization modal tapi bisa disesuaikan) */
+.feedback-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6); /* Overlay lebih gelap */
+  z-index: var(--z-modal);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s, visibility 0.3s;
+}
+
+.feedback-modal.show-modal {
+  opacity: 1;
+  visibility: visible;
+}
+
+.feedback-modal-content {
+  background-color: #fff;
+  padding: 2rem;
+  border-radius: 1rem;
+  position: relative;
+  width: 100%;
+  max-width: 450px; /* Lebar modal feedback */
+  text-align: center;
+  transform: translateY(20px);
+  transition: transform 0.3s;
+  color: var(--dark-color); /* Teks gelap untuk modal terang */
+}
+
+.feedback-modal.show-modal .feedback-modal-content {
+  transform: translateY(0);
+}
+
+.feedback-modal-content h2 {
+  font-size: var(--h2-font-size);
+  color: var(--dark-color); /* Judul gelap */
+  margin-bottom: 0.5rem;
+}
+
+.feedback-modal-content p {
+  font-size: var(--normal-font-size);
+  color: #555; /* Warna teks deskripsi */
+  margin-bottom: 1.5rem;
+}
+
+.feedback-form-group {
+  margin-bottom: 1rem;
+  text-align: left; /* Label dan input rata kiri */
+}
+
+.feedback-form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: var(--font-medium);
+  font-size: var(--small-font-size);
+  color: #333;
+}
+
+.feedback-form-group input,
+.feedback-form-group textarea {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid hsl(0, 0%, 85%);
+  font-size: var(--normal-font-size);
+  background-color: var(--white-color);
+  color: var(--dark-color); /* Warna teks input */
+}
+.feedback-form-group input:focus,
+.feedback-form-group textarea:focus {
+  border-color: var(--kopi-first-color); /* Warna fokus Kopi */
+  box-shadow: 0 0 0 2px hsla(28, 80%, 50%, 0.15);
+  outline: none;
+}
+/* Anda bisa tambahkan style focus untuk tema matcha jika perlu */
+
+#submit-feedback-btn .button__loading-spinner {
+  border-top-color: var(--white-color); /* Warna spinner default */
+}
+body.matcha-theme #submit-feedback-btn .button__loading-spinner {
+  border-top-color: var(--dark-color); /* Warna spinner tema matcha */
 }

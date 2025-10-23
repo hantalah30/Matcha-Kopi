@@ -73,6 +73,19 @@
                     ><i class="ri-feedback-line"></i><span>Ulasan</span></a
                   >
                 </li>
+                <li>
+                  <a href="#popup" class="sidebar__link" data-tooltip="Pop-up"
+                    ><i class="ri-advertisement-line"></i><span>Pop-up</span></a
+                  >
+                </li>
+                <li>
+                  <a
+                    href="#feedback"
+                    class="sidebar__link"
+                    data-tooltip="Feedback"
+                    ><i class="ri-mail-star-line"></i><span>Feedback</span></a
+                  >
+                </li>
               </ul>
             </div>
           </div>
@@ -138,27 +151,36 @@
             <div class="section-header">
               <h1>Manajemen Pesanan</h1>
             </div>
-            <div class="order-table-container">
-              <table id="order-table">
-                <thead>
-                  <tr>
-                    <th>Waktu</th>
-                    <th>Pelanggan</th>
-                    <th>Pesanan</th>
-                    <th>Total</th>
-                    <th>Lokasi</th>
-                    <th>Status</th>
-                    <th>Aksi</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td colspan="7" style="text-align: center">
-                      Memuat pesanan...
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+
+            <div class="order-tabs">
+              <button class="tab-btn active" data-status="pending">
+                Pending
+              </button>
+              <button class="tab-btn" data-status="completed">Completed</button>
+              <button class="tab-btn" data-status="cancelled">Cancelled</button>
+            </div>
+
+            <div class="order-content">
+              <div id="orders-pending" class="order-status-section active">
+                <h2>Pesanan Pending</h2>
+                <div class="order-table-container">
+                  <p class="loading-message">Memuat pesanan pending...</p>
+                </div>
+              </div>
+
+              <div id="orders-completed" class="order-status-section">
+                <h2>Pesanan Completed</h2>
+                <div class="order-table-container">
+                  <p class="loading-message">Memuat pesanan completed...</p>
+                </div>
+              </div>
+
+              <div id="orders-cancelled" class="order-status-section">
+                <h2>Pesanan Cancelled</h2>
+                <div class="order-table-container">
+                  <p class="loading-message">Memuat pesanan cancelled...</p>
+                </div>
+              </div>
             </div>
           </section>
 
@@ -210,6 +232,123 @@
             </div>
             <div id="reviews-list-container" class="reviews-list-container">
               <p style="text-align: center">Memuat ulasan...</p>
+            </div>
+          </section>
+
+          <section id="page-popup" class="admin-page">
+            <div class="section-header">
+              <h1>Pengaturan Pop-up Promosi</h1>
+            </div>
+
+            <div
+              id="current-popup-display"
+              class="current-popup-display"
+              style="display: none"
+            >
+              <h2>Pop-up Aktif Saat Ini</h2>
+              <div id="current-popup-content" class="current-popup-content">
+                <img
+                  id="current-popup-image"
+                  src="#"
+                  alt="Preview Pop-up"
+                  style="display: none"
+                />
+                <p id="current-popup-text">-</p>
+                <div id="current-popup-link-info" style="display: none">
+                  <strong>Link:</strong>
+                  <a id="current-popup-link" href="#" target="_blank">-</a>
+                </div>
+                <p id="current-popup-status">Status: -</p>
+              </div>
+              <div class="current-popup-actions">
+                <button id="edit-popup-btn" class="button">
+                  <i class="ri-pencil-line"></i> Edit
+                </button>
+                <button id="delete-popup-btn" class="button button-danger">
+                  <i class="ri-delete-bin-line"></i> Hapus
+                </button>
+              </div>
+            </div>
+
+            <p id="no-popup-message" style="text-align: center; display: none">
+              Belum ada pop-up promosi yang dikonfigurasi.
+              <button
+                id="add-new-popup-btn-from-empty"
+                class="button"
+                style="margin-top: 1rem; display: block; margin-inline: auto"
+              >
+                <i class="ri-add-line"></i> Tambah Pop-up Baru
+              </button>
+            </p>
+
+            <div
+              id="popup-form-container"
+              class="popup-settings-container"
+              style="display: none"
+            >
+              <h2 id="popup-form-title">Tambah Pop-up Baru</h2>
+              <form id="popup-form">
+                <div class="input-group">
+                  <label for="popup-image-url">URL Gambar Pop-up</label>
+                  <input type="url" id="popup-image-url" required />
+                  <img
+                    id="popup-image-preview"
+                    src="#"
+                    alt="Preview"
+                    style="
+                      display: none;
+                      max-width: 150px;
+                      margin-top: 1rem;
+                      border-radius: 8px;
+                    "
+                  />
+                </div>
+                <div class="input-group">
+                  <label for="popup-text">Teks Penjelasan</label>
+                  <textarea id="popup-text" rows="3" required></textarea>
+                </div>
+                <div class="input-group">
+                  <label for="popup-link-url">URL Link (Opsional)</label>
+                  <input
+                    type="url"
+                    id="popup-link-url"
+                    placeholder="https://contoh.com/promo"
+                  />
+                  <small>Jika diisi, gambar pop-up akan bisa diklik.</small>
+                </div>
+                <div class="toggle-group input-group">
+                  <label for="popup-enabled">Aktifkan Pop-up?</label>
+                  <label class="switch">
+                    <input type="checkbox" id="popup-enabled" checked />
+                    <span class="slider round"></span>
+                  </label>
+                </div>
+                <div class="modal-actions">
+                  <button type="submit" class="button" id="save-popup-button">
+                    <i class="ri-save-line"></i>
+                    <span id="save-popup-button-text">Simpan Pengaturan</span>
+                  </button>
+                  <button
+                    type="button"
+                    class="button button-secondary"
+                    id="cancel-edit-popup-btn"
+                    style="display: none"
+                  >
+                    Batal Edit
+                  </button>
+                </div>
+              </form>
+            </div>
+          </section>
+
+          <section id="page-feedback" class="admin-page">
+            <div class="section-header">
+              <h1>Kritik & Saran Pelanggan</h1>
+            </div>
+            <div id="feedback-list-container" class="feedback-list-container">
+              <p class="loading-message" style="text-align: center">
+                Memuat kritik dan saran...
+              </p>
             </div>
           </section>
         </div>

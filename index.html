@@ -175,6 +175,13 @@
         </div>
         <div class="products__container container grid"></div>
       </section>
+          <div class="footer__feedback">
+      <button class="button button-secondary" id="open-feedback-modal-btn">
+        <i class="ri-mail-send-line"></i> Kirim Kritik & Saran
+      </button>
+    </div>
+
+      
 
 <section class="reviews section" id="reviews">
             <h2 class="section__title">Dinding Apresiasi</h2>
@@ -186,7 +193,7 @@
             </div>
         </section>
 
-    </main>
+
 
 
 
@@ -205,7 +212,9 @@
         </div>
         <div class="footer__glow-line"></div>
       </div>
-    </footer>
+
+
+
 
     <a href="#" class="scrollup" id="scroll-up"
       ><i class="ri-arrow-up-line"></i
@@ -226,6 +235,40 @@
         <i class="ri-user-line"></i>
       </a>
     </nav>
+
+<div class="promo-popup" id="promo-popup">
+        <button class="promo-popup__close" id="promo-popup-close">&times;</button>
+        <a href="#" id="promo-popup-link" target="_blank" rel="noopener noreferrer">
+            <img id="promo-popup-image" src="#" alt="Promosi" class="promo-popup__img" style="display: none;" />
+            <p id="promo-popup-text" class="promo-popup__text"></p>
+        </a>
+    </div>
+
+<div class="feedback-modal" id="feedback-modal">
+    <div class="modal-content feedback-modal-content">
+      <i class="ri-close-line modal-close" id="feedback-modal-close"></i>
+      <h2>Kritik & Saran</h2>
+      <p>Masukan Anda sangat berarti untuk kami.</p>
+      <form id="feedback-form">
+        <div class="feedback-form-group">
+          <label for="feedback-name">Nama (Opsional)</label>
+          <input type="text" id="feedback-name" placeholder="Nama Anda" />
+        </div>
+        <div class="feedback-form-group">
+          <label for="feedback-message">Pesan Anda</label>
+          <textarea id="feedback-message" rows="4" placeholder="Tulis kritik atau saran Anda di sini..." required></textarea>
+        </div>
+        <div class="modal-actions">
+          <button type="submit" class="button" id="submit-feedback-btn">
+            <span class="button__text">Kirim Masukan</span>
+            <span class="button__loading-spinner"></span>
+          </button>
+        </div>
+        <p id="feedback-success-message" style="color: var(--success-color); margin-top: 1rem; display: none;">Terima kasih atas masukan Anda!</p>
+        <p id="feedback-error-message" style="color: var(--danger-color); margin-top: 1rem; display: none;">Gagal mengirim masukan. Coba lagi.</p>
+      </form>
+    </div>
+  </div>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
