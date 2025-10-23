@@ -798,6 +798,69 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  /*=============== PWA INSTALL ISLAND LOGIC ===============*/
+  const installContainer = document.getElementById("install-container");
+  const installTriggerBtn = document.getElementById("install-trigger-btn");
+  const installIsland = document.getElementById("install-island");
+  const installAppBtn = document.getElementById("install-app-btn");
+  let deferredPrompt; // Variabel untuk menyimpan event prompt
+
+  // Cek apakah semua elemen ada
+  if (installContainer && installTriggerBtn && installIsland && installAppBtn) {
+    window.addEventListener("beforeinstallprompt", (e) => {
+      // Cegah mini-infobar default muncul (Chrome 67 ke bawah)
+      // e.preventDefault(); // Uncomment jika ingin benar-benar menyembunyikan banner bawaan browser
+      console.log("beforeinstallprompt event fired");
+      // Simpan event agar bisa dipicu nanti.
+      deferredPrompt = e;
+      // Tampilkan tombol trigger bulat kita
+      installContainer.style.display = "flex"; // Tampilkan container
+
+      // Handler untuk klik tombol trigger (bulat)
+      installTriggerBtn.addEventListener("click", () => {
+        installIsland.classList.toggle("expanded"); // Toggle expand/collapse island
+      });
+
+      // Handler untuk klik tombol "Install" di dalam island
+      installAppBtn.addEventListener("click", async () => {
+        if (!deferredPrompt) {
+          console.log("Deferred prompt not available");
+          return; // Jika event tidak ada, jangan lakukan apa-apa
+        }
+        // Tampilkan prompt instalasi
+        deferredPrompt.prompt();
+        console.log("Install prompt shown");
+        // Tunggu pengguna merespon prompt
+        const { outcome } = await deferredPrompt.userChoice;
+        console.log(`User response to the install prompt: ${outcome}`);
+        // Kita hanya bisa menggunakan prompt sekali
+        deferredPrompt = null;
+        // Sembunyikan UI instalasi kita
+        installContainer.style.display = "none";
+        installIsland.classList.remove("expanded"); // Collapse island jika masih terbuka
+      });
+    });
+
+    // Event listener jika aplikasi sudah diinstall
+    window.addEventListener("appinstalled", () => {
+      console.log("PWA was installed");
+      // Sembunyikan UI instalasi
+      deferredPrompt = null;
+      installContainer.style.display = "none";
+      installIsland.classList.remove("expanded");
+      // Anda bisa menampilkan pesan "Aplikasi terinstall!" jika mau
+      // showNotification("Aplikasi berhasil diinstall!");
+    });
+  } else {
+    console.warn(
+      "Install PWA elements not found in index.html. Install feature disabled."
+    );
+  }
+  /*=============== AKHIR PWA INSTALL ISLAND LOGIC ===============*/
+
+  /*=============== INITIAL LOAD ===============*/
+  // ... (renderProducts, renderSpecials, dll) ...
+
   /*=============== INITIAL LOAD ===============*/
   renderProducts();
   renderSpecials();

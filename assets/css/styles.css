@@ -1616,3 +1616,136 @@ body.matcha-theme .option-btn.active {
 body.matcha-theme #submit-feedback-btn .button__loading-spinner {
   border-top-color: var(--dark-color); /* Warna spinner tema matcha */
 }
+
+/*=============== INSTALL PWA ISLAND ===============*/
+.install-container {
+  position: fixed;
+  bottom: calc(
+    var(--mobile-nav-height) + 1.5rem
+  ); /* Sesuaikan posisi agar di atas mobile nav */
+  right: 1.5rem;
+  z-index: var(--z-fixed); /* Pastikan di atas elemen lain */
+  display: flex; /* Aktifkan display ketika JS menambahkannya */
+  justify-content: flex-end; /* Align item ke kanan */
+  align-items: flex-end; /* Align item ke bawah */
+  width: auto; /* Lebar otomatis */
+  height: auto; /* Tinggi otomatis */
+  pointer-events: none; /* Container tidak menghalangi klik */
+}
+
+/* Tombol Bulat Trigger */
+.install-trigger-btn {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: var(--kopi-first-color); /* Warna Kopi */
+  color: var(--white-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem; /* Ukuran ikon */
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 12px hsla(28, 80%, 30%, 0.4);
+  transition: transform 0.3s ease, background-color 0.6s;
+  pointer-events: auto; /* Tombol bisa diklik */
+  position: relative; /* Untuk z-index relatif thd island */
+  z-index: 2; /* Di atas island saat collapsed */
+}
+
+body.matcha-theme .install-trigger-btn {
+  background-color: var(--matcha-first-color); /* Warna Matcha */
+  color: var(--dark-color);
+  box-shadow: 0 4px 12px hsla(88, 50%, 40%, 0.4);
+}
+
+.install-trigger-btn:hover {
+  transform: scale(1.1);
+}
+
+/* Dynamic Island */
+.install-island {
+  position: absolute; /* Relatif terhadap container */
+  bottom: 0;
+  right: 0;
+  width: 50px; /* Mulai seukuran tombol */
+  height: 50px;
+  background-color: var(--kopi-first-color); /* Warna Kopi */
+  border-radius: 25px; /* Mulai bulat */
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: width 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55),
+    /* Animasi springy */ border-radius 0.4s
+      cubic-bezier(0.68, -0.55, 0.27, 1.55),
+    background-color 0.6s;
+  pointer-events: none; /* Island tidak bisa diklik langsung */
+  z-index: 1; /* Di bawah tombol saat collapsed */
+}
+
+body.matcha-theme .install-island {
+  background-color: var(--matcha-first-color); /* Warna Matcha */
+}
+
+.install-island.expanded {
+  width: 260px; /* Lebar saat expand */
+  border-radius: 25px; /* Tetap bulat di ujungnya */
+  pointer-events: auto; /* Bisa interaksi saat expand */
+}
+
+/* Konten di dalam Island */
+.install-island-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* Konten berjauhan */
+  width: 100%;
+  padding: 0 1rem 0 2rem; /* Padding saat expand */
+  opacity: 0; /* Awalnya transparan */
+  transition: opacity 0.2s ease 0.2s; /* Muncul setelah island expand */
+  white-space: nowrap; /* Mencegah teks wrap */
+  color: var(--white-color);
+}
+body.matcha-theme .install-island-content {
+  color: var(--dark-color);
+}
+
+.install-island.expanded .install-island-content {
+  opacity: 1; /* Tampilkan konten saat expand */
+}
+
+.install-island-content span {
+  font-weight: var(--font-medium);
+  margin-right: 1rem; /* Jarak antara teks dan tombol */
+}
+
+/* Tombol Install di dalam Island */
+.install-app-button {
+  padding: 0.4rem 0.8rem; /* Ukuran tombol lebih kecil */
+  font-size: var(--small-font-size);
+  background-color: rgba(255, 255, 255, 0.2); /* Tombol agak transparan */
+  color: var(--white-color);
+  border-radius: 20px; /* Tombol lebih bulat */
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  flex-shrink: 0; /* Jangan susutkan tombol */
+}
+body.matcha-theme .install-app-button {
+  background-color: rgba(0, 0, 0, 0.1);
+  color: var(--dark-color);
+  border-color: rgba(0, 0, 0, 0.2);
+}
+
+.install-app-button:hover {
+  background-color: rgba(255, 255, 255, 0.4);
+}
+body.matcha-theme .install-app-button:hover {
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+/* Penyesuaian Posisi di Desktop */
+@media screen and (min-width: 769px) {
+  .install-container {
+    bottom: 2rem; /* Posisi berbeda di desktop */
+    right: 2rem;
+  }
+}
