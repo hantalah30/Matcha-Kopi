@@ -9,6 +9,35 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   const db = firebase.firestore();
 
+  // --- LOGIKA RESET DATA HARIAN ---
+  const checkAndResetDailyData = () => {
+    const lastVisitDateKey = "kopiMatchaLastVisitDate"; // Nama key di localStorage
+    const today = new Date().toISOString().split("T")[0]; // Format YYYY-MM-DD
+    const lastVisit = localStorage.getItem(lastVisitDateKey);
+
+    if (lastVisit !== today) {
+      console.log(
+        `Resetting daily data (Last visit: ${lastVisit}, Today: ${today})`
+      );
+
+      // Hapus data yang ingin direset setiap hari:
+      localStorage.removeItem("kopiMatchaCart"); // Hapus keranjang belanja
+      sessionStorage.removeItem("promoPopupClosed"); // Hapus status popup (jika masih terbuka dari kemarin)
+      // Tambahkan item lain jika perlu dihapus harian
+
+      // Update tanggal kunjungan terakhir ke hari ini
+      localStorage.setItem(lastVisitDateKey, today);
+      console.log("Daily data reset complete.");
+    } else {
+      // Jika masih hari yang sama, pastikan tanggal tersimpan (untuk kunjungan pertama kali)
+      if (!lastVisit) {
+        localStorage.setItem(lastVisitDateKey, today);
+      }
+      console.log("No daily reset needed.");
+    }
+  };
+  checkAndResetDailyData(); // Jalankan fun
+
   const formatRupiah = (number) =>
     new Intl.NumberFormat("id-ID", {
       style: "currency",
